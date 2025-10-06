@@ -84,6 +84,13 @@ const Index = () => {
 
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#FF6B00]/10 to-transparent" />
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 text-9xl animate-pulse">🧟</div>
+          <div className="absolute top-20 right-20 text-8xl animate-pulse delay-100">🧟‍♂️</div>
+          <div className="absolute bottom-20 left-1/4 text-7xl animate-pulse delay-200">🧟‍♀️</div>
+          <div className="absolute bottom-10 right-1/3 text-9xl animate-pulse delay-300">🧟</div>
+          <div className="absolute top-1/2 left-1/3 text-6xl animate-pulse delay-150">🧟‍♂️</div>
+        </div>
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-4 gta-gradient text-white border-0">
