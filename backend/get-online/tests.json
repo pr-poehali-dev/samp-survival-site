@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get online count",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "online": 100
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

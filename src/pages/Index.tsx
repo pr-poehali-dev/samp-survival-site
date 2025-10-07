@@ -5,9 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import AdminPanel from '@/components/AdminPanel';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [serverName, setServerName] = useState('SAMP SURVIVAL');
 
   const donateItems = {
     vip: [
@@ -59,7 +61,7 @@ const Index = () => {
                 S
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gradient">SAMP SURVIVAL</h1>
+                <h1 className="text-2xl font-bold text-gradient">{serverName}</h1>
                 <p className="text-xs text-muted-foreground">IP: 185.169.134.45:7777</p>
               </div>
             </div>
@@ -84,12 +86,15 @@ const Index = () => {
 
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#FF6B00]/10 to-transparent" />
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 text-9xl animate-pulse">🧟</div>
-          <div className="absolute top-20 right-20 text-8xl animate-pulse delay-100">🧟‍♂️</div>
-          <div className="absolute bottom-20 left-1/4 text-7xl animate-pulse delay-200">🧟‍♀️</div>
-          <div className="absolute bottom-10 right-1/3 text-9xl animate-pulse delay-300">🧟</div>
-          <div className="absolute top-1/2 left-1/3 text-6xl animate-pulse delay-150">🧟‍♂️</div>
+        <div className="absolute inset-0 opacity-10 overflow-hidden">
+          <div className="absolute top-0 left-[5%] w-24 h-24 bg-contain bg-no-repeat opacity-70" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[15%] left-[25%] w-20 h-20 bg-contain bg-no-repeat opacity-60 animate-pulse" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♂️%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[10%] right-[15%] w-28 h-28 bg-contain bg-no-repeat opacity-50" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♀️%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[5%] right-[5%] w-16 h-16 bg-contain bg-no-repeat opacity-70 animate-pulse delay-100" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[30%] left-[15%] w-20 h-20 bg-contain bg-no-repeat opacity-60" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♂️%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[25%] right-[30%] w-24 h-24 bg-contain bg-no-repeat opacity-50 animate-pulse delay-200" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♀️%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[20%] left-[45%] w-16 h-16 bg-contain bg-no-repeat opacity-70" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟%3C/text%3E%3C/svg%3E')"}} />
+          <div className="absolute top-[35%] right-[20%] w-20 h-20 bg-contain bg-no-repeat opacity-60 animate-pulse delay-300" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♂️%3C/text%3E%3C/svg%3E')"}} />
         </div>
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
@@ -98,7 +103,7 @@ const Index = () => {
               Онлайн: 847 игроков
             </Badge>
             <h2 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
-              SAMP SURVIVAL
+              {serverName}
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
               Выживай в жестоком мире GTA San Andreas. Создавай банды, захватывай территории, зарабатывай деньги и становись легендой улиц!
@@ -367,6 +372,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
+      
+      <AdminPanel serverName={serverName} onServerNameChange={setServerName} />
     </div>
   );
 };
