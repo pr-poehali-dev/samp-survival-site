@@ -1,0 +1,26 @@
+<svg width="200" height="300" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Голова -->
+  <ellipse cx="100" cy="55" rx="32" ry="38" fill="#6a8a6a" opacity="0.8"/>
+  
+  <!-- Глаза -->
+  <circle cx="90" cy="50" r="5" fill="#ff3333"/>
+  <circle cx="110" cy="50" r="5" fill="#ff3333"/>
+  
+  <!-- Рот открытый -->
+  <ellipse cx="100" cy="68" rx="12" ry="8" fill="#1a1a1a" opacity="0.9"/>
+  
+  <!-- Тело наклонённое -->
+  <rect x="70" y="90" width="55" height="85" rx="12" fill="#5a7a5a" opacity="0.7" transform="rotate(-5 97 132)"/>
+  
+  <!-- Руки вытянутые -->
+  <rect x="45" y="95" width="16" height="70" rx="6" fill="#6a8a6a" opacity="0.7" transform="rotate(-25 53 95)"/>
+  <rect x="135" y="95" width="16" height="70" rx="6" fill="#6a8a6a" opacity="0.7" transform="rotate(25 143 95)"/>
+  
+  <!-- Ноги -->
+  <rect x="78" y="175" width="20" height="85" rx="6" fill="#5a7a5a" opacity="0.7" transform="rotate(-3 88 175)"/>
+  <rect x="102" y="175" width="20" height="85" rx="6" fill="#5a7a5a" opacity="0.7" transform="rotate(3 112 175)"/>
+  
+  <!-- Раны -->
+  <circle cx="95" cy="120" r="4" fill="#8a2a2a" opacity="0.8"/>
+  <circle cx="110" cy="135" r="3" fill="#8a2a2a" opacity="0.8"/>
+</svg>

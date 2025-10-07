@@ -1,0 +1,26 @@
+<svg width="200" height="300" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Голова зомби -->
+  <ellipse cx="100" cy="60" rx="35" ry="40" fill="#5a7a5a" opacity="0.8"/>
+  
+  <!-- Глаза -->
+  <circle cx="88" cy="55" r="4" fill="#ff0000"/>
+  <circle cx="112" cy="55" r="4" fill="#ff0000"/>
+  
+  <!-- Рот -->
+  <path d="M 85 70 Q 100 75 115 70" stroke="#2a2a2a" stroke-width="2" fill="none"/>
+  
+  <!-- Тело -->
+  <rect x="75" y="95" width="50" height="80" rx="10" fill="#4a6a4a" opacity="0.7"/>
+  
+  <!-- Руки -->
+  <rect x="55" y="100" width="15" height="60" rx="5" fill="#5a7a5a" opacity="0.7" transform="rotate(-15 62 100)"/>
+  <rect x="130" y="100" width="15" height="60" rx="5" fill="#5a7a5a" opacity="0.7" transform="rotate(15 138 100)"/>
+  
+  <!-- Ноги -->
+  <rect x="80" y="175" width="18" height="80" rx="5" fill="#4a6a4a" opacity="0.7"/>
+  <rect x="102" y="175" width="18" height="80" rx="5" fill="#4a6a4a" opacity="0.7"/>
+  
+  <!-- Детали одежды (рваная) -->
+  <path d="M 75 120 L 70 125 L 75 130" stroke="#2a2a2a" stroke-width="1" fill="none"/>
+  <path d="M 125 140 L 130 145 L 125 150" stroke="#2a2a2a" stroke-width="1" fill="none"/>
+</svg>

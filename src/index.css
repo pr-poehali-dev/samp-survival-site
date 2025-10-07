@@ -106,20 +106,28 @@
     animation-delay: 0.35s;
   }
 
+  .delay-120 {
+    animation-delay: 0.12s;
+  }
+
+  .delay-320 {
+    animation-delay: 0.32s;
+  }
+
   @keyframes sway {
     0%,
     100% {
       transform: translateX(0) rotate(0deg);
     }
     25% {
-      transform: translateX(-10px) rotate(-2deg);
+      transform: translateX(-8px) rotate(-1deg);
     }
     75% {
-      transform: translateX(10px) rotate(2deg);
+      transform: translateX(8px) rotate(1deg);
     }
   }
 
   .animate-sway {
-    animation: sway 6s ease-in-out infinite;
+    animation: sway 8s ease-in-out infinite;
   }
 }

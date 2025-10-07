@@ -1,0 +1,28 @@
+<svg width="200" height="300" viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Голова -->
+  <ellipse cx="105" cy="58" rx="34" ry="39" fill="#7a9a7a" opacity="0.8"/>
+  
+  <!-- Глаза светящиеся -->
+  <circle cx="93" cy="52" r="6" fill="#ffff00" opacity="0.9"/>
+  <circle cx="117" cy="52" r="6" fill="#ffff00" opacity="0.9"/>
+  <circle cx="93" cy="52" r="3" fill="#ff0000"/>
+  <circle cx="117" cy="52" r="3" fill="#ff0000"/>
+  
+  <!-- Рот оскал -->
+  <path d="M 88 70 Q 105 78 122 70 Q 105 75 88 70" fill="#1a1a1a" opacity="0.8"/>
+  
+  <!-- Тело -->
+  <rect x="73" y="92" width="58" height="88" rx="14" fill="#6a8a6a" opacity="0.7"/>
+  
+  <!-- Руки -->
+  <rect x="50" y="98" width="18" height="75" rx="7" fill="#7a9a7a" opacity="0.7" transform="rotate(-20 59 98)"/>
+  <rect x="128" y="98" width="18" height="75" rx="7" fill="#7a9a7a" opacity="0.7" transform="rotate(20 137 98)"/>
+  
+  <!-- Ноги -->
+  <rect x="82" y="180" width="19" height="88" rx="6" fill="#6a8a6a" opacity="0.7"/>
+  <rect x="104" y="180" width="19" height="88" rx="6" fill="#6a8a6a" opacity="0.7"/>
+  
+  <!-- Кровь -->
+  <ellipse cx="100" cy="100" rx="8" ry="12" fill="#aa2a2a" opacity="0.7"/>
+  <path d="M 100 112 L 98 125 L 102 125 Z" fill="#aa2a2a" opacity="0.7"/>
+</svg>
