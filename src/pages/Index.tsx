@@ -108,15 +108,38 @@ const Index = () => {
 
       <section className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#FF6B00]/10 to-transparent" />
-        <div className="absolute inset-0 opacity-10 overflow-hidden">
-          <div className="absolute top-0 left-[5%] w-24 h-24 bg-contain bg-no-repeat opacity-70" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[15%] left-[25%] w-20 h-20 bg-contain bg-no-repeat opacity-60 animate-pulse" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♂️%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[10%] right-[15%] w-28 h-28 bg-contain bg-no-repeat opacity-50" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♀️%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[5%] right-[5%] w-16 h-16 bg-contain bg-no-repeat opacity-70 animate-pulse delay-100" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[30%] left-[15%] w-20 h-20 bg-contain bg-no-repeat opacity-60" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♂️%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[25%] right-[30%] w-24 h-24 bg-contain bg-no-repeat opacity-50 animate-pulse delay-200" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♀️%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[20%] left-[45%] w-16 h-16 bg-contain bg-no-repeat opacity-70" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟%3C/text%3E%3C/svg%3E')"}} />
-          <div className="absolute top-[35%] right-[20%] w-20 h-20 bg-contain bg-no-repeat opacity-60 animate-pulse delay-300" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🧟‍♂️%3C/text%3E%3C/svg%3E')"}} />
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Зомби силуэты на заднем плане */}
+          <div className="absolute top-[5%] left-[3%] w-32 h-48 opacity-15 animate-sway">
+            <div className="w-full h-full bg-gradient-to-b from-gray-700 to-gray-900 rounded-t-full" style={{clipPath: "polygon(30% 0%, 70% 0%, 80% 30%, 75% 100%, 25% 100%, 20% 30%)"}} />
+          </div>
+          <div className="absolute top-[15%] left-[20%] w-28 h-44 opacity-12 animate-sway delay-100">
+            <div className="w-full h-full bg-gradient-to-b from-gray-600 to-gray-800 rounded-t-full" style={{clipPath: "polygon(35% 0%, 65% 0%, 75% 25%, 80% 100%, 20% 100%, 25% 25%)"}} />
+          </div>
+          <div className="absolute top-[8%] right-[10%] w-36 h-52 opacity-18 animate-sway delay-200">
+            <div className="w-full h-full bg-gradient-to-b from-gray-700 to-black rounded-t-full" style={{clipPath: "polygon(32% 0%, 68% 0%, 78% 28%, 72% 100%, 28% 100%, 22% 28%)"}} />
+          </div>
+          <div className="absolute top-[25%] right-[35%] w-24 h-40 opacity-10 animate-sway delay-300">
+            <div className="w-full h-full bg-gradient-to-b from-gray-600 to-gray-900 rounded-t-full" style={{clipPath: "polygon(33% 0%, 67% 0%, 77% 30%, 70% 100%, 30% 100%, 23% 30%)"}} />
+          </div>
+          <div className="absolute top-[30%] left-[12%] w-30 h-46 opacity-14 animate-sway delay-150">
+            <div className="w-full h-full bg-gradient-to-b from-gray-700 to-gray-800 rounded-t-full" style={{clipPath: "polygon(34% 0%, 66% 0%, 76% 27%, 73% 100%, 27% 100%, 24% 27%)"}} />
+          </div>
+          <div className="absolute top-[20%] left-[45%] w-26 h-42 opacity-11 animate-sway delay-250">
+            <div className="w-full h-full bg-gradient-to-b from-gray-600 to-black rounded-t-full" style={{clipPath: "polygon(36% 0%, 64% 0%, 74% 29%, 71% 100%, 29% 100%, 26% 29%)"}} />
+          </div>
+          <div className="absolute top-[35%] right-[18%] w-28 h-44 opacity-13 animate-sway delay-350">
+            <div className="w-full h-full bg-gradient-to-b from-gray-700 to-gray-900 rounded-t-full" style={{clipPath: "polygon(31% 0%, 69% 0%, 79% 26%, 74% 100%, 26% 100%, 21% 26%)"}} />
+          </div>
+          <div className="absolute top-[12%] left-[60%] w-32 h-48 opacity-16 animate-sway delay-180">
+            <div className="w-full h-full bg-gradient-to-b from-gray-600 to-gray-800 rounded-t-full" style={{clipPath: "polygon(33% 0%, 67% 0%, 77% 28%, 72% 100%, 28% 100%, 23% 28%)"}} />
+          </div>
+          <div className="absolute top-[28%] right-[5%] w-25 h-41 opacity-12 animate-sway delay-280">
+            <div className="w-full h-full bg-gradient-to-b from-gray-700 to-black rounded-t-full" style={{clipPath: "polygon(35% 0%, 65% 0%, 75% 30%, 70% 100%, 30% 100%, 25% 30%)"}} />
+          </div>
+          <div className="absolute top-[18%] left-[75%] w-29 h-45 opacity-14 animate-sway delay-220">
+            <div className="w-full h-full bg-gradient-to-b from-gray-600 to-gray-900 rounded-t-full" style={{clipPath: "polygon(32% 0%, 68% 0%, 78% 27%, 73% 100%, 27% 100%, 22% 27%)"}} />
+          </div>
         </div>
         <div className="container mx-auto px-4 relative">
           <div className="text-center max-w-4xl mx-auto">
