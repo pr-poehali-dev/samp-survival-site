@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,28 @@ import AdminPanel from '@/components/AdminPanel';
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [serverName, setServerName] = useState('SAMP SURVIVAL');
+  const [onlineCount, setOnlineCount] = useState(847);
+  const [isOnlineLoading, setIsOnlineLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchOnline = async () => {
+      try {
+        setIsOnlineLoading(true);
+        const response = await fetch('https://functions.poehali.dev/0785d800-5b06-489f-bdd2-3b05aaeca92f');
+        const data = await response.json();
+        setOnlineCount(data.online);
+      } catch (error) {
+        console.error('Failed to fetch online count:', error);
+      } finally {
+        setIsOnlineLoading(false);
+      }
+    };
+
+    fetchOnline();
+    const interval = setInterval(fetchOnline, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const donateItems = {
     vip: [
@@ -100,7 +122,7 @@ const Index = () => {
           <div className="text-center max-w-4xl mx-auto">
             <Badge className="mb-4 gta-gradient text-white border-0">
               <Icon name="Users" size={16} className="mr-2" />
-              Онлайн: 847 игроков
+              Онлайн: {onlineCount} {isOnlineLoading && '⟳'} игроков
             </Badge>
             <h2 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
               {serverName}
