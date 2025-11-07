@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Check database structure",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "tables": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Login with credentials",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "login": "test",
+        "password": "test"
+      },
+      "expectedStatus": 200,
+      "bodyMatcher": "partial"
+    }
+  ]
+}
