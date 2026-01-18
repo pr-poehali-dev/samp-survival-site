@@ -267,18 +267,32 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 user_id_col = col
                 break
         
+        print(f'DEBUG: user_id_col = {user_id_col}')
+        print(f'DEBUG: user keys = {user.keys()}')
+        
         if user_id_col and user.get(user_id_col):
+            user_id_value = user[user_id_col]
+            print(f'DEBUG: Querying users_admins for u_id = {user_id_value}')
+            
             try:
-                cursor.execute('SELECT user_admin FROM users_admins WHERE u_id = %s', (user[user_id_col],))
+                cursor.execute('SELECT user_admin FROM users_admins WHERE u_id = %s', (user_id_value,))
                 admin_data = cursor.fetchone()
+                print(f'DEBUG: admin_data result = {admin_data}')
+                
                 if admin_data:
-                    user_data['admin_level'] = admin_data.get('user_admin', 0)
+                    admin_level = admin_data.get('user_admin', 0)
+                    print(f'DEBUG: Setting admin_level = {admin_level}')
+                    user_data['admin_level'] = admin_level
                 else:
+                    print('DEBUG: No admin data found, setting admin_level = 0')
                     user_data['admin_level'] = 0
             except Exception as e:
-                print(f'Error fetching admin level: {str(e)}')
+                print(f'ERROR fetching admin level: {str(e)}')
+                import traceback
+                traceback.print_exc()
                 user_data['admin_level'] = 0
         else:
+            print(f'DEBUG: No user_id_col or user value, setting admin_level = 0')
             user_data['admin_level'] = 0
         
         cursor.close()

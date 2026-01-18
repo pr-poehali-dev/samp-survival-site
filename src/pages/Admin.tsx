@@ -36,9 +36,18 @@ const Admin = () => {
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
     
-    console.log('User data:', parsedUser);
+    console.log('=== ADMIN CHECK DEBUG ===');
+    console.log('Full user data:', parsedUser);
+    console.log('All user keys:', Object.keys(parsedUser));
+    console.log('admin_level value:', parsedUser?.admin_level);
+    console.log('admin_level type:', typeof parsedUser?.admin_level);
+    console.log('u_admin value:', parsedUser?.u_admin);
+    console.log('user_admin value:', parsedUser?.user_admin);
+    
     const adminLevel = parsedUser?.admin_level || 0;
-    console.log('Admin level:', adminLevel, 'Type:', typeof adminLevel);
+    console.log('Final adminLevel:', adminLevel, 'Type:', typeof adminLevel);
+    console.log('Check result:', Number(adminLevel) >= 6 ? 'PASS' : 'FAIL');
+    console.log('========================');
     
     if (Number(adminLevel) < 6) {
       toast({
