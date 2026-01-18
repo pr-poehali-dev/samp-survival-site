@@ -9,6 +9,7 @@ const Index = () => {
   const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
   const [serverName, setServerName] = useState('SURVIVAL RP');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,6 +47,11 @@ const Index = () => {
         if (data.server_name) {
           setServerName(data.server_name);
         }
+        setSettings({
+          discord_link: data.discord_link || '',
+          vk_link: data.vk_link || '',
+          forum_link: data.forum_link || ''
+        });
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
@@ -209,7 +215,12 @@ const Index = () => {
                       <p className="text-gray-400">3 онлайн • 34 участников</p>
                     </div>
                   </div>
-                  <Button className="w-full neon-glow" size="lg">
+                  <Button 
+                    className="w-full neon-glow" 
+                    size="lg"
+                    onClick={() => settings.discord_link && window.open(settings.discord_link, '_blank')}
+                    disabled={!settings.discord_link}
+                  >
                     Присоединиться к Discord
                   </Button>
                 </Card>
@@ -224,7 +235,12 @@ const Index = () => {
                       <p className="text-gray-400">149 участников</p>
                     </div>
                   </div>
-                  <Button className="w-full neon-glow" size="lg">
+                  <Button 
+                    className="w-full neon-glow" 
+                    size="lg"
+                    onClick={() => settings.vk_link && window.open(settings.vk_link, '_blank')}
+                    disabled={!settings.vk_link}
+                  >
                     Подписаться ВКонтакте
                   </Button>
                 </Card>

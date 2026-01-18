@@ -76,6 +76,8 @@ const Profile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("user_password");
+    localStorage.removeItem("login_time");
     navigate("/");
   };
 
@@ -308,7 +310,7 @@ const Profile = () => {
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
                   <Icon name="Heart" size={32} className="mx-auto mb-2 text-red-500" />
-                  <div className="text-2xl font-bold">{getStatValue('u_deaths') || '0'}</div>
+                  <div className="text-2xl font-bold">{getStatValue('u_death') || '0'}</div>
                   <div className="text-sm text-gray-400">Смертей</div>
                 </div>
                 <div className="text-center p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">

@@ -125,6 +125,8 @@ const Admin = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("user_password");
+    localStorage.removeItem("login_time");
     navigate("/");
   };
 
