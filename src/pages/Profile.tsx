@@ -19,7 +19,10 @@ const Profile = () => {
       navigate("/login");
       return;
     }
-    setUser(JSON.parse(userData));
+    const parsedUser = JSON.parse(userData);
+    console.log('Profile - User data:', parsedUser);
+    console.log('Profile - All keys:', Object.keys(parsedUser));
+    setUser(parsedUser);
   }, [navigate]);
 
   const handleLogout = () => {
@@ -63,8 +66,8 @@ const Profile = () => {
   };
 
   const isAdmin = () => {
-    const adminLevel = user?.u_admin || user?.admin || 0;
-    return adminLevel >= 6;
+    const adminLevel = user?.u_admin || user?.admin || user?.u_admin_level || 0;
+    return Number(adminLevel) >= 6;
   };
 
   return (

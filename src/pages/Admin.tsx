@@ -36,11 +36,14 @@ const Admin = () => {
     const parsedUser = JSON.parse(userData);
     setUser(parsedUser);
     
-    const adminLevel = parsedUser?.u_admin || parsedUser?.admin || 0;
-    if (adminLevel < 6) {
+    console.log('User data:', parsedUser);
+    const adminLevel = parsedUser?.u_admin || parsedUser?.admin || parsedUser?.u_admin_level || 0;
+    console.log('Admin level:', adminLevel, 'Type:', typeof adminLevel);
+    
+    if (Number(adminLevel) < 6) {
       toast({
-        title: "Доступ запрещён",
-        description: "Требуется администратор 6+ уровня",
+        title: "Access denied",
+        description: `Admin level 6+ required (current: ${adminLevel})`,
         variant: "destructive",
       });
       navigate("/profile");
@@ -57,8 +60,8 @@ const Admin = () => {
       setSettings(data);
     } catch (error) {
       toast({
-        title: "Ошибка",
-        description: "Не удалось загрузить настройки",
+        title: "Error",
+        description: "Failed to load settings",
         variant: "destructive",
       });
     }
@@ -83,20 +86,20 @@ const Admin = () => {
 
       if (response.ok && data.success) {
         toast({
-          title: "Успешно!",
-          description: "Настройки сохранены",
+          title: "Success!",
+          description: "Settings saved",
         });
       } else {
         toast({
-          title: "Ошибка",
-          description: data.error || "Не удалось сохранить",
+          title: "Error",
+          description: data.error || "Failed to save",
           variant: "destructive",
         });
       }
     } catch (error) {
       toast({
-        title: "Ошибка",
-        description: "Не удалось подключиться к серверу",
+        title: "Error",
+        description: "Failed to connect to server",
         variant: "destructive",
       });
     } finally {
@@ -144,15 +147,15 @@ const Admin = () => {
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-4xl font-black mb-2 neon-text">Админ-панель</h1>
-              <p className="text-gray-400">Управление настройками сервера</p>
+              <h1 className="text-4xl font-black mb-2 neon-text">Admin Panel</h1>
+              <p className="text-gray-400">Server settings management</p>
             </div>
 
             <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8">
               <div className="space-y-6">
                 <div>
                   <Label htmlFor="server_name" className="text-white mb-2 block">
-                    Название сервера
+                    Server Name
                   </Label>
                   <Input
                     id="server_name"
@@ -165,7 +168,7 @@ const Admin = () => {
 
                 <div>
                   <Label htmlFor="discord_link" className="text-white mb-2 block">
-                    Ссылка на Discord
+                    Discord Link
                   </Label>
                   <Input
                     id="discord_link"
@@ -178,7 +181,7 @@ const Admin = () => {
 
                 <div>
                   <Label htmlFor="vk_link" className="text-white mb-2 block">
-                    Ссылка на VK
+                    VK Link
                   </Label>
                   <Input
                     id="vk_link"
@@ -191,7 +194,7 @@ const Admin = () => {
 
                 <div>
                   <Label htmlFor="forum_link" className="text-white mb-2 block">
-                    Ссылка на форум
+                    Forum Link
                   </Label>
                   <Input
                     id="forum_link"
@@ -211,12 +214,12 @@ const Admin = () => {
                   {loading ? (
                     <>
                       <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
-                      Сохранение...
+                      Saving...
                     </>
                   ) : (
                     <>
                       <Icon name="Save" size={20} className="mr-2" />
-                      Сохранить изменения
+                      Save Changes
                     </>
                   )}
                 </Button>
@@ -227,8 +230,8 @@ const Admin = () => {
               <div className="flex items-center gap-3">
                 <Icon name="Shield" size={24} className="text-primary" />
                 <div>
-                  <div className="font-bold">Уровень доступа: Администратор {user?.u_admin || user?.admin}</div>
-                  <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
+                  <div className="font-bold">Access Level: Administrator {user?.u_admin || user?.admin}</div>
+                  <div className="text-sm text-gray-400">You can edit server settings</div>
                 </div>
               </div>
             </Card>
