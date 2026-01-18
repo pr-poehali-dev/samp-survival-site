@@ -105,6 +105,12 @@ const Profile = () => {
     return `${hours}ч ${minutes}мин`;
   };
 
+  const getKillStats = () => {
+    const killData = user?.u_kill || '0,0';
+    const [zombies, players] = killData.split(',').map(Number);
+    return { zombies, players };
+  };
+
   const translateField = (key: string): string => {
     const translations: {[key: string]: string} = {
       'admin_level': 'Уровень админки',
@@ -289,11 +295,16 @@ const Profile = () => {
                 <Icon name="Activity" size={24} className="text-primary" />
                 Статистика
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                  <Icon name="Crosshair" size={32} className="mx-auto mb-2 text-yellow-500" />
-                  <div className="text-2xl font-bold text-yellow-500">{getStatValue('u_kills') || '0'}</div>
-                  <div className="text-sm text-yellow-500/70">Убийств</div>
+                  <Icon name="Skull" size={32} className="mx-auto mb-2 text-yellow-500" />
+                  <div className="text-2xl font-bold text-yellow-500">{getKillStats().zombies}</div>
+                  <div className="text-sm text-yellow-500/70">Убито зомби</div>
+                </div>
+                <div className="text-center p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                  <Icon name="Crosshair" size={32} className="mx-auto mb-2 text-orange-500" />
+                  <div className="text-2xl font-bold text-orange-500">{getKillStats().players}</div>
+                  <div className="text-sm text-orange-500/70">Убито людей</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
                   <Icon name="Heart" size={32} className="mx-auto mb-2 text-red-500" />
