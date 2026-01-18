@@ -64,33 +64,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         check_param = query_params.get('check', '')
         
         if check_param == 'online':
-            cursor.close()
-            connection.close()
+            print(f'DEBUG ONLINE: Request received')
             
-            server_ip = '80.242.59.112'
-            server_port = 2073
-            
+            # Попробуем получить онлайн из MySQL - считаем недавно активных игроков
             try:
-                # SA-MP query протокол
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.settimeout(2)
+                # Считаем пользователей, которые заходили недавно (например, за последние 5 минут)
+                cursor.execute("SELECT COUNT(*) as online FROM users WHERE u_date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)")
+                result = cursor.fetchone()
+                online_count = result['online'] if result else 0
                 
-                # Формат пакета: SAMP + IP в байтах + порт (2 байта) + opcode 'i' (info)
-                ip_parts = [int(x) for x in server_ip.split('.')]
-                packet = b'SAMP' + bytes(ip_parts) + struct.pack('<H', server_port) + b'i'
+                print(f'DEBUG ONLINE: MySQL count = {online_count}')
                 
-                sock.sendto(packet, (server_ip, server_port))
-                data, _ = sock.recvfrom(1024)
-                sock.close()
-                
-                # Парсинг ответа
-                offset = 11
-                password = data[offset]
-                offset += 1
-                
-                players = struct.unpack('<H', data[offset:offset+2])[0]
-                offset += 2
-                maxplayers = struct.unpack('<H', data[offset:offset+2])[0]
+                cursor.close()
+                connection.close()
                 
                 return {
                     'statusCode': 200,
@@ -99,13 +85,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Access-Control-Allow-Origin': '*'
                     },
                     'body': json.dumps({
-                        'online': players,
-                        'maxPlayers': maxplayers
+                        'online': online_count,
+                        'maxPlayers': 100
                     }),
                     'isBase64Encoded': False
                 }
+            except Exception as e:
+                print(f'ERROR ONLINE MySQL: {str(e)}')
+                import traceback
+                traceback.print_exc()
                 
-            except Exception:
+                cursor.close()
+                connection.close()
+                
                 return {
                     'statusCode': 200,
                     'headers': {
