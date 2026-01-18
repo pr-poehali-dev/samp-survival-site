@@ -153,7 +153,7 @@ const Index = () => {
             
             <nav className="hidden md:flex items-center gap-6">
               <a href="#news" className="hover:text-primary transition-colors">Новости</a>
-              <a href="#howto" className="hover:text-primary transition-colors">Как начать</a>
+              <button onClick={() => setShowHowToPlay(true)} className="hover:text-primary transition-colors">Как начать</button>
               <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
               <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
               <a href="#donate" className="hover:text-primary transition-colors">Донат</a>
@@ -185,7 +185,7 @@ const Index = () => {
             <div className="md:hidden bg-black/95 border-t border-white/10">
               <nav className="flex flex-col p-4 gap-4">
                 <a href="#news" className="hover:text-primary transition-colors">Новости</a>
-                <a href="#howto" className="hover:text-primary transition-colors">Как начать</a>
+                <button onClick={() => setShowHowToPlay(true)} className="hover:text-primary transition-colors text-left">Как начать</button>
                 <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
                 <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
                 <a href="#donate" className="hover:text-primary transition-colors">Донат</a>
@@ -228,16 +228,10 @@ const Index = () => {
                       <Icon name="Copy" size={20} className="text-primary/60" />
                     </div>
                   </div>
-                  <div className="flex gap-3">
-                    <Button size="lg" className="neon-glow px-8" onClick={handleConnect}>
-                      <Icon name="Wifi" size={20} className="mr-2" />
-                      Подключиться
-                    </Button>
-                    <Button size="lg" variant="outline" className="border-primary/30" onClick={() => setShowHowToPlay(true)}>
-                      <Icon name="HelpCircle" size={20} className="mr-2" />
-                      Как начать?
-                    </Button>
-                  </div>
+                  <Button size="lg" className="neon-glow px-8" onClick={handleConnect}>
+                    <Icon name="Wifi" size={20} className="mr-2" />
+                    Подключиться
+                  </Button>
                 </div>
                 
                 <div className="mt-6">
