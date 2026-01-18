@@ -15,16 +15,16 @@
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 24 100% 50%;
+    --primary: 210 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 45 100% 50%;
+    --secondary: 180 100% 50%;
     --secondary-foreground: 0 0% 0%;
 
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 24 100% 50%;
+    --accent: 210 100% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
@@ -32,18 +32,18 @@
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 24 100% 50%;
+    --ring: 210 100% 60%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 10%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 24 100% 50%;
+    --sidebar-primary: 210 100% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 15%;
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 24 100% 50%;
+    --sidebar-ring: 210 100% 60%;
   }
 }
 
@@ -60,14 +60,26 @@
 
 @layer utilities {
   .gta-gradient {
-    background: linear-gradient(135deg, #ff6b00 0%, #ffd700 100%);
+    background: linear-gradient(135deg, #0099ff 0%, #00ffff 100%);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, #ff6b00 0%, #ffd700 100%);
+    background: linear-gradient(135deg, #0099ff 0%, #00ffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .neon-glow {
+    box-shadow:
+      0 0 10px rgba(0, 153, 255, 0.5),
+      0 0 20px rgba(0, 153, 255, 0.3);
+  }
+
+  .neon-text {
+    text-shadow:
+      0 0 10px rgba(0, 153, 255, 0.8),
+      0 0 20px rgba(0, 153, 255, 0.5);
   }
 
   .delay-100 {
