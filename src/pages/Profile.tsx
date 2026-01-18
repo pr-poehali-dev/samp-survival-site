@@ -167,21 +167,21 @@ const Profile = () => {
       <div className="blood-drip" style={{ left: '75%', top: '0', animationDelay: '1.8s', height: '85px' }} />
       
       <div className="relative z-10">
-        <header className="bg-black/80 backdrop-blur-md border-b border-white/10">
+        <header className="bg-transparent border-b border-white/10">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="text-2xl font-bold text-gradient">{serverName}</div>
+            <div className="text-2xl font-bold text-white">{serverName}</div>
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => navigate("/")}>
+              <Button variant="ghost" onClick={() => navigate("/")} className="text-white hover:text-white/80">
                 <Icon name="Home" size={18} className="mr-2" />
                 Главная
               </Button>
               {isAdmin() && (
-                <Button variant="ghost" onClick={() => navigate("/admin")} className="text-primary">
+                <Button variant="ghost" onClick={() => navigate("/admin")} className="text-red-500 hover:text-red-400">
                   <Icon name="Settings" size={18} className="mr-2" />
                   Админ-панель
                 </Button>
               )}
-              <Button variant="outline" onClick={handleLogout} className="border-primary/30">
+              <Button variant="outline" onClick={handleLogout} className="border-white/30 text-white hover:bg-white/10">
                 <Icon name="LogOut" size={18} className="mr-2" />
                 Выйти
               </Button>
