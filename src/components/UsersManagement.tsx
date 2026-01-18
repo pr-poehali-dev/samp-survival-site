@@ -33,15 +33,6 @@ const UsersManagement = () => {
   const { toast } = useToast();
 
   const fetchUsers = async () => {
-    if (!searchQuery.trim()) {
-      toast({
-        title: "Введите запрос",
-        description: "Введите имя или ID пользователя для поиска",
-        variant: "destructive"
-      });
-      return;
-    }
-
     try {
       setLoading(true);
       const response = await fetch('https://functions.poehali.dev/a41a848a-3f67-4204-b161-8f5de2014207');
@@ -49,7 +40,11 @@ const UsersManagement = () => {
       
       if (data.users) {
         setUsers(data.users);
-        filterUsers(data.users, searchQuery);
+        if (searchQuery.trim()) {
+          filterUsers(data.users, searchQuery);
+        } else {
+          setFilteredUsers(data.users);
+        }
         setShowUsers(true);
       }
     } catch (error) {
@@ -79,14 +74,28 @@ const UsersManagement = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchUsers();
+    if (searchQuery.trim() && users.length > 0) {
+      filterUsers(users, searchQuery);
+    } else if (!searchQuery.trim() && users.length > 0) {
+      setFilteredUsers(users);
+    }
   };
 
   useEffect(() => {
-    if (searchQuery.trim() && users.length > 0) {
-      filterUsers(users, searchQuery);
+    fetchUsers();
+    const interval = setInterval(fetchUsers, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (users.length > 0) {
+      if (searchQuery.trim()) {
+        filterUsers(users, searchQuery);
+      } else {
+        setFilteredUsers(users);
+      }
     }
-  }, [searchQuery]);
+  }, [searchQuery, users]);
 
   const startEditing = (user: User) => {
     setEditingUser(user.u_id);
@@ -177,28 +186,27 @@ const UsersManagement = () => {
         </h3>
       </div>
 
-      <form onSubmit={handleSearch} className="flex gap-2">
+      <div className="flex gap-2">
         <Input
-          placeholder="Введите имя, ID или email..."
+          placeholder="Поиск по имени, ID или email..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="flex-1"
         />
-        <Button type="submit" disabled={loading} className="neon-glow">
+        <Button onClick={fetchUsers} disabled={loading} variant="outline">
           {loading ? (
             <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
           ) : (
-            <Icon name="Search" size={16} className="mr-2" />
+            <Icon name="RefreshCw" size={16} className="mr-2" />
           )}
-          Поиск
+          Обновить
         </Button>
-      </form>
+      </div>
 
-      {!showUsers ? (
+      {loading && users.length === 0 ? (
         <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8 text-center">
-          <Icon name="SearchX" size={48} className="mx-auto mb-4 text-gray-600" />
-          <p className="text-gray-400">Введите запрос для поиска пользователей</p>
-          <p className="text-gray-600 text-sm mt-2">Можно искать по имени, ID или email</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+          <p className="text-gray-400 mt-4">Загрузка пользователей...</p>
         </Card>
       ) : filteredUsers.length === 0 ? (
         <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8 text-center">

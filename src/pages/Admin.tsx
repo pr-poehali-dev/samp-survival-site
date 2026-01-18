@@ -214,7 +214,7 @@ const Admin = () => {
                 className={activeTab === 'users' ? 'neon-glow' : ''}
               >
                 <Icon name="Users" size={18} className="mr-2" />
-                Пользователи
+                Пользователи (100)
               </Button>
               <Button
                 onClick={() => setActiveTab('logs')}
