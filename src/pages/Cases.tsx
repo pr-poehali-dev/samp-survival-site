@@ -89,20 +89,11 @@ const Cases = () => {
       return;
     }
 
-    // Проверяем баланс перед открытием
-    if (caseData.price_money > 0 && (user.u_money || 0) < caseData.price_money) {
-      toast({
-        title: "Недостаточно средств",
-        description: `Необходимо ${caseData.price_money}₽, у вас ${user.u_money || 0}₽`,
-        variant: "destructive"
-      });
-      return;
-    }
-
+    // Проверяем баланс доната перед открытием
     if (caseData.price_donate > 0 && (user.u_donate || 0) < caseData.price_donate) {
       toast({
         title: "Недостаточно доната",
-        description: `Необходимо ${caseData.price_donate} доната, у вас ${user.u_donate || 0}`,
+        description: `Необходимо ${caseData.price_donate}Ᵽ, у вас ${user.u_donate || 0}Ᵽ`,
         variant: "destructive"
       });
       return;
@@ -152,9 +143,6 @@ const Cases = () => {
             });
             
             const updatedUser = { ...user };
-            if (caseData.price_money > 0) {
-              updatedUser.u_money = (user.u_money || 0) - caseData.price_money;
-            }
             if (caseData.price_donate > 0) {
               updatedUser.u_donate = (user.u_donate || 0) - caseData.price_donate;
             }
@@ -212,13 +200,9 @@ const Cases = () => {
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="text-2xl font-bold text-gradient">КЕЙСЫ</div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-lg border border-primary/30">
-                <Icon name="Wallet" size={18} className="text-green-500" />
-                <span>{user?.u_money || 0}₽</span>
-              </div>
-              <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-lg border border-primary/30">
+              <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-lg border border-yellow-500/30">
                 <Icon name="Gem" size={18} className="text-yellow-500" />
-                <span>{user?.u_donate || 0}</span>
+                <span className="font-bold text-yellow-500">{user?.u_donate || 0}Ᵽ</span>
               </div>
               <Button variant="ghost" onClick={() => navigate("/")}>
                 <Icon name="Home" size={18} className="mr-2" />
