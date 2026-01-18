@@ -89,12 +89,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 data, _ = sock.recvfrom(1024)
                 sock.close()
                 
-                # Парсим ответ: первые 11 байт - заголовок, потом 1 байт password, потом 2 байта players, 2 байта maxplayers
-                if len(data) >= 13:
-                    online_count = struct.unpack('<H', data[11:13])[0]
-                    max_players = struct.unpack('<H', data[13:15])[0]
+                # Парсим ответ SA-MP Query Protocol 'i' (info)
+                # Формат: SAMP + IP(4) + Port(2) + i + password_flag(1) + players(2) + maxplayers(2) + strlen(4) + hostname + ...
+                if len(data) >= 15:
+                    print(f'DEBUG ONLINE: Response length = {len(data)} bytes')
+                    print(f'DEBUG ONLINE: Raw bytes 11-15: {data[11:15].hex()}')
                     
-                    print(f'DEBUG ONLINE: SA-MP server online = {online_count}/{max_players}')
+                    # Проверяем password флаг (1 байт на позиции 11)
+                    password_flag = data[11]
+                    
+                    # Игроки на позиции 12-13 (2 байта Little Endian)
+                    online_count = struct.unpack('<H', data[12:14])[0]
+                    
+                    # Макс игроков на позиции 14-15 (2 байта Little Endian)
+                    max_players = struct.unpack('<H', data[14:16])[0]
+                    
+                    print(f'DEBUG ONLINE: password_flag={password_flag}, players={online_count}, max={max_players}')
                     
                     return {
                         'statusCode': 200,
