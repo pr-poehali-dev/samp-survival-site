@@ -27,11 +27,18 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white overflow-hidden">
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30"
         style={{ backgroundImage: `url('https://cdn.poehali.dev/projects/bb150b69-aa78-47ca-b25a-00871a425db3/files/e11933f8-63f0-48b9-8388-339a50eaaaa6.jpg')` }}
       />
+      
+      <div className="blood-drip" style={{ left: '10%', top: '0', animationDelay: '0s' }} />
+      <div className="blood-drip" style={{ left: '25%', top: '0', animationDelay: '0.5s', height: '80px' }} />
+      <div className="blood-drip" style={{ left: '45%', top: '0', animationDelay: '1s', height: '50px' }} />
+      <div className="blood-drip" style={{ left: '60%', top: '0', animationDelay: '1.5s', height: '70px' }} />
+      <div className="blood-drip" style={{ left: '80%', top: '0', animationDelay: '2s', height: '90px' }} />
+      <div className="blood-drip" style={{ left: '90%', top: '0', animationDelay: '0.3s' }} />
       
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-md border-b border-white/10 z-50">

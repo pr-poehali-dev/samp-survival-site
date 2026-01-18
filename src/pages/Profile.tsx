@@ -71,11 +71,16 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white overflow-hidden">
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-20"
         style={{ backgroundImage: `url('https://cdn.poehali.dev/projects/bb150b69-aa78-47ca-b25a-00871a425db3/files/e11933f8-63f0-48b9-8388-339a50eaaaa6.jpg')` }}
       />
+      
+      <div className="blood-drip" style={{ left: '15%', top: '0', animationDelay: '0.2s' }} />
+      <div className="blood-drip" style={{ left: '35%', top: '0', animationDelay: '0.8s', height: '75px' }} />
+      <div className="blood-drip" style={{ left: '55%', top: '0', animationDelay: '1.2s', height: '55px' }} />
+      <div className="blood-drip" style={{ left: '75%', top: '0', animationDelay: '1.8s', height: '85px' }} />
       
       <div className="relative z-10">
         <header className="bg-black/80 backdrop-blur-md border-b border-white/10">

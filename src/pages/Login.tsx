@@ -54,11 +54,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 overflow-hidden">
       <div 
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-20"
         style={{ backgroundImage: `url('https://cdn.poehali.dev/projects/bb150b69-aa78-47ca-b25a-00871a425db3/files/e11933f8-63f0-48b9-8388-339a50eaaaa6.jpg')` }}
       />
+      
+      <div className="blood-drip" style={{ left: '8%', top: '0', animationDelay: '0.3s', height: '70px' }} />
+      <div className="blood-drip" style={{ left: '22%', top: '0', animationDelay: '0.9s', height: '85px' }} />
+      <div className="blood-drip" style={{ left: '42%', top: '0', animationDelay: '0.5s' }} />
+      <div className="blood-drip" style={{ left: '65%', top: '0', animationDelay: '1.3s', height: '75px' }} />
+      <div className="blood-drip" style={{ left: '82%', top: '0', animationDelay: '0.7s', height: '90px' }} />
+      <div className="blood-drip" style={{ left: '95%', top: '0', animationDelay: '1.6s', height: '65px' }} />
       
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
