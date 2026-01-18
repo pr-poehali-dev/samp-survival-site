@@ -94,58 +94,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             mysql_cursor = mysql_conn.cursor()
             
-            mysql_cursor.execute('SHOW TABLES')
-            tables = [list(row.values())[0] for row in mysql_cursor.fetchall()]
-            
-            users_table = None
-            for table in tables:
-                if 'user' in table.lower() and 'admin' not in table.lower():
-                    users_table = table
-                    break
-            
-            if not users_table:
-                mysql_cursor.close()
-                mysql_conn.close()
-                return {
-                    'statusCode': 500,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Users table not found'}),
-                    'isBase64Encoded': False
-                }
-            
-            mysql_cursor.execute(f'DESCRIBE {users_table}')
-            columns = [col['Field'] for col in mysql_cursor.fetchall()]
-            
-            id_col = None
-            for col in columns:
-                if col.lower() in ['id', 'u_id', 'user_id']:
-                    id_col = col
-                    break
-            
-            admin_col = None
-            for col in columns:
-                if 'admin' in col.lower():
-                    admin_col = col
-                    break
-            
-            if not id_col or not admin_col:
-                mysql_cursor.close()
-                mysql_conn.close()
-                return {
-                    'statusCode': 500,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Cannot find ID or admin column'}),
-                    'isBase64Encoded': False
-                }
-            
-            query = f'SELECT {admin_col} FROM {users_table} WHERE {id_col} = %s'
-            mysql_cursor.execute(query, (user_id,))
+            mysql_cursor.execute('SELECT user_admin FROM users_admins WHERE u_id = %s', (user_id,))
             result = mysql_cursor.fetchone()
             
             mysql_cursor.close()
@@ -158,11 +107,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'User not found'}),
+                    'body': json.dumps({'error': 'User not found or not admin'}),
                     'isBase64Encoded': False
                 }
             
-            admin_level = result[admin_col]
+            admin_level = result.get('user_admin', 0)
             
             if admin_level < 6:
                 return {

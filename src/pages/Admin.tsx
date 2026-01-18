@@ -37,7 +37,7 @@ const Admin = () => {
     setUser(parsedUser);
     
     console.log('User data:', parsedUser);
-    const adminLevel = parsedUser?.u_admin || parsedUser?.admin || parsedUser?.u_admin_level || 0;
+    const adminLevel = parsedUser?.admin_level || 0;
     console.log('Admin level:', adminLevel, 'Type:', typeof adminLevel);
     
     if (Number(adminLevel) < 6) {
@@ -236,8 +236,8 @@ const Admin = () => {
               <div className="flex items-center gap-3">
                 <Icon name="Shield" size={24} className="text-primary" />
                 <div>
-                  <div className="font-bold">Access Level: Administrator {user?.u_admin || user?.admin}</div>
-                  <div className="text-sm text-gray-400">You can edit server settings</div>
+                  <div className="font-bold">Уровень доступа: Администратор (уровень {user?.admin_level || 0})</div>
+                  <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
                 </div>
               </div>
             </Card>

@@ -223,10 +223,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cursor.execute(query, (login,))
         user = cursor.fetchone()
         
-        cursor.close()
-        connection.close()
-        
         if not user:
+            cursor.close()
+            connection.close()
             return {
                 'statusCode': 401,
                 'headers': {
@@ -248,6 +247,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             password_match = True
         
         if not password_match:
+            cursor.close()
+            connection.close()
             return {
                 'statusCode': 401,
                 'headers': {
@@ -259,6 +260,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         user_data = {k: v for k, v in user.items() if 'pass' not in k.lower()}
+        
+        user_id_col = None
+        for col in columns:
+            if col.lower() in ['id', 'u_id', 'user_id']:
+                user_id_col = col
+                break
+        
+        if user_id_col and user[user_id_col]:
+            try:
+                cursor.execute('SELECT * FROM users_admins WHERE u_id = %s', (user[user_id_col],))
+                admin_data = cursor.fetchone()
+                if admin_data:
+                    user_data['admin_level'] = admin_data.get('user_admin', 0)
+                else:
+                    user_data['admin_level'] = 0
+            except Exception:
+                user_data['admin_level'] = 0
+        
+        cursor.close()
+        connection.close()
         
         return {
             'statusCode': 200,

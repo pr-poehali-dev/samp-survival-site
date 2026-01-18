@@ -43,11 +43,13 @@ const Profile = () => {
   const formatPlayTime = () => {
     const seconds = user?.u_playtime || user?.playtime || 0;
     const hours = Math.floor(seconds / 3600);
-    return hours;
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}ч ${minutes}мин`;
   };
 
   const translateField = (key: string): string => {
     const translations: {[key: string]: string} = {
+      'admin_level': 'Уровень админки',
       'u_id': 'ID',
       'u_name': 'Имя',
       'u_level': 'Уровень',
@@ -66,7 +68,7 @@ const Profile = () => {
   };
 
   const isAdmin = () => {
-    const adminLevel = user?.u_admin || user?.admin || user?.u_admin_level || 0;
+    const adminLevel = user?.admin_level || 0;
     return Number(adminLevel) >= 6;
   };
 
@@ -218,10 +220,10 @@ const Profile = () => {
                   <div className="text-2xl font-bold">{getStatValue('u_deaths') || '0'}</div>
                   <div className="text-sm text-gray-400">Смертей</div>
                 </div>
-                <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <Icon name="Clock" size={32} className="mx-auto mb-2 text-secondary" />
-                  <div className="text-2xl font-bold">{formatPlayTime()}ч</div>
-                  <div className="text-sm text-gray-400">Наиграно</div>
+                <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                  <Icon name="Clock" size={32} className="mx-auto mb-2 text-yellow-500" />
+                  <div className="text-2xl font-bold text-yellow-500">{formatPlayTime()}</div>
+                  <div className="text-sm text-yellow-500/70">Наиграно</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
                   <Icon name="Target" size={32} className="mx-auto mb-2 text-green-500" />
