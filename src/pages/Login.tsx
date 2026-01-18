@@ -10,9 +10,7 @@ const Login = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [serverName, setServerName] = useState(() => {
-    return localStorage.getItem('cached_server_name') || 'SURVIVAL RP';
-  });
+  const [serverName, setServerName] = useState('SURVIVAL RP');
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -30,21 +28,8 @@ const Login = () => {
         
         const data = await response.json();
         
-        const cachedTimestamp = localStorage.getItem('cached_settings_timestamp');
-        const serverTimestamp = data._last_updated;
-        
-        const shouldUpdate = !cachedTimestamp || 
-                            (serverTimestamp && serverTimestamp !== cachedTimestamp);
-        
-        if (shouldUpdate || !localStorage.getItem('cached_server_name')) {
-          if (data.server_name) {
-            setServerName(data.server_name);
-            localStorage.setItem('cached_server_name', data.server_name);
-          }
-          
-          if (serverTimestamp) {
-            localStorage.setItem('cached_settings_timestamp', serverTimestamp);
-          }
+        if (data.server_name) {
+          setServerName(data.server_name);
         }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
@@ -52,7 +37,7 @@ const Login = () => {
     };
 
     fetchSettings();
-    const interval = setInterval(fetchSettings, 60000);
+    const interval = setInterval(fetchSettings, 10000);
     return () => clearInterval(interval);
   }, []);
 

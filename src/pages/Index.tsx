@@ -11,14 +11,9 @@ import HowToPlayModal from "@/components/HowToPlayModal";
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
-  const [serverName, setServerName] = useState(() => {
-    return localStorage.getItem('cached_server_name') || 'SURVIVAL RP';
-  });
+  const [serverName, setServerName] = useState('SURVIVAL RP');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [settings, setSettings] = useState(() => {
-    const cached = localStorage.getItem('cached_settings');
-    return cached ? JSON.parse(cached) : { discord_link: '', vk_link: '', forum_link: '' };
-  });
+  const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -74,13 +69,8 @@ const Index = () => {
         const data = await response.json();
         const newOnline = { players: data.online || 0, maxPlayers: data.maxPlayers || 100 };
         setOnline(newOnline);
-        localStorage.setItem('cached_online', JSON.stringify(newOnline));
       } catch (error) {
         console.error('Failed to fetch online:', error);
-        const cached = localStorage.getItem('cached_online');
-        if (cached) {
-          setOnline(JSON.parse(cached));
-        }
       }
     };
 
@@ -97,48 +87,29 @@ const Index = () => {
         
         const data = await response.json();
         
-        const cachedTimestamp = localStorage.getItem('cached_settings_timestamp');
-        const serverTimestamp = data._last_updated;
-        
-        const shouldUpdate = !cachedTimestamp || 
-                            (serverTimestamp && serverTimestamp !== cachedTimestamp);
-        
-        if (shouldUpdate || !localStorage.getItem('cached_server_name')) {
-          if (data.server_name) {
-            setServerName(data.server_name);
-            localStorage.setItem('cached_server_name', data.server_name);
-          }
-          
-          const newSettings = {
-            discord_link: data.discord_link || '',
-            vk_link: data.vk_link || '',
-            forum_link: data.forum_link || ''
-          };
-          
-          setSettings(newSettings);
-          localStorage.setItem('cached_settings', JSON.stringify(newSettings));
-          
-          if (serverTimestamp) {
-            localStorage.setItem('cached_settings_timestamp', serverTimestamp);
-          }
+        if (data.server_name) {
+          setServerName(data.server_name);
         }
+        
+        const newSettings = {
+          discord_link: data.discord_link || '',
+          vk_link: data.vk_link || '',
+          forum_link: data.forum_link || ''
+        };
+        
+        setSettings(newSettings);
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
     };
 
-    const cachedOnline = localStorage.getItem('cached_online');
-    if (cachedOnline) {
-      setOnline(JSON.parse(cachedOnline));
-    }
-    
     checkAuth();
     fetchOnline();
     fetchSettings();
     
     const authInterval = setInterval(checkAuth, 5000);
-    const onlineInterval = setInterval(fetchOnline, 30000);
-    const settingsInterval = setInterval(fetchSettings, 60000);
+    const onlineInterval = setInterval(fetchOnline, 10000);
+    const settingsInterval = setInterval(fetchSettings, 10000);
 
     return () => {
       clearInterval(authInterval);

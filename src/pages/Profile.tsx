@@ -14,9 +14,7 @@ interface UserData {
 
 const Profile = () => {
   const [user, setUser] = useState<UserData | null>(null);
-  const [serverName, setServerName] = useState(() => {
-    return localStorage.getItem('cached_server_name') || 'SURVIVAL RP';
-  });
+  const [serverName, setServerName] = useState('SURVIVAL RP');
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [donateAmount, setDonateAmount] = useState('');
   const navigate = useNavigate();
@@ -71,21 +69,8 @@ const Profile = () => {
         
         const data = await response.json();
         
-        const cachedTimestamp = localStorage.getItem('cached_settings_timestamp');
-        const serverTimestamp = data._last_updated;
-        
-        const shouldUpdate = !cachedTimestamp || 
-                            (serverTimestamp && serverTimestamp !== cachedTimestamp);
-        
-        if (shouldUpdate || !localStorage.getItem('cached_server_name')) {
-          if (data.server_name) {
-            setServerName(data.server_name);
-            localStorage.setItem('cached_server_name', data.server_name);
-          }
-          
-          if (serverTimestamp) {
-            localStorage.setItem('cached_settings_timestamp', serverTimestamp);
-          }
+        if (data.server_name) {
+          setServerName(data.server_name);
         }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
@@ -96,7 +81,7 @@ const Profile = () => {
     fetchSettings();
     
     const userInterval = setInterval(refreshUserData, 10000);
-    const settingsInterval = setInterval(fetchSettings, 60000);
+    const settingsInterval = setInterval(fetchSettings, 10000);
     
     return () => {
       clearInterval(userInterval);

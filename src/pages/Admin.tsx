@@ -16,23 +16,11 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
-  const [settings, setSettings] = useState<ServerSettings>(() => {
-    const cached = localStorage.getItem('cached_settings');
-    if (cached) {
-      const parsed = JSON.parse(cached);
-      return {
-        server_name: localStorage.getItem('cached_server_name') || '',
-        discord_link: parsed.discord_link || '',
-        vk_link: parsed.vk_link || '',
-        forum_link: parsed.forum_link || ''
-      };
-    }
-    return {
-      server_name: "",
-      discord_link: "",
-      vk_link: "",
-      forum_link: "",
-    };
+  const [settings, setSettings] = useState<ServerSettings>({
+    server_name: "",
+    discord_link: "",
+    vk_link: "",
+    forum_link: "",
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -84,7 +72,7 @@ const Admin = () => {
         console.warn(`Settings API returned ${response.status}`);
         toast({
           title: "Ошибка загрузки",
-          description: "Не удалось загрузить настройки с сервера. Показаны сохранённые данные.",
+          description: "Не удалось загрузить настройки с сервера.",
           variant: "destructive"
         });
         return;
@@ -92,26 +80,11 @@ const Admin = () => {
       
       const data = await response.json();
       setSettings(data);
-      
-      if (data.server_name) {
-        localStorage.setItem('cached_server_name', data.server_name);
-      }
-      
-      const settingsCache = {
-        discord_link: data.discord_link || '',
-        vk_link: data.vk_link || '',
-        forum_link: data.forum_link || ''
-      };
-      localStorage.setItem('cached_settings', JSON.stringify(settingsCache));
-      
-      if (data._last_updated) {
-        localStorage.setItem('cached_settings_timestamp', data._last_updated);
-      }
     } catch (error) {
       console.error('Failed to load settings:', error);
       toast({
         title: "Ошибка сети",
-        description: "Не удалось подключиться к серверу. Показаны сохранённые данные.",
+        description: "Не удалось подключиться к серверу.",
         variant: "destructive"
       });
     }
@@ -146,23 +119,12 @@ const Admin = () => {
       console.log('Response data:', data);
 
       if (response.ok && data.success) {
-        if (settings.server_name) {
-          localStorage.setItem('cached_server_name', settings.server_name);
-        }
-        
-        const settingsCache = {
-          discord_link: settings.discord_link || '',
-          vk_link: settings.vk_link || '',
-          forum_link: settings.forum_link || ''
-        };
-        localStorage.setItem('cached_settings', JSON.stringify(settingsCache));
-        
-        localStorage.setItem('cached_settings_timestamp', new Date().toISOString());
-        
         toast({
           title: "Успешно!",
-          description: "Настройки сохранены",
+          description: "Настройки сохранены и синхронизированы",
         });
+        
+        await fetchSettings();
       } else {
         toast({
           title: "Ошибка",
