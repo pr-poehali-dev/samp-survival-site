@@ -50,6 +50,7 @@ const Login = () => {
       if (response.ok && data.success) {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("user_password", password);
+        localStorage.setItem("login_time", Date.now().toString());
         toast({
           title: "Успешный вход!",
           description: `Добро пожаловать, ${login}`,

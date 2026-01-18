@@ -8,9 +8,27 @@ const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
   const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const userData = localStorage.getItem('user');
+    const loginTime = localStorage.getItem('login_time');
+    
+    if (userData && loginTime) {
+      const now = Date.now();
+      const elapsed = now - parseInt(loginTime);
+      const fifteenMinutes = 15 * 60 * 1000;
+      
+      if (elapsed < fifteenMinutes) {
+        setIsLoggedIn(true);
+      } else {
+        localStorage.removeItem('user');
+        localStorage.removeItem('user_password');
+        localStorage.removeItem('login_time');
+      }
+    }
+
     const fetchOnline = async () => {
       try {
         const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54?check=online');
@@ -73,10 +91,17 @@ const Index = () => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <Button className="hidden md:flex neon-glow" onClick={() => navigate('/login')}>
-                <Icon name="User" size={18} className="mr-2" />
-                Войти
-              </Button>
+              {isLoggedIn ? (
+                <Button className="hidden md:flex neon-glow" onClick={() => navigate('/profile')}>
+                  <Icon name="User" size={18} className="mr-2" />
+                  Профиль
+                </Button>
+              ) : (
+                <Button className="hidden md:flex neon-glow" onClick={() => navigate('/login')}>
+                  <Icon name="User" size={18} className="mr-2" />
+                  Войти
+                </Button>
+              )}
               
               <button 
                 className="md:hidden text-white"
@@ -95,10 +120,17 @@ const Index = () => {
                 <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
                 <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
                 <a href="#donate" className="hover:text-primary transition-colors">Donate</a>
-                <Button className="w-full neon-glow" onClick={() => navigate('/login')}>
-                  <Icon name="User" size={18} className="mr-2" />
-                  Войти
-                </Button>
+                {isLoggedIn ? (
+                  <Button className="w-full neon-glow" onClick={() => navigate('/profile')}>
+                    <Icon name="User" size={18} className="mr-2" />
+                    Профиль
+                  </Button>
+                ) : (
+                  <Button className="w-full neon-glow" onClick={() => navigate('/login')}>
+                    <Icon name="User" size={18} className="mr-2" />
+                    Войти
+                  </Button>
+                )}
               </nav>
             </div>
           )}
