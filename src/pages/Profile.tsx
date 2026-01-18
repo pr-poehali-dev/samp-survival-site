@@ -90,7 +90,13 @@ const Profile = () => {
 
   const formatPlayTime = () => {
     const seconds = user?.u_lifetime || user?.u_playtime || user?.playtime || 0;
-    console.log('Play time seconds:', seconds, 'from field:', user?.u_lifetime ? 'u_lifetime' : user?.u_playtime ? 'u_playtime' : 'playtime');
+    console.log('=== PLAYTIME DEBUG ===');
+    console.log('u_lifetime:', user?.u_lifetime);
+    console.log('u_playtime:', user?.u_playtime);
+    console.log('playtime:', user?.playtime);
+    console.log('Final seconds:', seconds);
+    console.log('=====================');
+    
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     if (hours === 0 && minutes === 0) {
