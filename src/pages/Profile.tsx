@@ -37,6 +37,36 @@ const Profile = () => {
     return value.toString();
   };
 
+  const formatPlayTime = () => {
+    const seconds = user?.u_playtime || user?.playtime || 0;
+    const hours = Math.floor(seconds / 3600);
+    return hours;
+  };
+
+  const translateField = (key: string): string => {
+    const translations: {[key: string]: string} = {
+      'u_id': 'ID',
+      'u_name': 'Имя',
+      'u_level': 'Уровень',
+      'u_money': 'Деньги',
+      'u_bank': 'Банк',
+      'u_donate': 'Донат',
+      'u_kills': 'Убийств',
+      'u_deaths': 'Смертей',
+      'u_playtime': 'Время игры',
+      'u_score': 'Очки',
+      'u_reg_date': 'Дата регистрации',
+      'u_last_login': 'Последний вход',
+      'u_admin': 'Админ уровень',
+    };
+    return translations[key] || key.replace(/_/g, ' ');
+  };
+
+  const isAdmin = () => {
+    const adminLevel = user?.u_admin || user?.admin || 0;
+    return adminLevel >= 6;
+  };
+
   return (
     <div className="min-h-screen bg-black text-white">
       <div 
@@ -53,6 +83,12 @@ const Profile = () => {
                 <Icon name="Home" size={18} className="mr-2" />
                 Главная
               </Button>
+              {isAdmin() && (
+                <Button variant="ghost" onClick={() => navigate("/admin")} className="text-primary">
+                  <Icon name="Settings" size={18} className="mr-2" />
+                  Админ-панель
+                </Button>
+              )}
               <Button variant="outline" onClick={handleLogout} className="border-primary/30">
                 <Icon name="LogOut" size={18} className="mr-2" />
                 Выйти
@@ -118,7 +154,7 @@ const Profile = () => {
                     .slice(0, 10)
                     .map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center border-b border-white/10 pb-2">
-                        <span className="text-gray-400 capitalize">{key.replace(/_/g, ' ')}</span>
+                        <span className="text-gray-400">{translateField(key)}</span>
                         <span className="font-medium">
                           {value === null || value === undefined ? '-' : value.toString()}
                         </span>
@@ -176,7 +212,7 @@ const Profile = () => {
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
                   <Icon name="Clock" size={32} className="mx-auto mb-2 text-secondary" />
-                  <div className="text-2xl font-bold">{getStatValue('u_hours') || '0'}ч</div>
+                  <div className="text-2xl font-bold">{formatPlayTime()}ч</div>
                   <div className="text-sm text-gray-400">Наиграно</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
