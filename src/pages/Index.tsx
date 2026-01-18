@@ -1,12 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchOnline = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54?check=online');
+        const data = await response.json();
+        setOnline({ players: data.online || 0, maxPlayers: data.maxPlayers || 100 });
+      } catch (error) {
+        console.error('Failed to fetch online:', error);
+      }
+    };
+
+    fetchOnline();
+    const interval = setInterval(fetchOnline, 30000); // Обновление каждые 30 секунд
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -85,10 +103,13 @@ const Index = () => {
                 <div className="mt-6">
                   <div className="flex justify-between text-sm mb-2">
                     <span>Онлайн</span>
-                    <span className="text-primary">2 / 25</span>
+                    <span className="text-primary">{online.players} / {online.maxPlayers}</span>
                   </div>
                   <div className="w-full bg-white/10 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style={{ width: '8%' }} />
+                    <div 
+                      className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all" 
+                      style={{ width: `${Math.min((online.players / online.maxPlayers) * 100, 100)}%` }} 
+                    />
                   </div>
                 </div>
               </Card>

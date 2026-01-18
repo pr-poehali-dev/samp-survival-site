@@ -1,7 +1,7 @@
 '''
 Авторизация пользователей через внешнюю MySQL базу данных
-Принимает: POST с login и password, GET для проверки структуры БД
-Возвращает: данные пользователя или информацию о таблицах
+Принимает: POST с login и password, GET для проверки структуры БД или онлайна сервера
+Возвращает: данные пользователя, информацию о таблицах или онлайн сервера
 '''
 
 import json
@@ -9,6 +9,8 @@ import os
 from typing import Dict, Any
 import pymysql
 import hashlib
+import socket
+import struct
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
@@ -57,6 +59,67 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cursor = connection.cursor()
     
     if method == 'GET':
+        # Проверка онлайна сервера если передан параметр check=online
+        query_params = event.get('queryStringParameters', {}) or {}
+        check_param = query_params.get('check', '')
+        
+        if check_param == 'online':
+            cursor.close()
+            connection.close()
+            
+            server_ip = '80.242.59.112'
+            server_port = 2073
+            
+            try:
+                # SA-MP query протокол
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                sock.settimeout(2)
+                
+                # Формат пакета: SAMP + IP в байтах + порт (2 байта) + opcode 'i' (info)
+                ip_parts = [int(x) for x in server_ip.split('.')]
+                packet = b'SAMP' + bytes(ip_parts) + struct.pack('<H', server_port) + b'i'
+                
+                sock.sendto(packet, (server_ip, server_port))
+                data, _ = sock.recvfrom(1024)
+                sock.close()
+                
+                # Парсинг ответа
+                offset = 11
+                password = data[offset]
+                offset += 1
+                
+                players = struct.unpack('<H', data[offset:offset+2])[0]
+                offset += 2
+                maxplayers = struct.unpack('<H', data[offset:offset+2])[0]
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'online': players,
+                        'maxPlayers': maxplayers
+                    }),
+                    'isBase64Encoded': False
+                }
+                
+            except Exception:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'online': 0,
+                        'maxPlayers': 100
+                    }),
+                    'isBase64Encoded': False
+                }
+        
+        # Обычный GET - структура БД
         cursor.execute('SHOW TABLES')
         tables = [list(row.values())[0] for row in cursor.fetchall()]
         
