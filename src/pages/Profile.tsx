@@ -23,6 +23,34 @@ const Profile = () => {
     console.log('Profile - User data:', parsedUser);
     console.log('Profile - All keys:', Object.keys(parsedUser));
     setUser(parsedUser);
+
+    const refreshUserData = async () => {
+      try {
+        const username = parsedUser.u_name || parsedUser.username;
+        const password = localStorage.getItem("user_password");
+        
+        if (!username || !password) return;
+
+        const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login: username, password })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.user) {
+            setUser(data.user);
+            localStorage.setItem("user", JSON.stringify(data.user));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to refresh user data:', error);
+      }
+    };
+
+    const interval = setInterval(refreshUserData, 3000);
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const handleLogout = () => {

@@ -30,6 +30,7 @@ const Login = () => {
 
       if (response.ok && data.success) {
         localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("user_password", password);
         toast({
           title: "Успешный вход!",
           description: `Добро пожаловать, ${login}`,
