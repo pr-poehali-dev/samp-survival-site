@@ -267,16 +267,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 user_id_col = col
                 break
         
-        if user_id_col and user[user_id_col]:
+        if user_id_col and user.get(user_id_col):
             try:
-                cursor.execute('SELECT * FROM users_admins WHERE u_id = %s', (user[user_id_col],))
+                cursor.execute('SELECT user_admin FROM users_admins WHERE u_id = %s', (user[user_id_col],))
                 admin_data = cursor.fetchone()
                 if admin_data:
                     user_data['admin_level'] = admin_data.get('user_admin', 0)
                 else:
                     user_data['admin_level'] = 0
-            except Exception:
+            except Exception as e:
+                print(f'Error fetching admin level: {str(e)}')
                 user_data['admin_level'] = 0
+        else:
+            user_data['admin_level'] = 0
         
         cursor.close()
         connection.close()
