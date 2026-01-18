@@ -209,7 +209,7 @@ const Profile = () => {
                   </div>
                   <div>
                     <div className="text-sm text-blue-500/70">Уровень</div>
-                    <div className="text-2xl font-bold text-blue-500">{getStatValue('u_lifegame') || getStatValue('u_level') || getStatValue('level')}</div>
+                    <div className="text-2xl font-bold text-blue-500">{Math.floor((user?.u_lifegame || 0) / 60 / 60)}</div>
                   </div>
                 </div>
               </Card>
