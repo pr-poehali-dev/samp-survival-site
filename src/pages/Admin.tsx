@@ -60,10 +60,6 @@ const Admin = () => {
     }
     
     fetchSettings();
-    
-    // Автообновление настроек каждую секунду
-    const interval = setInterval(fetchSettings, 1000);
-    return () => clearInterval(interval);
   }, [navigate, toast]);
 
   const fetchSettings = async () => {
@@ -72,11 +68,7 @@ const Admin = () => {
       const data = await response.json();
       setSettings(data);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load settings",
-        variant: "destructive",
-      });
+      console.error('Failed to load settings:', error);
     }
   };
 
@@ -177,15 +169,15 @@ const Admin = () => {
         <main className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
-              <h1 className="text-4xl font-black mb-2 neon-text">Admin Panel</h1>
-              <p className="text-gray-400">Server settings management</p>
+              <h1 className="text-4xl font-black mb-2 neon-text">Админ-панель</h1>
+              <p className="text-gray-400">Управление настройками сервера</p>
             </div>
 
             <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8">
               <div className="space-y-6">
                 <div>
                   <Label htmlFor="server_name" className="text-white mb-2 block">
-                    Server Name
+                    Название сервера
                   </Label>
                   <Input
                     id="server_name"
@@ -198,7 +190,7 @@ const Admin = () => {
 
                 <div>
                   <Label htmlFor="discord_link" className="text-white mb-2 block">
-                    Discord Link
+                    Ссылка на Discord
                   </Label>
                   <Input
                     id="discord_link"
@@ -211,7 +203,7 @@ const Admin = () => {
 
                 <div>
                   <Label htmlFor="vk_link" className="text-white mb-2 block">
-                    VK Link
+                    Ссылка на VK
                   </Label>
                   <Input
                     id="vk_link"
@@ -224,7 +216,7 @@ const Admin = () => {
 
                 <div>
                   <Label htmlFor="forum_link" className="text-white mb-2 block">
-                    Forum Link
+                    Ссылка на форум
                   </Label>
                   <Input
                     id="forum_link"
@@ -244,12 +236,12 @@ const Admin = () => {
                   {loading ? (
                     <>
                       <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
-                      Saving...
+                      Сохранение...
                     </>
                   ) : (
                     <>
                       <Icon name="Save" size={20} className="mr-2" />
-                      Save Changes
+                      Сохранить настройки
                     </>
                   )}
                 </Button>
