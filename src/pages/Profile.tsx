@@ -90,12 +90,17 @@ const Profile = () => {
   };
 
   const formatPlayTime = () => {
-    const hours = user?.u_lifegame || 0;
+    const totalSeconds = user?.u_lifetime || 0;
     
-    if (hours === 0) {
-      return '0ч';
+    if (totalSeconds === 0) {
+      return '0с';
     }
-    return `${hours}ч`;
+    
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
   const translateField = (key: string): string => {
@@ -185,7 +190,7 @@ const Profile = () => {
                   </div>
                   <div>
                     <div className="text-sm text-blue-500/70">Уровень</div>
-                    <div className="text-2xl font-bold text-blue-500">{getStatValue('u_level') || getStatValue('level')}</div>
+                    <div className="text-2xl font-bold text-blue-500">{getStatValue('u_lifegame') || getStatValue('u_level') || getStatValue('level')}</div>
                   </div>
                 </div>
               </Card>
