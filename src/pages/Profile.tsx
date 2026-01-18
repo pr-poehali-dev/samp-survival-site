@@ -41,9 +41,13 @@ const Profile = () => {
   };
 
   const formatPlayTime = () => {
-    const seconds = user?.u_playtime || user?.playtime || 0;
+    const seconds = user?.u_lifetime || user?.u_playtime || user?.playtime || 0;
+    console.log('Play time seconds:', seconds, 'from field:', user?.u_lifetime ? 'u_lifetime' : user?.u_playtime ? 'u_playtime' : 'playtime');
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours === 0 && minutes === 0) {
+      return `${seconds}с`;
+    }
     return `${hours}ч ${minutes}мин`;
   };
 
@@ -127,14 +131,14 @@ const Profile = () => {
                 </div>
               </Card>
 
-              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+              <Card className="bg-black/60 backdrop-blur-md border-blue-500/30 p-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
-                    <Icon name="TrendingUp" size={32} className="text-secondary" />
+                  <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center">
+                    <Icon name="TrendingUp" size={32} className="text-blue-500" />
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Уровень</div>
-                    <div className="text-2xl font-bold">{getStatValue('u_level') || getStatValue('level')}</div>
+                    <div className="text-sm text-blue-500/70">Уровень</div>
+                    <div className="text-2xl font-bold text-blue-500">{getStatValue('u_level') || getStatValue('level')}</div>
                   </div>
                 </div>
               </Card>
@@ -173,31 +177,31 @@ const Profile = () => {
                 </div>
               </Card>
 
-              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+              <Card className="bg-black/60 backdrop-blur-md border-green-500/30 p-6">
                 <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <Icon name="Award" size={24} className="text-primary" />
+                  <Icon name="Award" size={24} className="text-green-500" />
                   Достижения
                 </h2>
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
-                    <Icon name="Trophy" size={24} className="text-primary" />
+                  <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <Icon name="Trophy" size={24} className="text-green-500" />
                     <div>
-                      <div className="font-bold">Выживший</div>
-                      <div className="text-sm text-gray-400">Прожил 7 дней подряд</div>
+                      <div className="font-bold text-green-500">Выживший</div>
+                      <div className="text-sm text-green-500/70">Прожил 7 дней подряд</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
-                    <Icon name="Skull" size={24} className="text-primary" />
+                  <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <Icon name="Skull" size={24} className="text-green-500" />
                     <div>
-                      <div className="font-bold">Охотник на зомби</div>
-                      <div className="text-sm text-gray-400">Убил 100 зомби</div>
+                      <div className="font-bold text-green-500">Охотник на зомби</div>
+                      <div className="text-sm text-green-500/70">Убил 100 зомби</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
-                    <Icon name="Users" size={24} className="text-primary" />
+                  <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <Icon name="Users" size={24} className="text-green-500" />
                     <div>
-                      <div className="font-bold">Командный игрок</div>
-                      <div className="text-sm text-gray-400">Вступил в клан</div>
+                      <div className="font-bold text-green-500">Командный игрок</div>
+                      <div className="text-sm text-green-500/70">Вступил в клан</div>
                     </div>
                   </div>
                 </div>
@@ -210,20 +214,20 @@ const Profile = () => {
                 Статистика
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-white/5 rounded-lg">
-                  <Icon name="Crosshair" size={32} className="mx-auto mb-2 text-primary" />
-                  <div className="text-2xl font-bold">{getStatValue('u_kills') || '0'}</div>
-                  <div className="text-sm text-gray-400">Убийств</div>
+                <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                  <Icon name="Crosshair" size={32} className="mx-auto mb-2 text-yellow-500" />
+                  <div className="text-2xl font-bold text-yellow-500">{getStatValue('u_kills') || '0'}</div>
+                  <div className="text-sm text-yellow-500/70">Убийств</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
                   <Icon name="Heart" size={32} className="mx-auto mb-2 text-red-500" />
                   <div className="text-2xl font-bold">{getStatValue('u_deaths') || '0'}</div>
                   <div className="text-sm text-gray-400">Смертей</div>
                 </div>
-                <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                  <Icon name="Clock" size={32} className="mx-auto mb-2 text-yellow-500" />
-                  <div className="text-2xl font-bold text-yellow-500">{formatPlayTime()}</div>
-                  <div className="text-sm text-yellow-500/70">Наиграно</div>
+                <div className="text-center p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                  <Icon name="Clock" size={32} className="mx-auto mb-2 text-purple-500" />
+                  <div className="text-2xl font-bold text-purple-500">{formatPlayTime()}</div>
+                  <div className="text-sm text-purple-500/70">Наиграно</div>
                 </div>
                 <div className="text-center p-4 bg-white/5 rounded-lg">
                   <Icon name="Target" size={32} className="mx-auto mb-2 text-green-500" />
