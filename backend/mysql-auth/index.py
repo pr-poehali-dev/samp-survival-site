@@ -261,26 +261,26 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         user_data = {k: v for k, v in user.items() if 'pass' not in k.lower()}
         
-        user_id_col = None
+        username_col = None
         for col in columns:
-            if col.lower() in ['id', 'u_id', 'user_id']:
-                user_id_col = col
+            if any(x in col.lower() for x in ['login', 'username', 'name', 'u_name']):
+                username_col = col
                 break
         
-        print(f'DEBUG: user_id_col = {user_id_col}')
+        print(f'DEBUG: username_col = {username_col}')
         print(f'DEBUG: user keys = {user.keys()}')
         
-        if user_id_col and user.get(user_id_col):
-            user_id_value = user[user_id_col]
-            print(f'DEBUG: Querying users_admins for u_id = {user_id_value}')
+        if username_col and user.get(username_col):
+            username_value = user[username_col]
+            print(f'DEBUG: Querying users_admins for u_a_name = {username_value}')
             
             try:
-                cursor.execute('SELECT user_admin FROM users_admins WHERE u_id = %s', (user_id_value,))
+                cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username_value,))
                 admin_data = cursor.fetchone()
                 print(f'DEBUG: admin_data result = {admin_data}')
                 
                 if admin_data:
-                    admin_level = admin_data.get('user_admin', 0)
+                    admin_level = admin_data.get('admin_level', 0)
                     print(f'DEBUG: Setting admin_level = {admin_level}')
                     user_data['admin_level'] = admin_level
                 else:
@@ -292,7 +292,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 traceback.print_exc()
                 user_data['admin_level'] = 0
         else:
-            print(f'DEBUG: No user_id_col or user value, setting admin_level = 0')
+            print(f'DEBUG: No username_col or user value, setting admin_level = 0')
             user_data['admin_level'] = 0
         
         cursor.close()

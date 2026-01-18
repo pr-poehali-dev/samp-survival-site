@@ -79,14 +79,14 @@ const Admin = () => {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const userId = user?.u_id || user?.id;
+      const username = user?.u_name || user?.username;
       const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: userId,
+          username: username,
           settings: settings,
         }),
       });

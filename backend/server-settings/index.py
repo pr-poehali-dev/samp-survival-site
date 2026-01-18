@@ -61,17 +61,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     if method == 'POST':
         body_data = json.loads(event.get('body', '{}'))
-        user_id = body_data.get('user_id')
+        username = body_data.get('username')
         updates = body_data.get('settings', {})
         
-        if not user_id:
+        if not username:
             return {
                 'statusCode': 401,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'User ID required'}),
+                'body': json.dumps({'error': 'Username required'}),
                 'isBase64Encoded': False
             }
         
@@ -94,7 +94,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             mysql_cursor = mysql_conn.cursor()
             
-            mysql_cursor.execute('SELECT user_admin FROM users_admins WHERE u_id = %s', (user_id,))
+            mysql_cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username,))
             result = mysql_cursor.fetchone()
             
             mysql_cursor.close()
@@ -111,7 +111,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            admin_level = result.get('user_admin', 0)
+            admin_level = result.get('admin_level', 0)
             
             if admin_level < 6:
                 return {
