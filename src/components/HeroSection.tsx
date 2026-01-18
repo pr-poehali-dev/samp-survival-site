@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
+import { useNavigate } from "react-router-dom";
 
 interface HeroSectionProps {
   serverIp: string;
@@ -10,6 +11,8 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps) => {
+  const navigate = useNavigate();
+
   return (
     <section className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-4xl mx-auto">
@@ -33,10 +36,16 @@ const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps
                 <Icon name="Copy" size={20} className="text-primary/60" />
               </div>
             </div>
-            <Button size="lg" className="neon-glow px-8" onClick={onConnect}>
-              <Icon name="Wifi" size={20} className="mr-2" />
-              Подключиться
-            </Button>
+            <div className="flex gap-3">
+              <Button size="lg" className="neon-glow px-8" onClick={onConnect}>
+                <Icon name="Wifi" size={20} className="mr-2" />
+                Подключиться
+              </Button>
+              <Button size="lg" variant="outline" className="border-purple-500 text-purple-400 hover:bg-purple-500/10" onClick={() => navigate('/cases')}>
+                <Icon name="Gift" size={20} className="mr-2" />
+                Кейсы
+              </Button>
+            </div>
           </div>
           
           <div className="mt-6">
