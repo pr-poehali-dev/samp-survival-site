@@ -121,8 +121,25 @@ const Profile = () => {
       'u_reg_date': 'Дата регистрации',
       'u_last_login': 'Последний вход',
       'u_admin': 'Админ уровень',
+      'u_email': 'Email',
+      'u_ip_registration': 'IP регистрации',
+      'u_date_registration': 'Дата регистрации',
+      'u_gender': 'Пол',
+      'u_friend': 'Пригласивший друг',
+      'u_adverting': 'Достижения',
+      'u_skin': 'Скин',
     };
     return translations[key] || key.replace(/_/g, ' ');
+  };
+
+  const formatFieldValue = (key: string, value: any): string => {
+    if (value === null || value === undefined) return '-';
+    
+    if (key === 'u_gender') {
+      return value === 0 ? 'Женский' : 'Мужской';
+    }
+    
+    return value.toString();
   };
 
   const isAdmin = () => {
@@ -218,13 +235,17 @@ const Profile = () => {
                 </h2>
                 <div className="space-y-4">
                   {Object.entries(user)
-                    .filter(([key]) => !key.toLowerCase().includes('pass') && !key.toLowerCase().includes('password'))
+                    .filter(([key]) => 
+                      !key.toLowerCase().includes('pass') && 
+                      !key.toLowerCase().includes('password') &&
+                      key !== 'u_email_status'
+                    )
                     .slice(0, 10)
                     .map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-gray-400">{translateField(key)}</span>
                         <span className="font-medium">
-                          {value === null || value === undefined ? '-' : value.toString()}
+                          {formatFieldValue(key, value)}
                         </span>
                       </div>
                     ))}
