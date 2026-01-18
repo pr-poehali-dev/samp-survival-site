@@ -37,7 +37,7 @@ const Index = () => {
     fetchSettings();
     
     const onlineInterval = setInterval(fetchOnline, 30000);
-    const settingsInterval = setInterval(fetchSettings, 3000);
+    const settingsInterval = setInterval(fetchSettings, 1000);
 
     return () => {
       clearInterval(onlineInterval);

@@ -62,9 +62,10 @@ const Profile = () => {
       }
     };
 
+    refreshUserData();
     fetchSettings();
     
-    const userInterval = setInterval(refreshUserData, 3000);
+    const userInterval = setInterval(refreshUserData, 1000);
     const settingsInterval = setInterval(fetchSettings, 3000);
     
     return () => {

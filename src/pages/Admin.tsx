@@ -61,8 +61,8 @@ const Admin = () => {
     
     fetchSettings();
     
-    // Автообновление настроек каждые 3 секунды
-    const interval = setInterval(fetchSettings, 3000);
+    // Автообновление настроек каждую секунду
+    const interval = setInterval(fetchSettings, 1000);
     return () => clearInterval(interval);
   }, [navigate, toast]);
 
