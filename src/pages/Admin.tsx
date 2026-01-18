@@ -302,15 +302,15 @@ const Admin = () => {
               </div>
             </Card>
 
-            <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6 mt-6">
-              <div className="flex items-center gap-3">
-                <Icon name="Shield" size={24} className="text-primary" />
-                <div>
-                  <div className="font-bold">Уровень доступа: Администратор (уровень {user?.admin_level || 0})</div>
-                  <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
+              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6 mt-6">
+                <div className="flex items-center gap-3">
+                  <Icon name="Shield" size={24} className="text-primary" />
+                  <div>
+                    <div className="font-bold">Уровень доступа: Администратор (уровень {user?.admin_level || 0})</div>
+                    <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
             )}
 
             {activeTab === 'users' && (
