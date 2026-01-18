@@ -7,9 +7,14 @@ import { useNavigate } from "react-router-dom";
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
-  const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [serverName, setServerName] = useState(() => {
+    return localStorage.getItem('cached_server_name') || 'SURVIVAL RP';
+  });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
+  const [settings, setSettings] = useState(() => {
+    const cached = localStorage.getItem('cached_settings');
+    return cached ? JSON.parse(cached) : { discord_link: '', vk_link: '', forum_link: '' };
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,38 +42,71 @@ const Index = () => {
 
     const fetchOnline = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54?check=online');
+        const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54?check=online', {
+          signal: AbortSignal.timeout(5000)
+        });
+        
+        if (!response.ok) {
+          console.warn(`Online API returned ${response.status}`);
+          return;
+        }
+        
         const data = await response.json();
-        setOnline({ players: data.online || 0, maxPlayers: data.maxPlayers || 100 });
+        const newOnline = { players: data.online || 0, maxPlayers: data.maxPlayers || 100 };
+        setOnline(newOnline);
+        localStorage.setItem('cached_online', JSON.stringify(newOnline));
       } catch (error) {
         console.error('Failed to fetch online:', error);
+        const cached = localStorage.getItem('cached_online');
+        if (cached) {
+          setOnline(JSON.parse(cached));
+        }
       }
     };
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
+        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8', {
+          signal: AbortSignal.timeout(5000)
+        });
+        
+        if (!response.ok) {
+          console.warn(`Settings API returned ${response.status}`);
+          return;
+        }
+        
         const data = await response.json();
         
-        setServerName(prev => data.server_name || prev);
+        if (data.server_name) {
+          setServerName(data.server_name);
+          localStorage.setItem('cached_server_name', data.server_name);
+        }
         
-        setSettings(prev => ({
-          discord_link: data.discord_link || prev.discord_link,
-          vk_link: data.vk_link || prev.vk_link,
-          forum_link: data.forum_link || prev.forum_link
-        }));
+        const newSettings = {
+          discord_link: data.discord_link || settings.discord_link,
+          vk_link: data.vk_link || settings.vk_link,
+          forum_link: data.forum_link || settings.forum_link
+        };
+        
+        setSettings(newSettings);
+        localStorage.setItem('cached_settings', JSON.stringify(newSettings));
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
     };
 
+    const cachedOnline = localStorage.getItem('cached_online');
+    if (cachedOnline) {
+      setOnline(JSON.parse(cachedOnline));
+    }
+    
     checkAuth();
     fetchOnline();
     fetchSettings();
     
     const authInterval = setInterval(checkAuth, 5000);
-    const onlineInterval = setInterval(fetchOnline, 5000);
-    const settingsInterval = setInterval(fetchSettings, 5000);
+    const onlineInterval = setInterval(fetchOnline, 30000);
+    const settingsInterval = setInterval(fetchSettings, 60000);
 
     return () => {
       clearInterval(authInterval);

@@ -14,7 +14,9 @@ interface UserData {
 
 const Profile = () => {
   const [user, setUser] = useState<UserData | null>(null);
-  const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [serverName, setServerName] = useState(() => {
+    return localStorage.getItem('cached_server_name') || 'SURVIVAL RP';
+  });
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [donateAmount, setDonateAmount] = useState('');
   const navigate = useNavigate();
@@ -58,10 +60,21 @@ const Profile = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
+        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8', {
+          signal: AbortSignal.timeout(5000)
+        });
+        
+        if (!response.ok) {
+          console.warn(`Settings API returned ${response.status}`);
+          return;
+        }
+        
         const data = await response.json();
         
-        setServerName(prev => data.server_name || prev);
+        if (data.server_name) {
+          setServerName(data.server_name);
+          localStorage.setItem('cached_server_name', data.server_name);
+        }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
@@ -70,8 +83,8 @@ const Profile = () => {
     refreshUserData();
     fetchSettings();
     
-    const userInterval = setInterval(refreshUserData, 5000);
-    const settingsInterval = setInterval(fetchSettings, 5000);
+    const userInterval = setInterval(refreshUserData, 10000);
+    const settingsInterval = setInterval(fetchSettings, 60000);
     
     return () => {
       clearInterval(userInterval);

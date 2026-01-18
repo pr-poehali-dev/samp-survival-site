@@ -16,11 +16,23 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
-  const [settings, setSettings] = useState<ServerSettings>({
-    server_name: "",
-    discord_link: "",
-    vk_link: "",
-    forum_link: "",
+  const [settings, setSettings] = useState<ServerSettings>(() => {
+    const cached = localStorage.getItem('cached_settings');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      return {
+        server_name: localStorage.getItem('cached_server_name') || '',
+        discord_link: parsed.discord_link || '',
+        vk_link: parsed.vk_link || '',
+        forum_link: parsed.forum_link || ''
+      };
+    }
+    return {
+      server_name: "",
+      discord_link: "",
+      vk_link: "",
+      forum_link: "",
+    };
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -64,11 +76,40 @@ const Admin = () => {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8");
+      const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
+        signal: AbortSignal.timeout(5000)
+      });
+      
+      if (!response.ok) {
+        console.warn(`Settings API returned ${response.status}`);
+        toast({
+          title: "Ошибка загрузки",
+          description: "Не удалось загрузить настройки с сервера. Показаны сохранённые данные.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       const data = await response.json();
       setSettings(data);
+      
+      if (data.server_name) {
+        localStorage.setItem('cached_server_name', data.server_name);
+      }
+      
+      const settingsCache = {
+        discord_link: data.discord_link || '',
+        vk_link: data.vk_link || '',
+        forum_link: data.forum_link || ''
+      };
+      localStorage.setItem('cached_settings', JSON.stringify(settingsCache));
     } catch (error) {
       console.error('Failed to load settings:', error);
+      toast({
+        title: "Ошибка сети",
+        description: "Не удалось подключиться к серверу. Показаны сохранённые данные.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -93,6 +134,7 @@ const Admin = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10000)
       });
 
       const data = await response.json();
@@ -100,6 +142,17 @@ const Admin = () => {
       console.log('Response data:', data);
 
       if (response.ok && data.success) {
+        if (settings.server_name) {
+          localStorage.setItem('cached_server_name', settings.server_name);
+        }
+        
+        const settingsCache = {
+          discord_link: settings.discord_link || '',
+          vk_link: settings.vk_link || '',
+          forum_link: settings.forum_link || ''
+        };
+        localStorage.setItem('cached_settings', JSON.stringify(settingsCache));
+        
         toast({
           title: "Успешно!",
           description: "Настройки сохранены",
