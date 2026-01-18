@@ -103,6 +103,10 @@ const Admin = () => {
         forum_link: data.forum_link || ''
       };
       localStorage.setItem('cached_settings', JSON.stringify(settingsCache));
+      
+      if (data._last_updated) {
+        localStorage.setItem('cached_settings_timestamp', data._last_updated);
+      }
     } catch (error) {
       console.error('Failed to load settings:', error);
       toast({
@@ -152,6 +156,8 @@ const Admin = () => {
           forum_link: settings.forum_link || ''
         };
         localStorage.setItem('cached_settings', JSON.stringify(settingsCache));
+        
+        localStorage.setItem('cached_settings_timestamp', new Date().toISOString());
         
         toast({
           title: "Успешно!",

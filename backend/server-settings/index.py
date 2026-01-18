@@ -34,8 +34,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             pg_conn = psycopg2.connect(pg_dsn)
             pg_cursor = pg_conn.cursor()
             
-            pg_cursor.execute('SELECT setting_key, setting_value FROM t_p38718569_samp_survival_site.server_settings')
-            settings = {row[0]: row[1] for row in pg_cursor.fetchall()}
+            pg_cursor.execute('SELECT setting_key, setting_value, updated_at FROM t_p38718569_samp_survival_site.server_settings')
+            rows = pg_cursor.fetchall()
+            
+            settings = {}
+            latest_update = None
+            
+            for row in rows:
+                settings[row[0]] = row[1]
+                if row[2]:
+                    if not latest_update or row[2] > latest_update:
+                        latest_update = row[2]
+            
+            settings['_last_updated'] = latest_update.isoformat() if latest_update else None
             
             pg_cursor.close()
             pg_conn.close()
@@ -46,7 +57,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps(settings),
+                'body': json.dumps(settings, default=str),
                 'isBase64Encoded': False
             }
         except Exception as e:

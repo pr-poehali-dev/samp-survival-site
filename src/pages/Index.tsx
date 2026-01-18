@@ -97,19 +97,31 @@ const Index = () => {
         
         const data = await response.json();
         
-        if (data.server_name) {
-          setServerName(data.server_name);
-          localStorage.setItem('cached_server_name', data.server_name);
+        const cachedTimestamp = localStorage.getItem('cached_settings_timestamp');
+        const serverTimestamp = data._last_updated;
+        
+        const shouldUpdate = !cachedTimestamp || 
+                            (serverTimestamp && serverTimestamp !== cachedTimestamp);
+        
+        if (shouldUpdate || !localStorage.getItem('cached_server_name')) {
+          if (data.server_name) {
+            setServerName(data.server_name);
+            localStorage.setItem('cached_server_name', data.server_name);
+          }
+          
+          const newSettings = {
+            discord_link: data.discord_link || '',
+            vk_link: data.vk_link || '',
+            forum_link: data.forum_link || ''
+          };
+          
+          setSettings(newSettings);
+          localStorage.setItem('cached_settings', JSON.stringify(newSettings));
+          
+          if (serverTimestamp) {
+            localStorage.setItem('cached_settings_timestamp', serverTimestamp);
+          }
         }
-        
-        const newSettings = {
-          discord_link: data.discord_link || settings.discord_link,
-          vk_link: data.vk_link || settings.vk_link,
-          forum_link: data.forum_link || settings.forum_link
-        };
-        
-        setSettings(newSettings);
-        localStorage.setItem('cached_settings', JSON.stringify(newSettings));
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }

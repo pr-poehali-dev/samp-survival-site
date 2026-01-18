@@ -71,9 +71,21 @@ const Profile = () => {
         
         const data = await response.json();
         
-        if (data.server_name) {
-          setServerName(data.server_name);
-          localStorage.setItem('cached_server_name', data.server_name);
+        const cachedTimestamp = localStorage.getItem('cached_settings_timestamp');
+        const serverTimestamp = data._last_updated;
+        
+        const shouldUpdate = !cachedTimestamp || 
+                            (serverTimestamp && serverTimestamp !== cachedTimestamp);
+        
+        if (shouldUpdate || !localStorage.getItem('cached_server_name')) {
+          if (data.server_name) {
+            setServerName(data.server_name);
+            localStorage.setItem('cached_server_name', data.server_name);
+          }
+          
+          if (serverTimestamp) {
+            localStorage.setItem('cached_settings_timestamp', serverTimestamp);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch settings:', error);
