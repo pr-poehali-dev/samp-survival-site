@@ -69,10 +69,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cursor.close()
             connection.close()
             
-            # SA-MP Query Protocol для получения онлайна с 46.174.48.50:7788
+            # SA-MP Query Protocol для получения онлайна с 80.242.59.112:2073
             try:
-                server_ip = '46.174.48.50'
-                server_port = 7788
+                server_ip = '80.242.59.112'
+                server_port = 2073
                 
                 # Создаем UDP socket
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

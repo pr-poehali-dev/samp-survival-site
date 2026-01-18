@@ -202,7 +202,7 @@ const Index = () => {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="text-left">
                     <div className="text-sm text-gray-400 mb-2">IP сервера</div>
-                    <div className="text-2xl font-bold text-primary">46.174.48.50:7788</div>
+                    <div className="text-2xl font-bold text-primary">80.242.59.112:2073</div>
                   </div>
                   <Button size="lg" className="neon-glow px-8">
                     <Icon name="Wifi" size={20} className="mr-2" />
