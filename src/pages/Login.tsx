@@ -19,16 +19,15 @@ const Login = () => {
       try {
         const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
         const data = await response.json();
-        if (data.server_name) {
-          setServerName(data.server_name);
-        }
+        
+        setServerName(prev => data.server_name || prev);
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
     };
 
     fetchSettings();
-    const interval = setInterval(fetchSettings, 1000);
+    const interval = setInterval(fetchSettings, 5000);
     return () => clearInterval(interval);
   }, []);
 

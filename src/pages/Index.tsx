@@ -49,14 +49,14 @@ const Index = () => {
       try {
         const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
         const data = await response.json();
-        if (data.server_name) {
-          setServerName(data.server_name);
-        }
-        setSettings({
-          discord_link: data.discord_link || '',
-          vk_link: data.vk_link || '',
-          forum_link: data.forum_link || ''
-        });
+        
+        setServerName(prev => data.server_name || prev);
+        
+        setSettings(prev => ({
+          discord_link: data.discord_link || prev.discord_link,
+          vk_link: data.vk_link || prev.vk_link,
+          forum_link: data.forum_link || prev.forum_link
+        }));
       } catch (error) {
         console.error('Failed to fetch settings:', error);
       }
