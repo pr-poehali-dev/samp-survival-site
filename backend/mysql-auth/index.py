@@ -93,7 +93,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Формат: SAMP + IP(4) + Port(2) + i + password_flag(1) + players(2) + maxplayers(2) + strlen(4) + hostname + ...
                 if len(data) >= 15:
                     print(f'DEBUG ONLINE: Response length = {len(data)} bytes')
-                    print(f'DEBUG ONLINE: Raw bytes 11-15: {data[11:15].hex()}')
+                    print(f'DEBUG ONLINE: Full packet hex: {data.hex()}')
+                    print(f'DEBUG ONLINE: Raw bytes 0-20: {data[0:20].hex()}')
+                    
+                    # Проверяем заголовок SAMP
+                    if data[0:4] != b'SAMP':
+                        print(f'DEBUG ONLINE: Invalid header, expected SAMP, got {data[0:4]}')
+                        raise Exception('Invalid SAMP header')
+                    
+                    # Проверяем opcode на позиции 10
+                    opcode = chr(data[10])
+                    print(f'DEBUG ONLINE: Opcode = {opcode}')
                     
                     # Проверяем password флаг (1 байт на позиции 11)
                     password_flag = data[11]
