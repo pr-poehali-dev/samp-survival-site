@@ -263,11 +263,11 @@ const Profile = () => {
               <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
-                    <Icon name="DollarSign" size={32} className="text-green-500" />
+                    <Icon name="Wallet" size={32} className="text-green-500" />
                   </div>
                   <div>
                     <div className="text-sm text-gray-400">Деньги</div>
-                    <div className="text-2xl font-bold">${getStatValue('u_money') || getStatValue('money') || '0'}</div>
+                    <div className="text-2xl font-bold">{getStatValue('u_money') || getStatValue('money') || '0'}₽</div>
                   </div>
                 </div>
               </Card>
@@ -292,7 +292,7 @@ const Profile = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center border-b border-white/10 pb-2">
                     <span className="text-gray-400">Донат</span>
-                    <span className="font-medium text-white">${getStatValue('u_donate') || '0'}</span>
+                    <span className="font-medium text-white">{getStatValue('u_donate') || '0'}₽</span>
                   </div>
                   {Object.entries(user)
                     .filter(([key]) => 
