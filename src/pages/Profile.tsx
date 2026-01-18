@@ -335,8 +335,8 @@ const Profile = () => {
                       { id: 9, name: 'Воин', desc: 'Убил 50 игроков', icon: 'Crosshair' },
                       { id: 10, name: 'Лекарь', desc: 'Вылечил 100 раз', icon: 'Heart' },
                       { id: 11, name: 'Механик', desc: 'Отремонтировал 100 машин', icon: 'Wrench' },
-                      { id: 12, name: 'Повар', desc: 'Приготовил 200 блюд', icon: 'UtensilsCrossed' },
-                      { id: 13, name: 'Коллекционер', desc: 'Собрал все редкие предметы', icon: 'PackageOpen' },
+                      { id: 12, name: 'Повар', desc: 'Приготовил 200 блюд', icon: 'Utensils' },
+                      { id: 13, name: 'Коллекционер', desc: 'Собрал все редкие предметы', icon: 'Package' },
                       { id: 14, name: 'Ветеран', desc: 'Играет более года', icon: 'Star' },
                       { id: 15, name: 'Легенда', desc: 'Достиг максимального уровня', icon: 'Crown' },
                     ];
