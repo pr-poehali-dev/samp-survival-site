@@ -238,7 +238,8 @@ const Profile = () => {
                     .filter(([key]) => 
                       !key.toLowerCase().includes('pass') && 
                       !key.toLowerCase().includes('password') &&
-                      key !== 'u_email_status'
+                      key !== 'u_email_status' &&
+                      key !== 'u_newgame'
                     )
                     .slice(0, 10)
                     .map(([key, value]) => (
