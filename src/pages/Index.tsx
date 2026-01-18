@@ -101,7 +101,7 @@ const Index = () => {
               <a href="#howto" className="hover:text-primary transition-colors">Как начать</a>
               <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
               <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
-              <a href="#donate" className="hover:text-primary transition-colors">Donate</a>
+              <a href="#donate" className="hover:text-primary transition-colors">Донат</a>
             </nav>
 
             <div className="flex items-center gap-4">
@@ -133,7 +133,7 @@ const Index = () => {
                 <a href="#howto" className="hover:text-primary transition-colors">Как начать</a>
                 <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
                 <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
-                <a href="#donate" className="hover:text-primary transition-colors">Donate</a>
+                <a href="#donate" className="hover:text-primary transition-colors">Донат</a>
                 {isLoggedIn ? (
                   <Button className="w-full neon-glow" onClick={() => navigate('/profile')}>
                     <Icon name="User" size={18} className="mr-2" />

@@ -4,6 +4,9 @@ import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface UserData {
   [key: string]: any;
@@ -12,7 +15,10 @@ interface UserData {
 const Profile = () => {
   const [user, setUser] = useState<UserData | null>(null);
   const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [showDonateModal, setShowDonateModal] = useState(false);
+  const [donateAmount, setDonateAmount] = useState('');
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
@@ -154,6 +160,26 @@ const Profile = () => {
     return Number(adminLevel) >= 6;
   };
 
+  const handleDonateSubmit = () => {
+    const amount = parseInt(donateAmount);
+    if (!amount || amount <= 0) {
+      toast({
+        title: "Ошибка",
+        description: "Введите корректную сумму",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "Пополнение доната",
+      description: `Для пополнения на ${amount}₽ обратитесь к администрации сервера`,
+    });
+    
+    setShowDonateModal(false);
+    setDonateAmount('');
+  };
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       <div 
@@ -236,19 +262,35 @@ const Profile = () => {
 
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <Icon name="User" size={24} className="text-primary" />
-                  Основная информация
-                </h2>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <Icon name="User" size={24} className="text-primary" />
+                    Основная информация
+                  </h2>
+                  <Button 
+                    size="sm" 
+                    onClick={() => setShowDonateModal(true)}
+                    className="neon-glow"
+                  >
+                    <Icon name="DollarSign" size={16} className="mr-1" />
+                    Пополнить
+                  </Button>
+                </div>
                 <div className="space-y-4">
+                  <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                    <span className="text-gray-400">Донат</span>
+                    <span className="font-medium text-white">${getStatValue('u_donate') || '0'}</span>
+                  </div>
                   {Object.entries(user)
                     .filter(([key]) => 
                       !key.toLowerCase().includes('pass') && 
                       !key.toLowerCase().includes('password') &&
                       key !== 'u_email_status' &&
-                      key !== 'u_newgame'
+                      key !== 'u_newgame' &&
+                      key !== 'u_lifetime' &&
+                      key !== 'u_donate'
                     )
-                    .slice(0, 10)
+                    .slice(0, 9)
                     .map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-gray-400">{translateField(key)}</span>
@@ -327,6 +369,59 @@ const Profile = () => {
           </div>
         </main>
       </div>
+
+      {showDonateModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <Card className="bg-black/90 border-primary/30 p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-bold flex items-center gap-2">
+                <Icon name="DollarSign" size={24} className="text-primary" />
+                Пополнение доната
+              </h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDonateModal(false)}
+              >
+                <Icon name="X" size={20} />
+              </Button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="amount" className="text-white mb-2 block">
+                  Сумма пополнения (₽)
+                </Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  value={donateAmount}
+                  onChange={(e) => setDonateAmount(e.target.value)}
+                  placeholder="Введите сумму"
+                  className="bg-black/50 border-primary/30 text-white"
+                  min="1"
+                />
+              </div>
+
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                <p className="text-sm text-yellow-500/90">
+                  <Icon name="Info" size={16} className="inline mr-2" />
+                  После подтверждения обратитесь к администрации сервера для завершения пополнения
+                </p>
+              </div>
+
+              <Button 
+                className="w-full neon-glow" 
+                size="lg"
+                onClick={handleDonateSubmit}
+              >
+                <Icon name="Check" size={20} className="mr-2" />
+                Подтвердить
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
