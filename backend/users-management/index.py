@@ -63,7 +63,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     u_id, u_name, u_email, u_date_registration, u_lifetime, 
                     u_money, u_donate, u_score, u_mute, u_ip
                 FROM users 
-                ORDER BY u_id DESC 
+                ORDER BY u_date_registration DESC 
                 LIMIT 100
             '''
             cursor.execute(query)
