@@ -254,7 +254,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             # Находим свободный слот в инвентаре
             inventory_columns = [f'u_i_slot_{i}' for i in range(1, 51)]
-            cursor.execute(f"SELECT {', '.join(inventory_columns)} FROM users_inventory WHERE u_i_name = %s", (user['u_name'],))
+            cursor.execute(f"SELECT {', '.join(inventory_columns)} FROM users_inventory WHERE u_i_owner = %s", (user_id,))
             inventory = cursor.fetchone()
             
             free_slot = None
@@ -267,8 +267,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             # Добавляем предмет в инвентарь
             if free_slot:
                 item_data = f"{won_item['loot_name']}|{won_item.get('loot_quality', 100)}"
-                cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_name = %s",
-                             (item_data, user['u_name']))
+                cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
+                             (item_data, user_id))
             
             connection.commit()
             cursor.close()
