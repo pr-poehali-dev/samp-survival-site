@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Check database structure",
+      "name": "Get database structure",
       "method": "GET",
       "path": "/",
       "expectedStatus": 200,

@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -27,7 +29,7 @@ const Index = () => {
             </nav>
 
             <div className="flex items-center gap-4">
-              <Button className="hidden md:flex neon-glow">
+              <Button className="hidden md:flex neon-glow" onClick={() => navigate('/login')}>
                 <Icon name="User" size={18} className="mr-2" />
                 Войти
               </Button>
@@ -49,7 +51,7 @@ const Index = () => {
                 <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
                 <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
                 <a href="#donate" className="hover:text-primary transition-colors">Donate</a>
-                <Button className="w-full neon-glow">
+                <Button className="w-full neon-glow" onClick={() => navigate('/login')}>
                   <Icon name="User" size={18} className="mr-2" />
                   Войти
                 </Button>
