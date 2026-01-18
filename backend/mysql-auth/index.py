@@ -66,37 +66,56 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if check_param == 'online':
             print(f'DEBUG ONLINE: Request received')
             
-            # Попробуем получить онлайн из MySQL - считаем недавно активных игроков
+            cursor.close()
+            connection.close()
+            
+            # SA-MP Query Protocol для получения онлайна с 46.174.48.50:7788
             try:
-                # Считаем пользователей, которые заходили недавно (например, за последние 5 минут)
-                cursor.execute("SELECT COUNT(*) as online FROM users WHERE u_date >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)")
-                result = cursor.fetchone()
-                online_count = result['online'] if result else 0
+                server_ip = '46.174.48.50'
+                server_port = 7788
                 
-                print(f'DEBUG ONLINE: MySQL count = {online_count}')
+                # Создаем UDP socket
+                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                sock.settimeout(2)
                 
-                cursor.close()
-                connection.close()
+                # SA-MP query packet: SAMP + IP (4 bytes) + Port (2 bytes) + opcode 'i'
+                ip_parts = [int(x) for x in server_ip.split('.')]
+                packet = b'SAMP' + bytes(ip_parts) + struct.pack('<H', server_port) + b'i'
                 
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({
-                        'online': online_count,
-                        'maxPlayers': 100
-                    }),
-                    'isBase64Encoded': False
-                }
+                print(f'DEBUG ONLINE: Sending query to {server_ip}:{server_port}')
+                sock.sendto(packet, (server_ip, server_port))
+                
+                # Получаем ответ
+                data, _ = sock.recvfrom(1024)
+                sock.close()
+                
+                # Парсим ответ: первые 11 байт - заголовок, потом 1 байт password, потом 2 байта players, 2 байта maxplayers
+                if len(data) >= 13:
+                    online_count = struct.unpack('<H', data[11:13])[0]
+                    max_players = struct.unpack('<H', data[13:15])[0]
+                    
+                    print(f'DEBUG ONLINE: SA-MP server online = {online_count}/{max_players}')
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'online': online_count,
+                            'maxPlayers': max_players
+                        }),
+                        'isBase64Encoded': False
+                    }
+                else:
+                    print(f'DEBUG ONLINE: Invalid response length {len(data)}')
+                    raise Exception('Invalid response')
+                    
             except Exception as e:
-                print(f'ERROR ONLINE MySQL: {str(e)}')
+                print(f'ERROR ONLINE SA-MP Query: {str(e)}')
                 import traceback
                 traceback.print_exc()
-                
-                cursor.close()
-                connection.close()
                 
                 return {
                     'statusCode': 200,
