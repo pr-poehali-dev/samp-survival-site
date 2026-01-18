@@ -6,6 +6,7 @@ import Icon from "@/components/ui/icon";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import UsersManagement from "@/components/UsersManagement";
 
 interface ServerSettings {
   server_name: string;
@@ -279,6 +280,10 @@ const Admin = () => {
                   <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
                 </div>
               </div>
+            </Card>
+
+            <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6 mt-6">
+              <UsersManagement />
             </Card>
           </div>
         </main>

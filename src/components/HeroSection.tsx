@@ -13,14 +13,14 @@ const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps
   return (
     <section className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-7xl font-black mb-6 neon-text">
+        <h1 className="text-5xl md:text-7xl font-black mb-6 neon-text glitch shake">
           НОВАЯ КРЕПОСТЬ
         </h1>
-        <p className="text-xl md:text-2xl text-gray-300 mb-8">
+        <p className="text-xl md:text-2xl text-gray-300 mb-8 fade-pulse">
           Постапокалиптическая пустошь
         </p>
         
-        <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8 mb-8">
+        <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8 mb-8 horror-glow">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-left">
               <div className="text-sm text-gray-400 mb-2">IP сервера</div>
@@ -54,20 +54,20 @@ const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps
         </Card>
 
         <div className="grid md:grid-cols-3 gap-4">
-          <Card className="bg-black/40 backdrop-blur-md border-primary/20 p-6 hover:border-primary/50 transition-all">
-            <Icon name="Skull" size={40} className="mx-auto mb-4 text-primary" />
+          <Card className="bg-black/40 backdrop-blur-md border-primary/20 p-6 hover:border-primary/50 hover:horror-glow transition-all">
+            <Icon name="Skull" size={40} className="mx-auto mb-4 text-primary animate-pulse" />
             <h3 className="font-bold mb-2">Зомби</h3>
             <p className="text-sm text-gray-400">Сражайся с ордами зомби и защищай своё убежище</p>
           </Card>
 
-          <Card className="bg-black/40 backdrop-blur-md border-primary/20 p-6 hover:border-primary/50 transition-all">
-            <Icon name="Users" size={40} className="mx-auto mb-4 text-primary" />
+          <Card className="bg-black/40 backdrop-blur-md border-primary/20 p-6 hover:border-primary/50 hover:horror-glow transition-all">
+            <Icon name="Users" size={40} className="mx-auto mb-4 text-primary animate-pulse" />
             <h3 className="font-bold mb-2">Кланы</h3>
             <p className="text-sm text-gray-400">Объединяйся с друзьями и захватывай территории</p>
           </Card>
 
-          <Card className="bg-black/40 backdrop-blur-md border-primary/20 p-6 hover:border-primary/50 transition-all">
-            <Icon name="Crosshair" size={40} className="mx-auto mb-4 text-primary" />
+          <Card className="bg-black/40 backdrop-blur-md border-primary/20 p-6 hover:border-primary/50 hover:horror-glow transition-all">
+            <Icon name="Crosshair" size={40} className="mx-auto mb-4 text-primary animate-pulse" />
             <h3 className="font-bold mb-2">Оружие</h3>
             <p className="text-sm text-gray-400">Огромный арсенал оружия для выживания</p>
           </Card>

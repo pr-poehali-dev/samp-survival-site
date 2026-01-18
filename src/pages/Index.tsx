@@ -125,12 +125,14 @@ const Index = () => {
         style={{ backgroundImage: `url('https://cdn.poehali.dev/projects/bb150b69-aa78-47ca-b25a-00871a425db3/files/e11933f8-63f0-48b9-8388-339a50eaaaa6.jpg')` }}
       />
       
-      <div className="blood-drip" style={{ left: '10%', top: '0', animationDelay: '0s' }} />
-      <div className="blood-drip" style={{ left: '25%', top: '0', animationDelay: '0.5s', height: '80px' }} />
-      <div className="blood-drip" style={{ left: '45%', top: '0', animationDelay: '1s', height: '50px' }} />
-      <div className="blood-drip" style={{ left: '60%', top: '0', animationDelay: '1.5s', height: '70px' }} />
-      <div className="blood-drip" style={{ left: '80%', top: '0', animationDelay: '2s', height: '90px' }} />
-      <div className="blood-drip" style={{ left: '90%', top: '0', animationDelay: '0.3s' }} />
+      <div className="blood-trail" style={{ left: '5%', animationDelay: '0s' }} />
+      <div className="blood-trail" style={{ left: '15%', animationDelay: '1.2s', height: '100px' }} />
+      <div className="blood-trail" style={{ left: '30%', animationDelay: '0.8s', height: '60px' }} />
+      <div className="blood-trail" style={{ left: '48%', animationDelay: '2s', height: '90px' }} />
+      <div className="blood-trail" style={{ left: '62%', animationDelay: '1.5s', height: '70px' }} />
+      <div className="blood-trail" style={{ left: '77%', animationDelay: '0.4s', height: '110px' }} />
+      <div className="blood-trail" style={{ left: '88%', animationDelay: '2.3s', height: '80px' }} />
+      <div className="blood-trail" style={{ left: '95%', animationDelay: '0.9s' }} />
       
       <div className="relative z-10">
         <Header 

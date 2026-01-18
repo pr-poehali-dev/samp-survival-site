@@ -169,4 +169,133 @@
   .animate-sway {
     animation: sway 8s ease-in-out infinite;
   }
+
+  .blood-splatter {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(
+      circle,
+      rgba(139, 0, 0, 0.6) 0%,
+      rgba(139, 0, 0, 0) 70%
+    );
+    pointer-events: none;
+    animation: splatter 2s ease-out forwards;
+  }
+
+  @keyframes splatter {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.5);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(2);
+    }
+  }
+
+  .glitch {
+    animation: glitch 3s infinite;
+  }
+
+  @keyframes glitch {
+    0%,
+    100% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(2px, -2px);
+    }
+    60% {
+      transform: translate(-2px, -2px);
+    }
+    80% {
+      transform: translate(2px, 2px);
+    }
+  }
+
+  .shake {
+    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+  }
+
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-3px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(3px, 0, 0);
+    }
+  }
+
+  .fade-pulse {
+    animation: fadePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes fadePulse {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .blood-trail {
+    position: absolute;
+    width: 4px;
+    height: 80px;
+    background: linear-gradient(
+      180deg,
+      rgba(139, 0, 0, 0.9) 0%,
+      rgba(80, 0, 0, 0.5) 50%,
+      transparent 100%
+    );
+    animation: bloodTrail 4s ease-in infinite;
+    filter: blur(1px);
+  }
+
+  @keyframes bloodTrail {
+    0% {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    20% {
+      opacity: 0.8;
+    }
+    80% {
+      opacity: 0.6;
+      transform: translateY(100vh);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(100vh);
+    }
+  }
+
+  .horror-glow {
+    box-shadow:
+      0 0 20px rgba(139, 0, 0, 0.8),
+      0 0 40px rgba(139, 0, 0, 0.5),
+      0 0 60px rgba(80, 0, 0, 0.3),
+      inset 0 0 20px rgba(139, 0, 0, 0.2);
+  }
 }

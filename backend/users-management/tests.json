@@ -1,0 +1,30 @@
+{
+  "tests": [
+    {
+      "name": "Get users list",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "users": "array",
+        "total": "number"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Update user money",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "user_id": 1,
+        "action": "update",
+        "u_money": 10000
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
