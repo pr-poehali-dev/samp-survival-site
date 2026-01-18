@@ -20,7 +20,10 @@ interface User {
 
 const UsersManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showUsers, setShowUsers] = useState(false);
   const [editingUser, setEditingUser] = useState<number | null>(null);
   const [editValues, setEditValues] = useState<{ u_money: number; u_donate: number; u_mute: number }>({
     u_money: 0,
@@ -30,12 +33,24 @@ const UsersManagement = () => {
   const { toast } = useToast();
 
   const fetchUsers = async () => {
+    if (!searchQuery.trim()) {
+      toast({
+        title: "Введите запрос",
+        description: "Введите имя или ID пользователя для поиска",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
+      setLoading(true);
       const response = await fetch('https://functions.poehali.dev/a41a848a-3f67-4204-b161-8f5de2014207');
       const data = await response.json();
       
       if (data.users) {
         setUsers(data.users);
+        filterUsers(data.users, searchQuery);
+        setShowUsers(true);
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -49,11 +64,29 @@ const UsersManagement = () => {
     }
   };
 
-  useEffect(() => {
+  const filterUsers = (userList: User[], query: string) => {
+    const lowerQuery = query.toLowerCase().trim();
+    
+    const filtered = userList.filter(user => {
+      const matchName = user.u_name.toLowerCase().includes(lowerQuery);
+      const matchId = user.u_id.toString().includes(lowerQuery);
+      const matchEmail = user.u_email.toLowerCase().includes(lowerQuery);
+      return matchName || matchId || matchEmail;
+    });
+    
+    setFilteredUsers(filtered);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
     fetchUsers();
-    const interval = setInterval(fetchUsers, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  };
+
+  useEffect(() => {
+    if (searchQuery.trim() && users.length > 0) {
+      filterUsers(users, searchQuery);
+    }
+  }, [searchQuery]);
 
   const startEditing = (user: User) => {
     setEditingUser(user.u_id);
@@ -135,29 +168,51 @@ const UsersManagement = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <h3 className="text-2xl font-bold flex items-center gap-2">
           <Icon name="Users" size={28} className="text-primary" />
-          Управление пользователями ({users.length})
+          Управление пользователями
         </h3>
-        <Button onClick={fetchUsers} variant="outline" size="sm">
-          <Icon name="RefreshCw" size={16} className="mr-2" />
-          Обновить
-        </Button>
       </div>
 
-      <div className="grid gap-4">
-        {users.map((user) => (
+      <form onSubmit={handleSearch} className="flex gap-2">
+        <Input
+          placeholder="Введите имя, ID или email..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1"
+        />
+        <Button type="submit" disabled={loading} className="neon-glow">
+          {loading ? (
+            <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+          ) : (
+            <Icon name="Search" size={16} className="mr-2" />
+          )}
+          Поиск
+        </Button>
+      </form>
+
+      {!showUsers ? (
+        <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8 text-center">
+          <Icon name="SearchX" size={48} className="mx-auto mb-4 text-gray-600" />
+          <p className="text-gray-400">Введите запрос для поиска пользователей</p>
+          <p className="text-gray-600 text-sm mt-2">Можно искать по имени, ID или email</p>
+        </Card>
+      ) : filteredUsers.length === 0 ? (
+        <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8 text-center">
+          <Icon name="UserX" size={48} className="mx-auto mb-4 text-gray-600" />
+          <p className="text-gray-400">Пользователи не найдены</p>
+          <p className="text-gray-600 text-sm mt-2">Попробуйте изменить поисковый запрос</p>
+        </Card>
+      ) : (
+        <>
+          <div className="text-sm text-gray-400">
+            Найдено пользователей: {filteredUsers.length} из {users.length}
+          </div>
+          <div className="grid gap-4">
+            {filteredUsers.map((user) => (
           <Card key={user.u_id} className="bg-black/60 backdrop-blur-md border-primary/30 p-4 horror-glow">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
               <div>
@@ -271,7 +326,9 @@ const UsersManagement = () => {
             </div>
           </Card>
         ))}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

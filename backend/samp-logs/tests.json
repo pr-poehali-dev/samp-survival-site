@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "Add log entry",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "category": "login",
+        "user_id": 1,
+        "user_name": "TestUser",
+        "action": "User logged in",
+        "details": "First login",
+        "ip_address": "127.0.0.1"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "log_id": "number"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get all logs",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "logs": "array",
+        "total": "number"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get logs by category",
+      "method": "GET",
+      "path": "/?category=login",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "logs": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

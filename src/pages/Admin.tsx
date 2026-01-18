@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UsersManagement from "@/components/UsersManagement";
+import LogsViewer from "@/components/LogsViewer";
 
 interface ServerSettings {
   server_name: string;
@@ -17,6 +18,7 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs'>('settings');
   const [settings, setSettings] = useState<ServerSettings>({
     server_name: "",
     discord_link: "",
@@ -191,13 +193,41 @@ const Admin = () => {
         </header>
 
         <main className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="mb-8">
               <h1 className="text-4xl font-black mb-2 neon-text">Админ-панель</h1>
               <p className="text-gray-400">Управление настройками сервера</p>
             </div>
 
-            <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8">
+            <div className="flex gap-2 mb-6">
+              <Button
+                onClick={() => setActiveTab('settings')}
+                variant={activeTab === 'settings' ? 'default' : 'outline'}
+                className={activeTab === 'settings' ? 'neon-glow' : ''}
+              >
+                <Icon name="Settings" size={18} className="mr-2" />
+                Настройки
+              </Button>
+              <Button
+                onClick={() => setActiveTab('users')}
+                variant={activeTab === 'users' ? 'default' : 'outline'}
+                className={activeTab === 'users' ? 'neon-glow' : ''}
+              >
+                <Icon name="Users" size={18} className="mr-2" />
+                Пользователи
+              </Button>
+              <Button
+                onClick={() => setActiveTab('logs')}
+                variant={activeTab === 'logs' ? 'default' : 'outline'}
+                className={activeTab === 'logs' ? 'neon-glow' : ''}
+              >
+                <Icon name="FileText" size={18} className="mr-2" />
+                Логи
+              </Button>
+            </div>
+
+            {activeTab === 'settings' && (
+              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8">
               <div className="space-y-6">
                 <div>
                   <Label htmlFor="server_name" className="text-white mb-2 block">
@@ -281,10 +311,19 @@ const Admin = () => {
                 </div>
               </div>
             </Card>
+            )}
 
-            <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6 mt-6">
-              <UsersManagement />
-            </Card>
+            {activeTab === 'users' && (
+              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+                <UsersManagement />
+              </Card>
+            )}
+
+            {activeTab === 'logs' && (
+              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+                <LogsViewer />
+              </Card>
+            )}
           </div>
         </main>
       </div>
