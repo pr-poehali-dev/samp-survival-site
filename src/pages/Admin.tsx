@@ -227,90 +227,92 @@ const Admin = () => {
             </div>
 
             {activeTab === 'settings' && (
-              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8">
-              <div className="space-y-6">
-                <div>
-                  <Label htmlFor="server_name" className="text-white mb-2 block">
-                    Название сервера
-                  </Label>
-                  <Input
-                    id="server_name"
-                    value={settings.server_name}
-                    onChange={(e) => setSettings({ ...settings, server_name: e.target.value })}
-                    className="bg-black/50 border-primary/30 text-white"
-                    placeholder="SURVIVAL RP"
-                  />
-                </div>
+              <>
+                <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-8">
+                  <div className="space-y-6">
+                    <div>
+                      <Label htmlFor="server_name" className="text-white mb-2 block">
+                        Название сервера
+                      </Label>
+                      <Input
+                        id="server_name"
+                        value={settings.server_name}
+                        onChange={(e) => setSettings({ ...settings, server_name: e.target.value })}
+                        className="bg-black/50 border-primary/30 text-white"
+                        placeholder="SURVIVAL RP"
+                      />
+                    </div>
 
-                <div>
-                  <Label htmlFor="discord_link" className="text-white mb-2 block">
-                    Ссылка на Discord
-                  </Label>
-                  <Input
-                    id="discord_link"
-                    value={settings.discord_link}
-                    onChange={(e) => setSettings({ ...settings, discord_link: e.target.value })}
-                    className="bg-black/50 border-primary/30 text-white"
-                    placeholder="https://discord.gg/..."
-                  />
-                </div>
+                    <div>
+                      <Label htmlFor="discord_link" className="text-white mb-2 block">
+                        Ссылка на Discord
+                      </Label>
+                      <Input
+                        id="discord_link"
+                        value={settings.discord_link}
+                        onChange={(e) => setSettings({ ...settings, discord_link: e.target.value })}
+                        className="bg-black/50 border-primary/30 text-white"
+                        placeholder="https://discord.gg/..."
+                      />
+                    </div>
 
-                <div>
-                  <Label htmlFor="vk_link" className="text-white mb-2 block">
-                    Ссылка на VK
-                  </Label>
-                  <Input
-                    id="vk_link"
-                    value={settings.vk_link}
-                    onChange={(e) => setSettings({ ...settings, vk_link: e.target.value })}
-                    className="bg-black/50 border-primary/30 text-white"
-                    placeholder="https://vk.com/..."
-                  />
-                </div>
+                    <div>
+                      <Label htmlFor="vk_link" className="text-white mb-2 block">
+                        Ссылка на VK
+                      </Label>
+                      <Input
+                        id="vk_link"
+                        value={settings.vk_link}
+                        onChange={(e) => setSettings({ ...settings, vk_link: e.target.value })}
+                        className="bg-black/50 border-primary/30 text-white"
+                        placeholder="https://vk.com/..."
+                      />
+                    </div>
 
-                <div>
-                  <Label htmlFor="forum_link" className="text-white mb-2 block">
-                    Ссылка на форум
-                  </Label>
-                  <Input
-                    id="forum_link"
-                    value={settings.forum_link}
-                    onChange={(e) => setSettings({ ...settings, forum_link: e.target.value })}
-                    className="bg-black/50 border-primary/30 text-white"
-                    placeholder="https://forum.example.com"
-                  />
-                </div>
+                    <div>
+                      <Label htmlFor="forum_link" className="text-white mb-2 block">
+                        Ссылка на форум
+                      </Label>
+                      <Input
+                        id="forum_link"
+                        value={settings.forum_link}
+                        onChange={(e) => setSettings({ ...settings, forum_link: e.target.value })}
+                        className="bg-black/50 border-primary/30 text-white"
+                        placeholder="https://forum.example.com"
+                      />
+                    </div>
 
-                <Button 
-                  onClick={handleSave} 
-                  className="w-full neon-glow" 
-                  size="lg"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
-                      Сохранение...
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="Save" size={20} className="mr-2" />
-                      Сохранить настройки
-                    </>
-                  )}
-                </Button>
-              </div>
-            </Card>
-
-              <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6 mt-6">
-                <div className="flex items-center gap-3">
-                  <Icon name="Shield" size={24} className="text-primary" />
-                  <div>
-                    <div className="font-bold">Уровень доступа: Администратор (уровень {user?.admin_level || 0})</div>
-                    <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
+                    <Button 
+                      onClick={handleSave} 
+                      className="w-full neon-glow" 
+                      size="lg"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <Icon name="Loader2" size={20} className="mr-2 animate-spin" />
+                          Сохранение...
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="Save" size={20} className="mr-2" />
+                          Сохранить настройки
+                        </>
+                      )}
+                    </Button>
                   </div>
-                </div>
-              </Card>
+                </Card>
+
+                <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6 mt-6">
+                  <div className="flex items-center gap-3">
+                    <Icon name="Shield" size={24} className="text-primary" />
+                    <div>
+                      <div className="font-bold">Уровень доступа: Администратор (уровень {user?.admin_level || 0})</div>
+                      <div className="text-sm text-gray-400">Вы можете редактировать настройки сервера</div>
+                    </div>
+                  </div>
+                </Card>
+              </>
             )}
 
             {activeTab === 'users' && (
