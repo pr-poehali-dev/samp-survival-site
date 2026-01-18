@@ -45,12 +45,17 @@ const Cases = () => {
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (!userData) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Войдите в систему, чтобы открывать кейсы",
+        variant: "destructive"
+      });
       navigate("/login");
       return;
     }
     setUser(JSON.parse(userData));
     fetchCases();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const fetchCases = async () => {
     try {
@@ -76,8 +81,28 @@ const Cases = () => {
   const openCase = async (caseData: Case) => {
     if (!user?.u_id) {
       toast({
-        title: "Ошибка",
-        description: "Необходимо войти в систему",
+        title: "Требуется авторизация",
+        description: "Войдите в систему, чтобы открывать кейсы",
+        variant: "destructive"
+      });
+      navigate("/login");
+      return;
+    }
+
+    // Проверяем баланс перед открытием
+    if (caseData.price_money > 0 && (user.u_money || 0) < caseData.price_money) {
+      toast({
+        title: "Недостаточно средств",
+        description: `Необходимо ${caseData.price_money}₽, у вас ${user.u_money || 0}₽`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (caseData.price_donate > 0 && (user.u_donate || 0) < caseData.price_donate) {
+      toast({
+        title: "Недостаточно доната",
+        description: `Необходимо ${caseData.price_donate} доната, у вас ${user.u_donate || 0}`,
         variant: "destructive"
       });
       return;
