@@ -90,26 +90,19 @@ const Profile = () => {
   };
 
   const formatPlayTime = () => {
-    const totalMinutes = user?.u_lifetime || 0;
+    const totalSeconds = user?.u_lifetime || 0;
     
-    if (totalMinutes === 0) {
-      return '0ч';
+    if (totalSeconds === 0) {
+      return '0с';
     }
     
-    const days = Math.floor(totalMinutes / 60 / 24);
-    const hours = Math.floor(totalMinutes / 60) % 24;
-    const minutes = totalMinutes % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     
-    if (days > 0) {
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}ч (${days} дней)`;
+    if (hours === 0 && minutes === 0) {
+      return `${totalSeconds}с`;
     }
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}ч`;
-  };
-
-  const formatSurvivalLevel = () => {
-    const survivalMinutes = user?.u_lifegame || 0;
-    const level = Math.floor(survivalMinutes / 60 / 60);
-    return level;
+    return `${hours}ч ${minutes}мин`;
   };
 
   const translateField = (key: string): string => {
@@ -198,8 +191,8 @@ const Profile = () => {
                     <Icon name="TrendingUp" size={32} className="text-blue-500" />
                   </div>
                   <div>
-                    <div className="text-sm text-blue-500/70">Уровень выживания</div>
-                    <div className="text-2xl font-bold text-blue-500">{formatSurvivalLevel()} lvl</div>
+                    <div className="text-sm text-blue-500/70">Уровень</div>
+                    <div className="text-2xl font-bold text-blue-500">{getStatValue('u_lifegame') || getStatValue('u_level') || getStatValue('level')}</div>
                   </div>
                 </div>
               </Card>
