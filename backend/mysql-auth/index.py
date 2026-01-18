@@ -261,6 +261,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         user_data = {k: v for k, v in user.items() if 'pass' not in k.lower()}
         
+        print(f'DEBUG PLAYTIME: u_lifetime = {user.get("u_lifetime")}')
+        print(f'DEBUG PLAYTIME: u_lifegame = {user.get("u_lifegame")}')
+        
         username_col = None
         for col in columns:
             if any(x in col.lower() for x in ['login', 'username', 'name', 'u_name']):
