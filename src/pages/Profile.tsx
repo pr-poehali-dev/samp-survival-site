@@ -80,8 +80,8 @@ const Profile = () => {
     refreshUserData();
     fetchSettings();
     
-    const userInterval = setInterval(refreshUserData, 10000);
-    const settingsInterval = setInterval(fetchSettings, 10000);
+    const userInterval = setInterval(refreshUserData, 5000);
+    const settingsInterval = setInterval(fetchSettings, 5000);
     
     return () => {
       clearInterval(userInterval);

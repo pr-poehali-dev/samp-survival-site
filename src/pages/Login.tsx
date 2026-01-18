@@ -37,7 +37,7 @@ const Login = () => {
     };
 
     fetchSettings();
-    const interval = setInterval(fetchSettings, 10000);
+    const interval = setInterval(fetchSettings, 5000);
     return () => clearInterval(interval);
   }, []);
 

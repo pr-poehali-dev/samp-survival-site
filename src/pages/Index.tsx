@@ -108,8 +108,8 @@ const Index = () => {
     fetchSettings();
     
     const authInterval = setInterval(checkAuth, 5000);
-    const onlineInterval = setInterval(fetchOnline, 10000);
-    const settingsInterval = setInterval(fetchSettings, 10000);
+    const onlineInterval = setInterval(fetchOnline, 5000);
+    const settingsInterval = setInterval(fetchSettings, 5000);
 
     return () => {
       clearInterval(authInterval);
