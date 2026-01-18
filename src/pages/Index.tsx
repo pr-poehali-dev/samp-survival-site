@@ -226,8 +226,8 @@ const Index = () => {
 
           <footer className="py-8 px-4 border-t border-white/10">
             <div className="container mx-auto text-center text-gray-400 text-sm">
-              <p>© 2026 Survival RP. Все права защищены.</p>
-              <p className="mt-2">Постапокалиптический ролевой проект GTA SAMP</p>
+              <p>© 2023-2026 Survival RP. Все права защищены.</p>
+              <p className="mt-2">Постапокалиптический ролевой проект GTA SAMP • Основан в 2023 году</p>
             </div>
           </footer>
         </main>
