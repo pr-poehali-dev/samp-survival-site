@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
+  const [serverName, setServerName] = useState('SURVIVAL RP');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +21,28 @@ const Index = () => {
       }
     };
 
-    fetchOnline();
-    const interval = setInterval(fetchOnline, 30000); // Обновление каждые 30 секунд
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
+        const data = await response.json();
+        if (data.server_name) {
+          setServerName(data.server_name);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
 
-    return () => clearInterval(interval);
+    fetchOnline();
+    fetchSettings();
+    
+    const onlineInterval = setInterval(fetchOnline, 30000);
+    const settingsInterval = setInterval(fetchSettings, 3000);
+
+    return () => {
+      clearInterval(onlineInterval);
+      clearInterval(settingsInterval);
+    };
   }, []);
 
   return (
@@ -43,7 +62,7 @@ const Index = () => {
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-md border-b border-white/10 z-50">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="text-2xl font-bold text-gradient">SURVIVAL RP</div>
+            <div className="text-2xl font-bold text-gradient">{serverName}</div>
             
             <nav className="hidden md:flex items-center gap-6">
               <a href="#news" className="hover:text-primary transition-colors">Новости</a>

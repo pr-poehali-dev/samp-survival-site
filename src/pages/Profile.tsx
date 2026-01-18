@@ -11,6 +11,7 @@ interface UserData {
 
 const Profile = () => {
   const [user, setUser] = useState<UserData | null>(null);
+  const [serverName, setServerName] = useState('SURVIVAL RP');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,8 +50,27 @@ const Profile = () => {
       }
     };
 
-    const interval = setInterval(refreshUserData, 3000);
-    return () => clearInterval(interval);
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
+        const data = await response.json();
+        if (data.server_name) {
+          setServerName(data.server_name);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
+
+    fetchSettings();
+    
+    const userInterval = setInterval(refreshUserData, 3000);
+    const settingsInterval = setInterval(fetchSettings, 3000);
+    
+    return () => {
+      clearInterval(userInterval);
+      clearInterval(settingsInterval);
+    };
   }, [navigate]);
 
   const handleLogout = () => {
@@ -119,7 +139,7 @@ const Profile = () => {
       <div className="relative z-10">
         <header className="bg-black/80 backdrop-blur-md border-b border-white/10">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="text-2xl font-bold text-gradient">SURVIVAL RP</div>
+            <div className="text-2xl font-bold text-gradient">{serverName}</div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => navigate("/")}>
                 <Icon name="Home" size={18} className="mr-2" />

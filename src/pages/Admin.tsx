@@ -156,7 +156,7 @@ const Admin = () => {
       <div className="relative z-10">
         <header className="bg-black/80 backdrop-blur-md border-b border-white/10">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="text-2xl font-bold text-gradient">SURVIVAL RP</div>
+            <div className="text-2xl font-bold text-gradient">{settings.server_name || 'SURVIVAL RP'}</div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => navigate("/")}>
                 <Icon name="Home" size={18} className="mr-2" />

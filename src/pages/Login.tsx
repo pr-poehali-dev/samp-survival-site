@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import Icon from "@/components/ui/icon";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -10,8 +10,27 @@ const Login = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [serverName, setServerName] = useState('SURVIVAL RP');
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8');
+        const data = await response.json();
+        if (data.server_name) {
+          setServerName(data.server_name);
+        }
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
+
+    fetchSettings();
+    const interval = setInterval(fetchSettings, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +89,7 @@ const Login = () => {
       
       <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-black mb-2 text-gradient neon-text">SURVIVAL RP</h1>
+          <h1 className="text-4xl font-black mb-2 text-gradient neon-text">{serverName}</h1>
           <p className="text-gray-400">Вход в личный кабинет</p>
         </div>
 
