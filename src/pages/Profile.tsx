@@ -253,7 +253,7 @@ const Profile = () => {
                     .map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center border-b border-white/10 pb-2">
                         <span className="text-gray-400">{translateField(key)}</span>
-                        <span className="font-medium">
+                        <span className="font-medium text-white">
                           {formatFieldValue(key, value)}
                         </span>
                       </div>

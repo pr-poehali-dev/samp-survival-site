@@ -13,22 +13,27 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    const loginTime = localStorage.getItem('login_time');
-    
-    if (userData && loginTime) {
-      const now = Date.now();
-      const elapsed = now - parseInt(loginTime);
-      const fifteenMinutes = 15 * 60 * 1000;
+    const checkAuth = () => {
+      const userData = localStorage.getItem('user');
+      const loginTime = localStorage.getItem('login_time');
       
-      if (elapsed < fifteenMinutes) {
-        setIsLoggedIn(true);
+      if (userData && loginTime) {
+        const now = Date.now();
+        const elapsed = now - parseInt(loginTime);
+        const fifteenMinutes = 15 * 60 * 1000;
+        
+        if (elapsed < fifteenMinutes) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+          localStorage.removeItem('user');
+          localStorage.removeItem('user_password');
+          localStorage.removeItem('login_time');
+        }
       } else {
-        localStorage.removeItem('user');
-        localStorage.removeItem('user_password');
-        localStorage.removeItem('login_time');
+        setIsLoggedIn(false);
       }
-    }
+    };
 
     const fetchOnline = async () => {
       try {
@@ -57,13 +62,16 @@ const Index = () => {
       }
     };
 
+    checkAuth();
     fetchOnline();
     fetchSettings();
     
-    const onlineInterval = setInterval(fetchOnline, 30000);
-    const settingsInterval = setInterval(fetchSettings, 30000);
+    const authInterval = setInterval(checkAuth, 5000);
+    const onlineInterval = setInterval(fetchOnline, 5000);
+    const settingsInterval = setInterval(fetchSettings, 5000);
 
     return () => {
+      clearInterval(authInterval);
       clearInterval(onlineInterval);
       clearInterval(settingsInterval);
     };
