@@ -60,6 +60,10 @@ const Admin = () => {
     }
     
     fetchSettings();
+    
+    // Автообновление настроек каждые 3 секунды
+    const interval = setInterval(fetchSettings, 3000);
+    return () => clearInterval(interval);
   }, [navigate, toast]);
 
   const fetchSettings = async () => {
@@ -80,35 +84,46 @@ const Admin = () => {
     setLoading(true);
     try {
       const username = user?.u_name || user?.username;
+      const payload = {
+        username: username,
+        settings: settings,
+      };
+      
+      console.log('=== SAVE SETTINGS DEBUG ===');
+      console.log('Username:', username);
+      console.log('Settings:', settings);
+      console.log('Payload:', payload);
+      console.log('===========================');
+      
       const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          username: username,
-          settings: settings,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response data:', data);
 
       if (response.ok && data.success) {
         toast({
-          title: "Success!",
-          description: "Settings saved",
+          title: "Успешно!",
+          description: "Настройки сохранены",
         });
       } else {
         toast({
-          title: "Error",
-          description: data.error || "Failed to save",
+          title: "Ошибка",
+          description: data.error || "Не удалось сохранить",
           variant: "destructive",
         });
       }
     } catch (error) {
+      console.error('Save error:', error);
       toast({
-        title: "Error",
-        description: "Failed to connect to server",
+        title: "Ошибка",
+        description: "Не удалось подключиться к серверу",
         variant: "destructive",
       });
     } finally {

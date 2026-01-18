@@ -64,7 +64,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         username = body_data.get('username')
         updates = body_data.get('settings', {})
         
+        print(f'DEBUG POST: username={username}, updates={updates}')
+        
         if not username:
+            print('ERROR: Username not provided')
             return {
                 'statusCode': 401,
                 'headers': {
@@ -96,11 +99,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             mysql_cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username,))
             result = mysql_cursor.fetchone()
+            print(f'DEBUG: Admin check result for {username}: {result}')
             
             mysql_cursor.close()
             mysql_conn.close()
             
             if not result:
+                print(f'ERROR: User {username} not found in users_admins')
                 return {
                     'statusCode': 404,
                     'headers': {
@@ -112,8 +117,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             admin_level = result.get('admin_level', 0)
+            print(f'DEBUG: Admin level: {admin_level}')
             
             if admin_level < 6:
+                print(f'ERROR: Access denied for level {admin_level}')
                 return {
                     'statusCode': 403,
                     'headers': {
@@ -124,16 +131,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
+            print('DEBUG: Connecting to PostgreSQL...')
             pg_conn = psycopg2.connect(pg_dsn)
             pg_cursor = pg_conn.cursor()
             
+            print(f'DEBUG: Updating {len(updates)} settings...')
             for key, value in updates.items():
+                print(f'DEBUG: Updating {key} = {value}')
                 pg_cursor.execute(
                     'UPDATE t_p38718569_samp_survival_site.server_settings SET setting_value = %s, updated_at = CURRENT_TIMESTAMP WHERE setting_key = %s',
                     (value, key)
                 )
             
             pg_conn.commit()
+            print('DEBUG: Settings committed successfully')
             pg_cursor.close()
             pg_conn.close()
             
