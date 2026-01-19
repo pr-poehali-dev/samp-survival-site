@@ -1,7 +1,7 @@
 '''
 Защита от брутфорса: отслеживание попыток входа и блокировка IP
-Принимает: POST check_block, POST record_attempt, POST unblock
-Возвращает: статус блокировки IP-адреса
+Принимает: POST check_block, POST record_attempt, POST unblock, POST list_blocks
+Возвращает: статус блокировки IP-адреса и список заблокированных IP
 '''
 
 import json
@@ -248,21 +248,38 @@ def handler(event: dict, context) -> dict:
                 'isBase64Encoded': False
             }
         
+        elif action == 'list_blocks':
+            cursor.execute('''
+                SELECT id, ip_address, failed_attempts, temp_blocked_until, 
+                       permanently_blocked, created_at, updated_at
+                FROM ip_blocks
+                ORDER BY updated_at DESC
+            ''')
+            
+            blocks = cursor.fetchall()
+            blocks_list = []
+            
+            for block in blocks:
+                block_dict = dict(block)
+                if block_dict['temp_blocked_until']:
+                    block_dict['temp_blocked_until'] = block_dict['temp_blocked_until'].isoformat()
+                if block_dict['created_at']:
+                    block_dict['created_at'] = block_dict['created_at'].isoformat()
+                if block_dict['updated_at']:
+                    block_dict['updated_at'] = block_dict['updated_at'].isoformat()
+                blocks_list.append(block_dict)
+            
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'blocks': blocks_list}),
+                'isBase64Encoded': False
+            }
+        
         elif action == 'unblock':
-            admin_key = body_data.get('admin_key', '')
-            correct_key = os.environ.get('ADMIN_KEY', 'default_admin_key')
-            
-            if admin_key != correct_key:
-                return {
-                    'statusCode': 403,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Invalid admin key'}),
-                    'isBase64Encoded': False
-                }
-            
             cursor.execute('''
                 UPDATE ip_blocks
                 SET failed_attempts = 0, 

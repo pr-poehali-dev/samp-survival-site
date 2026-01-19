@@ -10,6 +10,8 @@ import UsersManagement from "@/components/UsersManagement";
 import LogsViewer from "@/components/LogsViewer";
 import RulesManagement from "@/components/RulesManagement";
 import CasesManagement from "@/components/CasesManagement";
+import BlockedIPsManagement from "@/components/BlockedIPsManagement";
+import BlockedIPsManagement from "@/components/BlockedIPsManagement";
 
 interface ServerSettings {
   server_name: string;
@@ -20,7 +22,7 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules' | 'cases'>('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules' | 'cases' | 'blocked'>('settings');
   const [settings, setSettings] = useState<ServerSettings>({
     server_name: "",
     discord_link: "",
@@ -245,6 +247,14 @@ const Admin = () => {
                 <Icon name="Gift" size={18} className="mr-2" />
                 Кейсы
               </Button>
+              <Button
+                onClick={() => setActiveTab('blocked')}
+                variant={activeTab === 'blocked' ? 'default' : 'outline'}
+                className={activeTab === 'blocked' ? 'neon-glow' : ''}
+              >
+                <Icon name="ShieldAlert" size={18} className="mr-2" />
+                Блокировки IP
+              </Button>
             </div>
 
             {activeTab === 'settings' && (
@@ -357,6 +367,10 @@ const Admin = () => {
               <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
                 <LogsViewer />
               </Card>
+            )}
+
+            {activeTab === 'blocked' && (
+              <BlockedIPsManagement />
             )}
           </div>
         </main>

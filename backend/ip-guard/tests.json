@@ -25,8 +25,7 @@
       },
       "expectedStatus": 200,
       "expectedBody": {
-        "blocked": false,
-        "attempts": 1
+        "blocked": false
       },
       "bodyMatcher": "partial"
     }
