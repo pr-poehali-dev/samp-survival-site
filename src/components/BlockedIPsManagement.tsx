@@ -19,6 +19,7 @@ interface BlockedIP {
   failed_attempts: number;
   temp_blocked_until: string | null;
   permanently_blocked: boolean;
+  attempted_login: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -148,6 +149,7 @@ const BlockedIPsManagement = () => {
             <TableHeader>
               <TableRow className="border-white/10">
                 <TableHead className="text-gray-400">IP-адрес</TableHead>
+                <TableHead className="text-gray-400">Попытка входа под</TableHead>
                 <TableHead className="text-gray-400">Неудачные попытки</TableHead>
                 <TableHead className="text-gray-400">Статус</TableHead>
                 <TableHead className="text-gray-400">Последнее обновление</TableHead>
@@ -158,6 +160,13 @@ const BlockedIPsManagement = () => {
               {blockedIPs.map((ip) => (
                 <TableRow key={ip.id} className="border-white/10">
                   <TableCell className="font-mono text-white">{ip.ip_address}</TableCell>
+                  <TableCell className="text-gray-300">
+                    {ip.attempted_login ? (
+                      <span className="font-semibold">{ip.attempted_login}</span>
+                    ) : (
+                      <span className="text-gray-500 italic">не указано</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={ip.failed_attempts >= 5 ? "destructive" : "secondary"}>
                       {ip.failed_attempts} / 5

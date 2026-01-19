@@ -91,7 +91,7 @@ const Login = () => {
         await fetch('https://functions.poehali.dev/56f6b297-dc8f-4b8c-915b-e0291dc4267a', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'record_attempt', success: true })
+          body: JSON.stringify({ action: 'record_attempt', success: true, login })
         });
         
         localStorage.setItem("user", JSON.stringify(data.user));
@@ -106,7 +106,7 @@ const Login = () => {
         const attemptResponse = await fetch('https://functions.poehali.dev/56f6b297-dc8f-4b8c-915b-e0291dc4267a', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'record_attempt', success: false })
+          body: JSON.stringify({ action: 'record_attempt', success: false, login })
         });
         
         const attemptData = await attemptResponse.json();

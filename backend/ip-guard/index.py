@@ -151,6 +151,7 @@ def handler(event: dict, context) -> dict:
         
         elif action == 'record_attempt':
             success = body_data.get('success', False)
+            login = body_data.get('login', '')
             
             if success:
                 cursor.execute('''
@@ -171,14 +172,15 @@ def handler(event: dict, context) -> dict:
                 }
             
             cursor.execute('''
-                INSERT INTO ip_blocks (ip_address, failed_attempts)
-                VALUES (%s, 1)
+                INSERT INTO ip_blocks (ip_address, failed_attempts, attempted_login)
+                VALUES (%s, 1, %s)
                 ON CONFLICT (ip_address) 
                 DO UPDATE SET 
                     failed_attempts = ip_blocks.failed_attempts + 1,
+                    attempted_login = %s,
                     updated_at = CURRENT_TIMESTAMP
                 RETURNING failed_attempts, permanently_blocked
-            ''', (ip_address,))
+            ''', (ip_address, login, login))
             
             result = cursor.fetchone()
             attempts = result['failed_attempts']
@@ -251,7 +253,7 @@ def handler(event: dict, context) -> dict:
         elif action == 'list_blocks':
             cursor.execute('''
                 SELECT id, ip_address, failed_attempts, temp_blocked_until, 
-                       permanently_blocked, created_at, updated_at
+                       permanently_blocked, attempted_login, created_at, updated_at
                 FROM ip_blocks
                 ORDER BY updated_at DESC
             ''')
