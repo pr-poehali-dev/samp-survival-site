@@ -111,7 +111,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             mysql_cursor = mysql_conn.cursor()
             
-            mysql_cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username,))
+            mysql_cursor.execute('SELECT admin_level FROM users WHERE u_name = %s', (username,))
             result = mysql_cursor.fetchone()
             print(f'DEBUG: Admin check result for {username}: {result}')
             
@@ -119,19 +119,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             mysql_conn.close()
             
             if not result:
-                print(f'ERROR: User {username} not found in users_admins')
+                print(f'ERROR: User {username} not found in users table')
                 return {
                     'statusCode': 404,
                     'headers': {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'User not found or not admin'}),
+                    'body': json.dumps({'error': f'User {username} not found'}),
                     'isBase64Encoded': False
                 }
             
             admin_level = result.get('admin_level', 0)
-            print(f'DEBUG: Admin level: {admin_level}')
+            print(f'DEBUG: Admin level for {username}: {admin_level}')
             
             if admin_level < 6:
                 print(f'ERROR: Access denied for level {admin_level}')
