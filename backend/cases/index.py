@@ -195,32 +195,33 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Проверяем баланс
-            if config['price_money'] > 0 and user['u_money'] < config['price_money']:
-                cursor.close()
-                connection.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Недостаточно игровой валюты'}),
-                    'isBase64Encoded': False
-                }
-            
-            if config['price_donate'] > 0 and user['u_donate'] < config['price_donate']:
-                cursor.close()
-                connection.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Недостаточно доната'}),
-                    'isBase64Encoded': False
-                }
+            # Проверяем баланс в зависимости от выбранного способа оплаты
+            if payment_method == 'money':
+                if user['u_money'] < config['price_money']:
+                    cursor.close()
+                    connection.close()
+                    return {
+                        'statusCode': 400,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({'error': 'Недостаточно игровой валюты'}),
+                        'isBase64Encoded': False
+                    }
+            else:
+                if user['u_donate'] < config['price_donate']:
+                    cursor.close()
+                    connection.close()
+                    return {
+                        'statusCode': 400,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({'error': 'Недостаточно доната'}),
+                        'isBase64Encoded': False
+                    }
             
             # Списываем валюту в зависимости от выбранного способа оплаты
             if payment_method == 'money':
