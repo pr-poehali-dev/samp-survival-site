@@ -259,6 +259,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             inventory = cursor.fetchone()
             
             free_slot = None
+            debug_slots = []
+            
             if not inventory:
                 # Создаем запись инвентаря если её нет
                 cursor.execute("INSERT INTO users_inventory (u_i_owner) VALUES (%s)", (user_id,))
@@ -268,6 +270,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Проверяем каждый слот
                 for i, col in enumerate(inventory_columns, 1):
                     slot_value = inventory.get(col)
+                    debug_slots.append(f"slot_{i}={repr(slot_value)}")
+                    
                     # Проверяем пустой слот: None, 0, '0', 'None', пустая строка, 'null', 'NULL'
                     if (slot_value is None or 
                         slot_value == 0 or 
@@ -286,7 +290,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
                              (item_data, user_id))
             else:
-                # Если инвентарь полон
+                # Если инвентарь полон - возвращаем с отладочной информацией
                 connection.commit()
                 cursor.close()
                 connection.close()
@@ -296,7 +300,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'Инвентарь полон! Освободите место.', 'won_item': dict(won_item)}),
+                    'body': json.dumps({
+                        'error': 'Инвентарь полон! Освободите место.', 
+                        'won_item': dict(won_item),
+                        'debug': f"Checked {len(debug_slots)} slots. First 5: {', '.join(debug_slots[:5])}"
+                    }),
                     'isBase64Encoded': False
                 }
             
