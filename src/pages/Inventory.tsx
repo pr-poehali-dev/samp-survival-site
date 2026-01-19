@@ -145,13 +145,13 @@ const Inventory = () => {
                 <Icon name="Gem" size={18} className="text-yellow-500" />
                 <span className="font-bold text-yellow-500">{user?.u_donate || 0}Ᵽ</span>
               </div>
+              <Button variant="ghost" onClick={() => navigate("/cases")}>
+                <Icon name="ArrowLeft" size={18} className="mr-2" />
+                Назад к кейсам
+              </Button>
               <Button variant="ghost" onClick={() => navigate("/")}>
                 <Icon name="Home" size={18} className="mr-2" />
                 Главная
-              </Button>
-              <Button variant="ghost" onClick={() => navigate("/cases")}>
-                <Icon name="Package" size={18} className="mr-2" />
-                Кейсы
               </Button>
             </div>
           </div>
