@@ -79,23 +79,33 @@ const CasesManagement = ({ userId }: CasesManagementProps) => {
 
     setLoading(true);
     try {
-      console.log('Updating case with userId:', userId);
+      const requestBody = {
+        user_id: userId,
+        case_id: editingCase.case_id,
+        price_money: Number(editingCase.price_money),
+        price_donate: Number(editingCase.price_donate)
+      };
+      
+      console.log('=== UPDATE CASE REQUEST ===');
+      console.log('URL:', 'https://functions.poehali.dev/09aee658-398c-499d-9dc2-2b3c508b0f13');
+      console.log('Request body:', requestBody);
+      
       const response = await fetch('https://functions.poehali.dev/09aee658-398c-499d-9dc2-2b3c508b0f13', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          case_id: editingCase.case_id,
-          price_money: editingCase.price_money,
-          price_donate: editingCase.price_donate
-        })
+        body: JSON.stringify(requestBody)
       });
 
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Update failed:', errorData);
+        console.error('Update failed. Error data:', errorData);
         throw new Error(errorData.error || 'Failed to update case');
       }
+      
+      const successData = await response.json();
+      console.log('Update success:', successData);
       
       toast({
         title: "Успешно!",
