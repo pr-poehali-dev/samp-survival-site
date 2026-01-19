@@ -242,28 +242,51 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             # Веса: чем дешевле предмет, тем выше шанс
             weights = [1.0 / (int(item['loot_price']) + 1) for item in case_items]
-            won_item = random.choices(case_items, weights=weights, k=1)[0]
             
-            # Генерируем массив предметов для анимации прокрутки (60 предметов)
+            # Сначала генерируем все 60 предметов для анимации
             animation_items = []
             for _ in range(60):
                 item = random.choices(case_items, weights=weights, k=1)[0]
                 animation_items.append(item)
             
-            # Вставляем выигрышный предмет в середину (позиция 30)
-            animation_items[30] = won_item
+            # Выигрышный предмет - это тот который на позиции 30 (по центру)
+            won_item = animation_items[30]
             
-            # Находим свободный слот в инвентаре - просто добавляем в первый слот всегда
-            free_slot = 1
+            # Находим свободный слот в инвентаре
+            inventory_columns = [f'u_i_slot_{i}' for i in range(1, 51)]
+            cursor.execute(f"SELECT {', '.join(inventory_columns)} FROM users_inventory WHERE u_i_owner = %s", (user_id,))
+            inventory = cursor.fetchone()
             
-            # Проверяем есть ли запись инвентаря
-            cursor.execute("SELECT u_i_owner FROM users_inventory WHERE u_i_owner = %s", (user_id,))
-            inventory_exists = cursor.fetchone()
-            
-            if not inventory_exists:
+            free_slot = None
+            if not inventory:
                 # Создаем запись инвентаря если её нет
                 cursor.execute("INSERT INTO users_inventory (u_i_owner) VALUES (%s)", (user_id,))
                 connection.commit()
+                free_slot = 1
+            else:
+                # Ищем первый пустой слот
+                for i in range(1, 51):
+                    col_name = f'u_i_slot_{i}'
+                    slot_value = inventory.get(col_name)
+                    # Пустой слот: None или пустая строка
+                    if slot_value is None or (isinstance(slot_value, str) and slot_value.strip() in ['', '0', 'None', 'null', 'NULL']):
+                        free_slot = i
+                        break
+            
+            # Если нет свободного слота - ошибка
+            if free_slot is None:
+                connection.commit()
+                cursor.close()
+                connection.close()
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Инвентарь полон! Освободите место.'}),
+                    'isBase64Encoded': False
+                }
             
             # Добавляем предмет в инвентарь
             item_data = f"{won_item['loot_name']}|{won_item.get('loot_quality', 100)}"
