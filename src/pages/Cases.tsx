@@ -255,7 +255,7 @@ const Cases = () => {
                 <div 
                   className="flex gap-4 transition-transform duration-[5000ms] ease-out"
                   style={{
-                    transform: isAnimating ? 'translateX(calc(50vw - 30 * 144px - 80px))' : 'translateX(0)',
+                    transform: isAnimating ? 'translateX(calc(50vw - 30 * 144px - 64px - 8px))' : 'translateX(0)',
                   }}
                 >
                   {animationItems.map((item, index) => {
