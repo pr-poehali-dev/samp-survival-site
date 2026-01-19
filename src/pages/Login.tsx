@@ -120,9 +120,11 @@ const Login = () => {
             variant: "destructive",
           });
         } else {
+          const attemptsUsed = attemptData.attempts || 0;
+          const attemptsLeft = attemptData.remaining || 0;
           toast({
-            title: "Ошибка входа",
-            description: data.error || `Неверный логин или пароль. Осталось попыток: ${attemptData.remaining || 0}`,
+            title: "Неверный логин или пароль",
+            description: `Попытка ${attemptsUsed} из 5. Осталось попыток: ${attemptsLeft}`,
             variant: "destructive",
           });
         }
