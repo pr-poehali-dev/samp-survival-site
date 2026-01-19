@@ -169,43 +169,36 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # КРИТИЧНО: Проверяем онлайн статус - блокируем если игрок В ИГРЕ
+            # КРИТИЧНО: Проверяем онлайн по времени последней активности (5 минут)
             is_online = False
             
             try:
-                # Метод 1: Проверка поля u_online (1 = в игре, 0 = не в игре)
-                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_online'")
-                has_online_field = cursor.fetchone() is not None
-                print(f"DEBUG: has_online_field = {has_online_field}")
+                import time
+                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_last_action'")
+                has_last_action = cursor.fetchone() is not None
                 
-                if has_online_field:
-                    cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
-                    online_data = cursor.fetchone()
-                    print(f"DEBUG: online_data = {online_data}")
-                    u_online_value = online_data.get('u_online', 0) if online_data else 0
-                    print(f"DEBUG: u_online_value = {u_online_value}, type = {type(u_online_value)}")
-                    if online_data and u_online_value == 1:
-                        is_online = True
-                
-                # Метод 2: Проверка через last_action (активность < 10 мин = в игре)
-                if not has_online_field:
-                    cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_last_action'")
-                    has_last_action = cursor.fetchone() is not None
+                if has_last_action:
+                    cursor.execute('SELECT u_last_action FROM users WHERE u_id = %s', (user_id,))
+                    result = cursor.fetchone()
                     
-                    if has_last_action:
-                        import time
-                        cursor.execute('SELECT u_last_action FROM users WHERE u_id = %s', (user_id,))
-                        action_data = cursor.fetchone()
-                        if action_data:
-                            last_action = action_data.get('u_last_action', 0)
-                            current_time = int(time.time())
-                            if current_time - last_action < 600:
-                                is_online = True
-                
-                print(f"DEBUG: Final is_online = {is_online}")
+                    if result and result.get('u_last_action'):
+                        last_action = int(result['u_last_action'])
+                        current_time = int(time.time())
+                        time_diff = current_time - last_action
+                        
+                        print(f"DEBUG: User {user_id} last activity: {time_diff} seconds ago")
+                        
+                        # Если активность была в последние 5 минут — игрок онлайн
+                        if time_diff < 300:
+                            is_online = True
+                            print(f"DEBUG: User ONLINE (active {time_diff}s ago)")
+                        else:
+                            print(f"DEBUG: User OFFLINE (last seen {time_diff}s ago)")
+                else:
+                    print("DEBUG: Field u_last_action not found")
                             
             except Exception as e:
-                print(f"Online check error: {e}")
+                print(f"DEBUG: Online check error: {e}")
             
             # Если игрок В ИГРЕ (онлайн) - блокируем открытие кейса
             if is_online:
