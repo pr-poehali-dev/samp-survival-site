@@ -123,6 +123,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             price_money = body.get('price_money')
             price_donate = body.get('price_donate')
             
+            print(f"DEBUG POST: user_id={user_id}, case_id={case_id}, money={price_money}, donate={price_donate}")
+            
             if not user_id:
                 cursor.close()
                 connection.close()
@@ -140,7 +142,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cursor.execute('SELECT u_level FROM users WHERE u_id = %s', (user_id,))
             user = cursor.fetchone()
             
-            if not user or user['u_level'] < 10:
+            print(f"DEBUG: User found: {user}, level={user.get('u_level') if user else None}")
+            
+            if not user or user['u_level'] < 6:
                 cursor.close()
                 connection.close()
                 return {
@@ -154,12 +158,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 }
             
             # Обновляем цены кейса
+            print(f"DEBUG: Updating case {case_id} with money={price_money}, donate={price_donate}")
             cursor.execute(
                 'UPDATE cases_config SET price_money=%s, price_donate=%s WHERE case_id=%s',
                 (price_money, price_donate, case_id)
             )
             
             connection.commit()
+            print(f"DEBUG: Update successful for case {case_id}")
             cursor.close()
             connection.close()
             
@@ -198,7 +204,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cursor.execute('SELECT u_level FROM users WHERE u_id = %s', (user_id,))
             user = cursor.fetchone()
             
-            if not user or user['u_level'] < 10:
+            if not user or user['u_level'] < 6:
                 cursor.close()
                 connection.close()
                 return {
