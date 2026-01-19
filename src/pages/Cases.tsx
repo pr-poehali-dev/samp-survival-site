@@ -142,6 +142,11 @@ const Cases = () => {
         setAnimationItems(data.animation_items);
         setWonItem(data.won_item);
         
+        console.log('Animation items length:', data.animation_items.length);
+        console.log('Item at position 30:', data.animation_items[30]);
+        console.log('Won item:', data.won_item);
+        console.log('Items match?', data.animation_items[30]?.loot_name === data.won_item.loot_name);
+        
         setTimeout(() => {
           setIsAnimating(true);
           
@@ -246,7 +251,7 @@ const Cases = () => {
                 <div 
                   className="flex gap-4 transition-transform duration-[5000ms] ease-out"
                   style={{
-                    transform: isAnimating ? 'translateX(calc(-30 * 144px + 50vw - 64px))' : 'translateX(0)',
+                    transform: isAnimating ? 'translateX(calc(50vw - 30 * 144px - 80px))' : 'translateX(0)',
                   }}
                 >
                   {animationItems.map((item, index) => {
