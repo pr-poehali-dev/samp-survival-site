@@ -10,7 +10,7 @@ const Login = () => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [serverName, setServerName] = useState('Дозор Смерти / Death Watch');
   const [blocked, setBlocked] = useState(false);
   const [blockMessage, setBlockMessage] = useState("");
   const navigate = useNavigate();

@@ -12,7 +12,7 @@ interface UserData {
 
 const Profile = () => {
   const [user, setUser] = useState<UserData | null>(null);
-  const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [serverName, setServerName] = useState('Дозор Смерти / Death Watch');
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [donateAmount, setDonateAmount] = useState('');
   const navigate = useNavigate();

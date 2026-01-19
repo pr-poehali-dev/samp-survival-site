@@ -10,7 +10,7 @@ import HowToPlayModal from "@/components/HowToPlayModal";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [serverName, setServerName] = useState('Дозор Смерти / Death Watch');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
   const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -221,7 +221,7 @@ const Index = () => {
 
           <footer className="py-8 px-4 border-t border-white/10">
             <div className="container mx-auto text-center text-gray-400 text-sm">
-              <p>© 2023-2026 Survival RP. Все права защищены.</p>
+              <p>© 2023-2026 {serverName}. Все права защищены.</p>
               <p className="mt-2">Постапокалиптический ролевой проект GTA SAMP • Основан в 2023 году</p>
             </div>
           </footer>
