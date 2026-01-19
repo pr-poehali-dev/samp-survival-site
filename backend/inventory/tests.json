@@ -1,0 +1,10 @@
+{
+  "tests": [
+    {
+      "name": "Get inventory without user_id",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400
+    }
+  ]
+}

@@ -229,6 +229,10 @@ const Cases = () => {
                 <Icon name="Home" size={18} className="mr-2" />
                 Главная
               </Button>
+              <Button variant="ghost" onClick={() => navigate("/inventory")}>
+                <Icon name="Package" size={18} className="mr-2" />
+                Инвентарь
+              </Button>
               <Button variant="ghost" onClick={() => navigate("/profile")}>
                 <Icon name="User" size={18} className="mr-2" />
                 Профиль

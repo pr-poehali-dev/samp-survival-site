@@ -59,7 +59,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         if method == 'GET':
             # Получаем предметы из базы для формирования кейсов
-            cursor.execute('SELECT loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
+            cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
             items = cursor.fetchall()
             
             # Формируем кейсы с разными уровнями редкости
@@ -169,8 +169,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Получаем предметы для кейса
-            cursor.execute('SELECT loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
+            # Получаем предметы для кейса (включая loot_id)
+            cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
             all_items = cursor.fetchall()
             
             # Определяем параметры кейса
@@ -296,12 +296,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Получаем ID предмета из базы server_loots
-            cursor.execute('SELECT loot_id FROM server_loots WHERE loot_name = %s LIMIT 1', (won_item['loot_name'],))
-            loot_info = cursor.fetchone()
-            loot_id = loot_info['loot_id'] if loot_info else 1
-            
             # Добавляем предмет в инвентарь (формат: id,количество,прочность)
+            loot_id = won_item.get('loot_id', 1)
             item_data = f"{loot_id},1,0"
             cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
                          (item_data, user_id))
