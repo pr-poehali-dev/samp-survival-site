@@ -239,8 +239,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
     
     except Exception as e:
-        cursor.close()
-        connection.close()
+        print(f"ERROR in rules handler: {e}")
+        import traceback
+        traceback.print_exc()
+        try:
+            cursor.close()
+            connection.close()
+        except:
+            pass
         return {
             'statusCode': 500,
             'headers': {
