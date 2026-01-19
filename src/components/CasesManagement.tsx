@@ -43,6 +43,8 @@ const CasesManagement = ({ userId, adminLevel }: CasesManagementProps) => {
   const [editingCase, setEditingCase] = useState<CaseConfig | null>(null);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [filter, setFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(50);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -168,6 +170,13 @@ const CasesManagement = ({ userId, adminLevel }: CasesManagementProps) => {
     item.loot_name?.toLowerCase().includes(filter.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredItems.length / perPage);
+  const paginatedItems = filteredItems.slice((page - 1) * perPage, page * perPage);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter]);
+
   return (
     <div className="space-y-6">
       <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
@@ -260,7 +269,7 @@ const CasesManagement = ({ userId, adminLevel }: CasesManagementProps) => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredItems.slice(0, 50).map((item) => (
+              {paginatedItems.map((item) => (
                 editingItem?.loot_id === item.loot_id ? (
                   <TableRow key={item.loot_id} className="bg-primary/10">
                     <TableCell>{item.loot_id}</TableCell>
@@ -313,9 +322,36 @@ const CasesManagement = ({ userId, adminLevel }: CasesManagementProps) => {
           </Table>
         </div>
         
-        {filteredItems.length > 50 && (
-          <div className="text-center text-sm text-gray-500 mt-4">
-            Показано 50 из {filteredItems.length} предметов
+        {filteredItems.length > perPage && (
+          <div className="flex items-center justify-between mt-6 px-4">
+            <div className="text-sm text-gray-400">
+              Показано {Math.min((page - 1) * perPage + 1, filteredItems.length)} - {Math.min(page * perPage, filteredItems.length)} из {filteredItems.length} предметов
+            </div>
+            <div className="flex items-center gap-3">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => setPage(p => Math.max(1, p - 1))} 
+                disabled={page === 1}
+                className="bg-black/40 border-white/10"
+              >
+                <Icon name="ChevronLeft" size={16} className="mr-1" />
+                Назад
+              </Button>
+              <span className="text-sm text-gray-300">
+                Страница {page} из {totalPages}
+              </span>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => setPage(p => p + 1)} 
+                disabled={page >= totalPages}
+                className="bg-black/40 border-white/10"
+              >
+                Вперёд
+                <Icon name="ChevronRight" size={16} className="ml-1" />
+              </Button>
+            </div>
           </div>
         )}
       </Card>
