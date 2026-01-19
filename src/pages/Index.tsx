@@ -81,14 +81,18 @@ const Index = () => {
       }
     };
 
-    const fetchSettings = async () => {
+    const fetchSettings = async (retryCount = 0) => {
       try {
         const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8', {
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(8000),
+          cache: 'no-cache'
         });
         
         if (!response.ok) {
           console.warn(`Settings API returned ${response.status}`);
+          if (retryCount < 2) {
+            setTimeout(() => fetchSettings(retryCount + 1), 2000);
+          }
           return;
         }
         
@@ -106,25 +110,35 @@ const Index = () => {
         
         setSettings(newSettings);
       } catch (error) {
-        console.error('Failed to fetch settings:', error);
+        console.warn('Settings fetch failed, using defaults:', error);
+        if (retryCount < 2) {
+          setTimeout(() => fetchSettings(retryCount + 1), 2000);
+        }
       }
     };
 
-    const fetchRules = async () => {
+    const fetchRules = async (retryCount = 0) => {
       try {
         const response = await fetch('https://functions.poehali.dev/353a7f9f-c1a8-4395-9120-78c37baa0419', {
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(8000),
+          cache: 'no-cache'
         });
         
         if (!response.ok) {
           console.warn(`Rules API returned ${response.status}`);
+          if (retryCount < 2) {
+            setTimeout(() => fetchRules(retryCount + 1), 2000);
+          }
           return;
         }
         
         const data = await response.json();
         setRules(data.rules || []);
       } catch (error) {
-        console.error('Failed to fetch rules:', error);
+        console.warn('Rules fetch failed:', error);
+        if (retryCount < 2) {
+          setTimeout(() => fetchRules(retryCount + 1), 2000);
+        }
       }
     };
 

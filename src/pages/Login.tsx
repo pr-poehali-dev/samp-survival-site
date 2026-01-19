@@ -17,12 +17,14 @@ const Login = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const checkBlock = async () => {
+    const checkBlock = async (retryCount = 0) => {
       try {
         const response = await fetch('https://functions.poehali.dev/56f6b297-dc8f-4b8c-915b-e0291dc4267a', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'check_block' })
+          body: JSON.stringify({ action: 'check_block' }),
+          signal: AbortSignal.timeout(8000),
+          cache: 'no-cache'
         });
         const data = await response.json();
         
@@ -31,18 +33,25 @@ const Login = () => {
           setBlockMessage(data.message || 'Доступ заблокирован');
         }
       } catch (error) {
-        console.error('Failed to check IP block:', error);
+        console.warn('IP check failed:', error);
+        if (retryCount < 2) {
+          setTimeout(() => checkBlock(retryCount + 1), 2000);
+        }
       }
     };
 
-    const fetchSettings = async () => {
+    const fetchSettings = async (retryCount = 0) => {
       try {
         const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8', {
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(8000),
+          cache: 'no-cache'
         });
         
         if (!response.ok) {
           console.warn(`Settings API returned ${response.status}`);
+          if (retryCount < 2) {
+            setTimeout(() => fetchSettings(retryCount + 1), 2000);
+          }
           return;
         }
         
@@ -52,7 +61,10 @@ const Login = () => {
           setServerName(data.server_name);
         }
       } catch (error) {
-        console.error('Failed to fetch settings:', error);
+        console.warn('Settings fetch failed:', error);
+        if (retryCount < 2) {
+          setTimeout(() => fetchSettings(retryCount + 1), 2000);
+        }
       }
     };
 

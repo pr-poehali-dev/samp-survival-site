@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <meta name="version" content="2.1.0" />
     <title>Дозор Смерти / Death Watch - Постапокалиптический RP сервер GTA SAMP</title>
     <meta name="description" content="Дозор Смерти / Death Watch - постапокалиптический ролевой проект в GTA San Andreas Multiplayer. Уникальная атмосфера, хардкорный геймплей, активное коммьюнити."/>
     <meta name="author" content="Death Watch RP"/>
@@ -22,10 +23,36 @@
 
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
     <script>
-      // Clear cache on load for style consistency
-      if (performance.navigation.type === 1 && 'caches' in window) {
-        caches.keys().then(names => names.forEach(name => caches.delete(name)));
-      }
+      // Force clear all caches for style consistency v2.1
+      (function() {
+        const APP_VERSION = '2.1.0';
+        const lastVersion = localStorage.getItem('app_build_version');
+        
+        if (lastVersion !== APP_VERSION) {
+          console.log('New version detected, clearing caches...');
+          localStorage.setItem('app_build_version', APP_VERSION);
+          
+          // Clear Service Worker caches
+          if ('caches' in window) {
+            caches.keys().then(names => {
+              names.forEach(name => {
+                console.log('Deleting cache:', name);
+                caches.delete(name);
+              });
+            });
+          }
+          
+          // Clear old cache version flags
+          localStorage.removeItem('cache_version');
+          
+          // Reload styles by forcing CSS re-evaluation
+          const links = document.querySelectorAll('link[rel="stylesheet"]');
+          links.forEach(link => {
+            const href = link.href.split('?')[0];
+            link.href = href + '?v=' + APP_VERSION;
+          });
+        }
+      })();
       
       // Загружаем скрипты poehali.dev только если страница в iframe (режим редактора)
       if (window.self !== window.top) {

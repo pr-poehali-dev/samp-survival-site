@@ -73,14 +73,18 @@ const Admin = () => {
     return () => clearInterval(settingsInterval);
   }, [navigate, toast]);
 
-  const fetchSettings = async () => {
+  const fetchSettings = async (retryCount = 0) => {
     try {
       const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(8000),
+        cache: 'no-cache'
       });
       
       if (!response.ok) {
         console.warn(`Settings API returned ${response.status}`);
+        if (retryCount < 2) {
+          setTimeout(() => fetchSettings(retryCount + 1), 2000);
+        }
         return;
       }
       
@@ -92,7 +96,10 @@ const Admin = () => {
         forum_link: data.forum_link || ''
       });
     } catch (error) {
-      console.error('Failed to load settings:', error);
+      console.warn('Settings fetch failed, using defaults:', error);
+      if (retryCount < 2) {
+        setTimeout(() => fetchSettings(retryCount + 1), 2000);
+      }
     }
   };
 
