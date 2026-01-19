@@ -168,7 +168,7 @@ const Profile = () => {
     return Number(adminLevel) >= 6;
   };
 
-  const handleDonateSubmit = () => {
+  const handleDonateSubmit = async () => {
     const amount = parseInt(donateAmount);
     if (!amount || amount <= 0) {
       toast({
@@ -179,10 +179,40 @@ const Profile = () => {
       return;
     }
 
-    toast({
-      title: "Пополнение доната",
-      description: `Для пополнения на ${amount}₽ обратитесь к администрации сервера`,
-    });
+    try {
+      const response = await fetch('https://functions.poehali.dev/9d2c3abd-1e9b-47bb-aa92-279754af5495', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create_payment',
+          amount,
+          user_id: user?.u_id || user?.id,
+          username: user?.u_name || user?.username
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.payment_url) {
+        window.open(data.payment_url, '_blank');
+        toast({
+          title: "Перенаправление на оплату",
+          description: "Откроется страница Альфа-Банка для оплаты",
+        });
+      } else {
+        toast({
+          title: "Ошибка",
+          description: data.error || "Не удалось создать платеж",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка сети",
+        description: "Не удалось подключиться к серверу оплаты",
+        variant: "destructive"
+      });
+    }
     
     setShowDonateModal(false);
     setDonateAmount('');

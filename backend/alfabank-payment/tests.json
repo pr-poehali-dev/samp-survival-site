@@ -1,0 +1,34 @@
+{
+  "tests": [
+    {
+      "name": "Create payment",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "create_payment",
+        "amount": 100,
+        "user_id": 1,
+        "username": "TestUser"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Check payment status",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "check_payment",
+        "order_id": "test_order_123"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
