@@ -251,6 +251,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             # Выигрышный предмет - это тот который на позиции 30 (по центру)
             won_item = animation_items[30]
+            print(f"DEBUG: Won item = {won_item['loot_name']}, Item at 30 = {animation_items[30]['loot_name']}")
             
             # Находим свободный слот в инвентаре
             inventory_columns = [f'u_i_slot_{i}' for i in range(1, 51)]
