@@ -262,12 +262,19 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if not inventory:
                 # Создаем запись инвентаря если её нет
                 cursor.execute("INSERT INTO users_inventory (u_i_owner) VALUES (%s)", (user_id,))
+                connection.commit()
                 free_slot = 1
             else:
                 for i, col in enumerate(inventory_columns, 1):
-                    if not inventory[col] or inventory[col] == '0' or inventory[col] == 'None' or inventory[col] == '':
+                    slot_value = inventory[col]
+                    # Проверяем пустой слот: None, 0, '0', 'None', пустая строка
+                    if slot_value is None or slot_value == 0 or slot_value == '0' or slot_value == 'None' or slot_value == '':
                         free_slot = i
                         break
+                
+                # Если не нашли свободный слот, значит все заполнены
+                if free_slot is None:
+                    free_slot = None
             
             # Добавляем предмет в инвентарь
             if free_slot:
