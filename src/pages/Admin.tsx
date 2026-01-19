@@ -347,7 +347,10 @@ const Admin = () => {
             )}
 
             {activeTab === 'cases' && (
-              <CasesManagement userId={user?.u_id || user?.id || 0} />
+              <CasesManagement 
+                userId={user?.u_id || user?.id || 0} 
+                adminLevel={user?.admin_level || 0}
+              />
             )}
 
             {activeTab === 'logs' && (

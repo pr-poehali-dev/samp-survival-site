@@ -33,9 +33,10 @@ interface Item {
 
 interface CasesManagementProps {
   userId: number;
+  adminLevel: number;
 }
 
-const CasesManagement = ({ userId }: CasesManagementProps) => {
+const CasesManagement = ({ userId, adminLevel }: CasesManagementProps) => {
   const [cases, setCases] = useState<CaseConfig[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
@@ -83,7 +84,8 @@ const CasesManagement = ({ userId }: CasesManagementProps) => {
         user_id: userId,
         case_id: editingCase.case_id,
         price_money: Number(editingCase.price_money),
-        price_donate: Number(editingCase.price_donate)
+        price_donate: Number(editingCase.price_donate),
+        admin_level: adminLevel
       };
       
       console.log('=== UPDATE CASE REQUEST ===');
@@ -137,7 +139,8 @@ const CasesManagement = ({ userId }: CasesManagementProps) => {
           user_id: userId,
           loot_id: editingItem.loot_id,
           loot_price: editingItem.loot_price,
-          drop_chance: editingItem.drop_chance
+          drop_chance: editingItem.drop_chance,
+          admin_level: adminLevel
         })
       });
 

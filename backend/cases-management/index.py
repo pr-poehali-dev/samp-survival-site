@@ -122,8 +122,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             case_id = body.get('case_id')
             price_money = body.get('price_money')
             price_donate = body.get('price_donate')
+            admin_level = body.get('admin_level', 0)
             
-            print(f"DEBUG POST: user_id={user_id}, case_id={case_id}, money={price_money}, donate={price_donate}")
+            print(f"DEBUG POST: user_id={user_id}, case_id={case_id}, money={price_money}, donate={price_donate}, admin_level={admin_level}")
             
             if not user_id:
                 cursor.close()
@@ -138,13 +139,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Проверка прав администратора
-            cursor.execute('SELECT u_level FROM users WHERE u_id = %s', (user_id,))
-            user = cursor.fetchone()
-            
-            print(f"DEBUG: User found: {user}, level={user.get('u_level') if user else None}")
-            
-            if not user or user['u_level'] < 6:
+            # Проверка прав администратора (admin_level передается из frontend после авторизации)
+            if admin_level < 6:
                 cursor.close()
                 connection.close()
                 return {
@@ -186,6 +182,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             loot_id = body.get('loot_id')
             loot_price = body.get('loot_price')
             drop_chance = body.get('drop_chance')
+            admin_level = body.get('admin_level', 0)
             
             if not user_id:
                 cursor.close()
@@ -200,11 +197,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Проверка прав администратора
-            cursor.execute('SELECT u_level FROM users WHERE u_id = %s', (user_id,))
-            user = cursor.fetchone()
-            
-            if not user or user['u_level'] < 6:
+            # Проверка прав администратора (admin_level передается из frontend после авторизации)
+            if admin_level < 6:
                 cursor.close()
                 connection.close()
                 return {
