@@ -20,6 +20,7 @@ interface BlockedIP {
   temp_blocked_until: string | null;
   permanently_blocked: boolean;
   attempted_login: string | null;
+  all_logins: string[];
   created_at: string;
   updated_at: string;
 }
@@ -149,7 +150,7 @@ const BlockedIPsManagement = () => {
             <TableHeader>
               <TableRow className="border-white/10">
                 <TableHead className="text-gray-400">IP-адрес</TableHead>
-                <TableHead className="text-gray-400">Попытка входа под</TableHead>
+                <TableHead className="text-gray-400">Ники игроков</TableHead>
                 <TableHead className="text-gray-400">Неудачные попытки</TableHead>
                 <TableHead className="text-gray-400">Статус</TableHead>
                 <TableHead className="text-gray-400">Последнее обновление</TableHead>
@@ -161,10 +162,16 @@ const BlockedIPsManagement = () => {
                 <TableRow key={ip.id} className="border-white/10">
                   <TableCell className="font-mono text-white">{ip.ip_address}</TableCell>
                   <TableCell className="text-gray-300">
-                    {ip.attempted_login ? (
-                      <span className="font-semibold">{ip.attempted_login}</span>
+                    {ip.all_logins && ip.all_logins.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {ip.all_logins.map((login, idx) => (
+                          <Badge key={idx} variant="outline" className="text-xs">
+                            {login}
+                          </Badge>
+                        ))}
+                      </div>
                     ) : (
-                      <span className="text-gray-500 italic">не указано</span>
+                      <span className="text-gray-500 italic">нет данных</span>
                     )}
                   </TableCell>
                   <TableCell>

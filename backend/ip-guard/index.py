@@ -153,6 +153,13 @@ def handler(event: dict, context) -> dict:
             success = body_data.get('success', False)
             login = body_data.get('login', '')
             
+            # Записываем историю попытки входа
+            if login:
+                cursor.execute('''
+                    INSERT INTO ip_login_history (ip_address, login, success)
+                    VALUES (%s, %s, %s)
+                ''', (ip_address, login, success))
+            
             if success:
                 cursor.execute('''
                     UPDATE ip_blocks
@@ -252,10 +259,24 @@ def handler(event: dict, context) -> dict:
         
         elif action == 'list_blocks':
             cursor.execute('''
-                SELECT id, ip_address, failed_attempts, temp_blocked_until, 
-                       permanently_blocked, attempted_login, created_at, updated_at
-                FROM ip_blocks
-                ORDER BY updated_at DESC
+                SELECT 
+                    ib.id, 
+                    ib.ip_address, 
+                    ib.failed_attempts, 
+                    ib.temp_blocked_until, 
+                    ib.permanently_blocked, 
+                    ib.attempted_login, 
+                    ib.created_at, 
+                    ib.updated_at,
+                    COALESCE(
+                        ARRAY_AGG(DISTINCT ilh.login ORDER BY ilh.login) FILTER (WHERE ilh.login IS NOT NULL),
+                        ARRAY[]::VARCHAR[]
+                    ) as all_logins
+                FROM ip_blocks ib
+                LEFT JOIN ip_login_history ilh ON ib.ip_address = ilh.ip_address
+                GROUP BY ib.id, ib.ip_address, ib.failed_attempts, ib.temp_blocked_until, 
+                         ib.permanently_blocked, ib.attempted_login, ib.created_at, ib.updated_at
+                ORDER BY ib.updated_at DESC
             ''')
             
             blocks = cursor.fetchall()
