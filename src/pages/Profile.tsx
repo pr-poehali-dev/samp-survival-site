@@ -47,6 +47,7 @@ const Profile = () => {
           if (data.success && data.user) {
             setUser(data.user);
             localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("login_time", Date.now().toString());
           }
         }
       } catch (error) {

@@ -33,17 +33,42 @@ const Index = () => {
   };
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const userData = localStorage.getItem('user');
       const loginTime = localStorage.getItem('login_time');
+      const password = localStorage.getItem('user_password');
       
       if (userData && loginTime) {
         const now = Date.now();
         const elapsed = now - parseInt(loginTime);
-        const fifteenMinutes = 15 * 60 * 1000;
+        const twentyFourHours = 24 * 60 * 60 * 1000;
         
-        if (elapsed < fifteenMinutes) {
+        if (elapsed < twentyFourHours) {
           setIsLoggedIn(true);
+          
+          // Обновляем данные пользователя в фоне
+          try {
+            const user = JSON.parse(userData);
+            const username = user.u_name || user.username;
+            
+            if (username && password) {
+              const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ login: username, password })
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.user) {
+                  localStorage.setItem("user", JSON.stringify(data.user));
+                  localStorage.setItem("login_time", Date.now().toString());
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Failed to refresh user data:', error);
+          }
         } else {
           setIsLoggedIn(false);
           localStorage.removeItem('user');
@@ -54,8 +79,6 @@ const Index = () => {
         setIsLoggedIn(false);
       }
     };
-
-
 
     const fetchSettings = async () => {
       try {
