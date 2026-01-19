@@ -23,7 +23,7 @@ const Admin = () => {
   const [user, setUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules' | 'cases' | 'blocked'>('settings');
   const [settings, setSettings] = useState<ServerSettings>({
-    server_name: "",
+    server_name: "Дозор Смерти / Death Watch",
     discord_link: "",
     vk_link: "",
     forum_link: "",
@@ -69,6 +69,8 @@ const Admin = () => {
     }
     
     fetchSettings();
+    const settingsInterval = setInterval(fetchSettings, 5000);
+    return () => clearInterval(settingsInterval);
   }, [navigate, toast]);
 
   const fetchSettings = async () => {
@@ -79,23 +81,18 @@ const Admin = () => {
       
       if (!response.ok) {
         console.warn(`Settings API returned ${response.status}`);
-        toast({
-          title: "Ошибка загрузки",
-          description: "Не удалось загрузить настройки с сервера.",
-          variant: "destructive"
-        });
         return;
       }
       
       const data = await response.json();
-      setSettings(data);
+      setSettings({
+        server_name: data.server_name || 'Дозор Смерти / Death Watch',
+        discord_link: data.discord_link || '',
+        vk_link: data.vk_link || '',
+        forum_link: data.forum_link || ''
+      });
     } catch (error) {
       console.error('Failed to load settings:', error);
-      toast({
-        title: "Ошибка сети",
-        description: "Не удалось подключиться к серверу.",
-        variant: "destructive"
-      });
     }
   };
 
@@ -180,7 +177,7 @@ const Admin = () => {
       <div className="relative z-10">
         <header className="bg-black/80 backdrop-blur-md border-b border-white/10">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="text-2xl font-bold text-gradient">{settings.server_name || 'SURVIVAL RP'}</div>
+            <div className="text-2xl font-bold text-gradient neon-text">{settings.server_name || 'Дозор Смерти / Death Watch'}</div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => navigate("/")}>
                 <Icon name="Home" size={18} className="mr-2" />
@@ -269,7 +266,7 @@ const Admin = () => {
                         value={settings.server_name}
                         onChange={(e) => setSettings({ ...settings, server_name: e.target.value })}
                         className="bg-black/50 border-primary/30 text-white"
-                        placeholder="SURVIVAL RP"
+                        placeholder="Дозор Смерти / Death Watch"
                       />
                     </div>
 

@@ -21,7 +21,7 @@ const Header = ({
   return (
     <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-md border-b border-white/10 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="text-2xl font-bold text-gradient">{serverName}</div>
+        <div className="text-2xl font-bold text-gradient neon-text">{serverName}</div>
         
         <nav className="hidden md:flex items-center gap-6">
           <a href="#news" className="hover:text-primary transition-colors">Новости</a>
