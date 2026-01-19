@@ -68,53 +68,63 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f"DEBUG: u_last_action check: {e}")
         
         if method == 'GET':
+            # Получаем настройки кейсов из cases_config
+            cursor.execute('SELECT * FROM cases_config ORDER BY case_id')
+            cases_config = {row['case_id']: row for row in cursor.fetchall()}
+            
             # Получаем предметы из базы для формирования кейсов
             cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
             items = cursor.fetchall()
             
-            # Формируем кейсы с разными уровнями редкости
-            cases = [
+            # Формируем кейсы с ценами из cases_config
+            cases = []
+            case_definitions = [
                 {
                     'id': 1,
                     'name': 'Стартовый кейс',
-                    'price_money': 5000,
-                    'price_donate': 50,
                     'description': 'Базовые предметы для выживания (до 1000₽)',
                     'image': '📦',
                     'rarity': 'common',
-                    'items': [item for item in items if item['loot_price'] and int(item['loot_price']) < 1000][:20]
+                    'filter': lambda item: item['loot_price'] and int(item['loot_price']) < 1000
                 },
                 {
                     'id': 2,
                     'name': 'Военный кейс',
-                    'price_money': 15000,
-                    'price_donate': 150,
                     'description': 'Оружие и боеприпасы (1000-5000₽)',
                     'image': '🎖️',
                     'rarity': 'rare',
-                    'items': [item for item in items if item['loot_price'] and 1000 <= int(item['loot_price']) < 5000][:20]
+                    'filter': lambda item: item['loot_price'] and 1000 <= int(item['loot_price']) < 5000
                 },
                 {
                     'id': 3,
                     'name': 'Премиум кейс',
-                    'price_money': 50000,
-                    'price_donate': 500,
                     'description': 'Эксклюзивные предметы (5000+₽)',
                     'image': '💎',
                     'rarity': 'legendary',
-                    'items': [item for item in items if item['loot_price'] and int(item['loot_price']) >= 5000][:20]
+                    'filter': lambda item: item['loot_price'] and int(item['loot_price']) >= 5000
                 },
                 {
                     'id': 4,
                     'name': 'Кейс выживальщика',
-                    'price_money': 10000,
-                    'price_donate': 100,
                     'description': 'Еда, вода, медикаменты (до 3000₽)',
                     'image': '🏥',
                     'rarity': 'uncommon',
-                    'items': [item for item in items if item['loot_type'] and 'food' in str(item['loot_type']).lower()][:20]
+                    'filter': lambda item: item['loot_type'] and 'food' in str(item['loot_type']).lower()
                 }
             ]
+            
+            for case_def in case_definitions:
+                config = cases_config.get(case_def['id'])
+                cases.append({
+                    'id': case_def['id'],
+                    'name': config['case_name'] if config else case_def['name'],
+                    'price_money': config['price_money'] if config else 5000,
+                    'price_donate': config['price_donate'] if config else 50,
+                    'description': config['description'] if config else case_def['description'],
+                    'image': case_def['image'],
+                    'rarity': config['rarity'] if config else case_def['rarity'],
+                    'items': [item for item in items if case_def['filter'](item)][:20]
+                })
             
             # Добавляем дефолтные предметы если из базы пусто
             for case in cases:
@@ -224,20 +234,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Получаем предметы для кейса (включая loot_id)
-            cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
-            all_items = cursor.fetchall()
+            # Получаем настройки кейса из cases_config
+            cursor.execute('SELECT * FROM cases_config WHERE case_id = %s', (case_id,))
+            case_config = cursor.fetchone()
             
-            # Определяем параметры кейса
-            case_configs = {
-                1: {'price_money': 5000, 'price_donate': 50, 'max_price': 1000, 'min_price': 0},
-                2: {'price_money': 15000, 'price_donate': 150, 'max_price': 5000, 'min_price': 1000},
-                3: {'price_money': 50000, 'price_donate': 500, 'max_price': 999999, 'min_price': 5000},
-                4: {'price_money': 10000, 'price_donate': 100, 'max_price': 3000, 'min_price': 0}
-            }
-            
-            config = case_configs.get(case_id)
-            if not config:
+            if not case_config:
                 cursor.close()
                 connection.close()
                 return {
@@ -249,6 +250,27 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': 'Case not found'}),
                     'isBase64Encoded': False
                 }
+            
+            # Получаем предметы для кейса (включая loot_id)
+            cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')
+            all_items = cursor.fetchall()
+            
+            # Определяем диапазоны предметов по кейсам
+            price_ranges = {
+                1: {'max_price': 1000, 'min_price': 0},
+                2: {'max_price': 5000, 'min_price': 1000},
+                3: {'max_price': 999999, 'min_price': 5000},
+                4: {'max_price': 3000, 'min_price': 0}
+            }
+            
+            price_range = price_ranges.get(case_id, {'max_price': 1000, 'min_price': 0})
+            
+            config = {
+                'price_money': case_config['price_money'],
+                'price_donate': case_config['price_donate'],
+                'max_price': price_range['max_price'],
+                'min_price': price_range['min_price']
+            }
             
             # Проверяем баланс в зависимости от выбранного способа оплаты
             if payment_method == 'money':
