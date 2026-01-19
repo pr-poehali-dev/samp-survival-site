@@ -39,6 +39,7 @@ const Cases = () => {
   const [animationItems, setAnimationItems] = useState<CaseItem[]>([]);
   const [wonItem, setWonItem] = useState<CaseItem | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [animationFinished, setAnimationFinished] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -111,6 +112,7 @@ const Cases = () => {
     setOpening(true);
     setSelectedCase(caseData);
     setWonItem(null);
+    setAnimationFinished(false);
     
     try {
       const response = await fetch('https://functions.poehali.dev/e9b4f60e-91f5-4a4f-82c0-2d3541751535', {
@@ -147,6 +149,7 @@ const Cases = () => {
           
           setTimeout(() => {
             setIsAnimating(false);
+            setAnimationFinished(true);
             
             const updatedUser = { ...user };
             if (paymentMethod === 'donate') {
@@ -177,6 +180,7 @@ const Cases = () => {
     setAnimationItems([]);
     setWonItem(null);
     setIsAnimating(false);
+    setAnimationFinished(false);
   };
 
   const cleanItemName = (name: string) => {
@@ -246,7 +250,7 @@ const Cases = () => {
                 <div 
                   className="flex gap-4"
                   style={{
-                    transform: isAnimating ? 'translateX(calc(50% - 30 * 144px - 72px))' : 'translateX(0)',
+                    transform: (isAnimating || animationFinished) ? 'translateX(calc(50% - 30 * 144px - 72px))' : 'translateX(0)',
                     transition: isAnimating ? 'transform 8s cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none',
                   }}
                 >
