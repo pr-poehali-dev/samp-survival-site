@@ -28,7 +28,6 @@ const Header = ({
           <button onClick={onShowHowToPlay} className="hover:text-primary transition-colors">Как начать</button>
           <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
           <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
-          <a href="#donate" className="hover:text-primary transition-colors">Донат</a>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -60,7 +59,6 @@ const Header = ({
             <button onClick={onShowHowToPlay} className="hover:text-primary transition-colors text-left">Как начать</button>
             <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
             <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
-            <a href="#donate" className="hover:text-primary transition-colors">Донат</a>
             {isLoggedIn ? (
               <Button className="w-full neon-glow" onClick={() => onNavigate('/profile')}>
                 <Icon name="User" size={18} className="mr-2" />

@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import UsersManagement from "@/components/UsersManagement";
 import LogsViewer from "@/components/LogsViewer";
 import RulesManagement from "@/components/RulesManagement";
+import CasesManagement from "@/components/CasesManagement";
 
 interface ServerSettings {
   server_name: string;
@@ -19,7 +20,7 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules'>('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules' | 'cases'>('settings');
   const [settings, setSettings] = useState<ServerSettings>({
     server_name: "",
     discord_link: "",
@@ -233,6 +234,14 @@ const Admin = () => {
                 <Icon name="BookOpen" size={18} className="mr-2" />
                 Правила
               </Button>
+              <Button
+                onClick={() => setActiveTab('cases')}
+                variant={activeTab === 'cases' ? 'default' : 'outline'}
+                className={activeTab === 'cases' ? 'neon-glow' : ''}
+              >
+                <Icon name="Gift" size={18} className="mr-2" />
+                Кейсы
+              </Button>
             </div>
 
             {activeTab === 'settings' && (
@@ -332,6 +341,10 @@ const Admin = () => {
 
             {activeTab === 'rules' && (
               <RulesManagement userId={user?.u_id || user?.id || 0} />
+            )}
+
+            {activeTab === 'cases' && (
+              <CasesManagement userId={user?.u_id || user?.id || 0} />
             )}
 
             {activeTab === 'logs' && (

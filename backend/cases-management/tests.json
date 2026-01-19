@@ -1,0 +1,15 @@
+{
+  "tests": [
+    {
+      "name": "Get cases config",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "cases": "array",
+        "items": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
