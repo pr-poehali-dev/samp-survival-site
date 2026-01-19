@@ -165,50 +165,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # КРИТИЧНО: Проверяем онлайн статус игрока перед продажей
-            is_online = False
-            
-            try:
-                # Метод 1: Проверка поля u_online
-                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_online'")
-                has_online_field = cursor.fetchone() is not None
-                
-                if has_online_field:
-                    cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
-                    user_data = cursor.fetchone()
-                    if user_data and user_data.get('u_online', 0) == 1:
-                        is_online = True
-                
-                # Метод 2: Проверка через last_action
-                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_last_action'")
-                has_last_action = cursor.fetchone() is not None
-                
-                if has_last_action and not is_online:
-                    import time
-                    cursor.execute('SELECT u_last_action FROM users WHERE u_id = %s', (user_id,))
-                    action_data = cursor.fetchone()
-                    if action_data:
-                        last_action = action_data.get('u_last_action', 0)
-                        current_time = int(time.time())
-                        # Активность менее 10 минут назад = онлайн
-                        if current_time - last_action < 600:
-                            is_online = True
-                            
-            except Exception as e:
-                print(f"Online check error: {e}")
-            
-            if is_online:
-                cursor.close()
-                connection.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': '🎮 Вы находитесь в игре! Выйдите из игры, чтобы продать предмет.'}),
-                    'isBase64Encoded': False
-                }
+            # Проверка онлайн-статуса отключена
+            # Можно продавать предметы в любое время
             
             slot_value = result.get(f'u_i_slot_{slot}')
             if not slot_value or slot_value in ['0,0,0', '', 'None', 'null']:
