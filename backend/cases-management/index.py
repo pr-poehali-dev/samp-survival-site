@@ -56,6 +56,43 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cursor = connection.cursor()
     
     try:
+        # Создаем таблицу cases_config если её нет
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS cases_config (
+                case_id INT PRIMARY KEY,
+                case_name VARCHAR(100) NOT NULL,
+                price_money INT DEFAULT 5000,
+                price_donate INT DEFAULT 50,
+                description VARCHAR(255),
+                rarity VARCHAR(50),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ''')
+        
+        # Проверяем есть ли кейсы, если нет - добавляем дефолтные
+        cursor.execute('SELECT COUNT(*) as count FROM cases_config')
+        count_result = cursor.fetchone()
+        
+        if count_result['count'] == 0:
+            cursor.execute('''
+                INSERT INTO cases_config (case_id, case_name, price_money, price_donate, description, rarity) VALUES
+                (1, 'Стартовый кейс', 5000, 50, 'Базовые предметы для выживания', 'common'),
+                (2, 'Военный кейс', 15000, 150, 'Оружие и боеприпасы', 'rare'),
+                (3, 'Премиум кейс', 50000, 500, 'Эксклюзивные предметы', 'legendary'),
+                (4, 'Кейс выживальщика', 10000, 100, 'Еда, вода, медикаменты', 'uncommon')
+            ''')
+            connection.commit()
+        
+        # Добавляем поле drop_chance в server_loots если его нет
+        try:
+            cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'server_loots' AND COLUMN_NAME = 'drop_chance'")
+            if cursor.fetchone() is None:
+                cursor.execute('ALTER TABLE server_loots ADD COLUMN drop_chance DECIMAL(5,2) DEFAULT 1.0')
+                connection.commit()
+        except:
+            pass
+        
         if method == 'GET':
             # Получаем конфигурацию кейсов
             cursor.execute('SELECT * FROM cases_config ORDER BY case_id')

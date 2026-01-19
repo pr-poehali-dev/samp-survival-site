@@ -57,6 +57,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cursor = connection.cursor()
     
     try:
+        # Проверяем и создаем поле u_last_action если его нет
+        try:
+            cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_last_action'")
+            if cursor.fetchone() is None:
+                cursor.execute('ALTER TABLE users ADD COLUMN u_last_action INT DEFAULT 0')
+                connection.commit()
+                print("DEBUG: Created u_last_action field")
+        except Exception as e:
+            print(f"DEBUG: u_last_action check: {e}")
+        
         if method == 'GET':
             # Получаем предметы из базы для формирования кейсов
             cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')

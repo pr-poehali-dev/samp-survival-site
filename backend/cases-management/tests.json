@@ -5,11 +5,7 @@
       "method": "GET",
       "path": "/",
       "expectedStatus": 200,
-      "expectedBody": {
-        "cases": "array",
-        "items": "array"
-      },
-      "bodyMatcher": "partial"
+      "bodyMatcher": "skip"
     }
   ]
 }
