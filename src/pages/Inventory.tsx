@@ -10,6 +10,8 @@ interface InventoryItem {
   loot_id: string;
   name: string;
   price: number;
+  from_case: boolean;
+  can_sell: boolean;
 }
 
 const Inventory = () => {
@@ -154,7 +156,7 @@ const Inventory = () => {
           <div className="max-w-6xl mx-auto">
             <div className="mb-8">
               <h1 className="text-4xl font-black mb-2 neon-text">Ваш инвентарь</h1>
-              <p className="text-gray-400">Предметы из открытых кейсов. Продавайте за 70% от стоимости</p>
+              <p className="text-gray-400">Продавайте предметы из кейсов за 70% стоимости. Выйдите из игры для операций!</p>
             </div>
 
             {loading ? (
@@ -180,24 +182,31 @@ const Inventory = () => {
                       <h3 className="text-sm font-bold mb-1 line-clamp-2">{cleanItemName(item.name)}</h3>
                       <p className="text-xs text-gray-400 mb-2">Стоимость: {item.price}₽</p>
                       <p className="text-xs text-green-400 mb-3">Продажа: {Math.floor(item.price * 0.7)}₽</p>
-                      <Button 
-                        onClick={() => sellItem(item)}
-                        disabled={selling === item.slot}
-                        size="sm"
-                        className="w-full bg-green-600 hover:bg-green-700"
-                      >
-                        {selling === item.slot ? (
-                          <>
-                            <Icon name="Loader2" size={14} className="mr-2 animate-spin" />
-                            Продажа...
-                          </>
-                        ) : (
-                          <>
-                            <Icon name="DollarSign" size={14} className="mr-2" />
-                            Продать
-                          </>
-                        )}
-                      </Button>
+                      {item.can_sell ? (
+                        <Button 
+                          onClick={() => sellItem(item)}
+                          disabled={selling === item.slot}
+                          size="sm"
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          {selling === item.slot ? (
+                            <>
+                              <Icon name="Loader2" size={14} className="mr-2 animate-spin" />
+                              Продажа...
+                            </>
+                          ) : (
+                            <>
+                              <Icon name="DollarSign" size={14} className="mr-2" />
+                              Продать
+                            </>
+                          )}
+                        </Button>
+                      ) : (
+                        <div className="text-xs text-red-400 text-center py-2 border border-red-500/30 rounded bg-red-950/20">
+                          <Icon name="Lock" size={14} className="inline mr-1" />
+                          Из игры
+                        </div>
+                      )}
                     </div>
                   </Card>
                 ))}

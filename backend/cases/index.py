@@ -152,8 +152,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Получаем данные пользователя
-            cursor.execute('SELECT u_id, u_name, u_money, u_donate FROM users WHERE u_id = %s', (user_id,))
+            # Получаем данные пользователя и проверяем онлайн статус
+            cursor.execute('SELECT u_id, u_name, u_money, u_donate, u_online FROM users WHERE u_id = %s', (user_id,))
             user = cursor.fetchone()
             
             if not user:
@@ -166,6 +166,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Access-Control-Allow-Origin': '*'
                     },
                     'body': json.dumps({'error': 'User not found'}),
+                    'isBase64Encoded': False
+                }
+            
+            # Проверяем, не находится ли игрок в игре
+            if user.get('u_online', 0) == 1:
+                cursor.close()
+                connection.close()
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы открыть кейс.'}),
                     'isBase64Encoded': False
                 }
             
@@ -297,9 +311,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Добавляем предмет в инвентарь (формат: id,количество,прочность)
+            # Добавляем предмет в инвентарь (формат: id,количество,прочность,из_кейса)
+            # Флаг из_кейса: 1 = можно продавать, 0 = из игры, нельзя продавать
             loot_id = won_item.get('loot_id', 1)
-            item_data = f"{loot_id},1,0"
+            item_data = f"{loot_id},1,0,1"
             cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
                          (item_data, user_id))
             

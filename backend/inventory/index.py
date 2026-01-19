@@ -105,12 +105,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     parts = str(slot_value).split(',')
                     if len(parts) >= 1 and parts[0] != '0':
                         loot_id = parts[0]
+                        # Флаг из_кейса: 1 = можно продавать, 0 или отсутствует = из игры
+                        from_case = parts[3] if len(parts) > 3 else '0'
                         loot_info = loots.get(loot_id, {'loot_name': 'Неизвестный предмет', 'loot_price': 0})
                         items.append({
                             'slot': i,
                             'loot_id': loot_id,
                             'name': loot_info['loot_name'],
-                            'price': int(loot_info['loot_price'])
+                            'price': int(loot_info['loot_price']),
+                            'from_case': from_case == '1',
+                            'can_sell': from_case == '1'
                         })
             
             cursor.close()
@@ -161,6 +165,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
+            # Проверяем, не находится ли игрок в игре
+            cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
+            user_data = cursor.fetchone()
+            if user_data and user_data.get('u_online', 0) == 1:
+                cursor.close()
+                connection.close()
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы продать предмет.'}),
+                    'isBase64Encoded': False
+                }
+            
             slot_value = result.get(f'u_i_slot_{slot}')
             if not slot_value or slot_value in ['0,0,0', '', 'None', 'null']:
                 cursor.close()
@@ -178,6 +198,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             # Получаем информацию о предмете
             parts = str(slot_value).split(',')
             loot_id = parts[0]
+            
+            # Проверяем, что предмет из кейса (флаг = 1)
+            from_case = parts[3] if len(parts) > 3 else '0'
+            if from_case != '1':
+                cursor.close()
+                connection.close()
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Можно продавать только предметы, полученные из кейсов!'}),
+                    'isBase64Encoded': False
+                }
             
             cursor.execute('SELECT loot_name, loot_price FROM server_loots WHERE loot_id = %s', (loot_id,))
             loot = cursor.fetchone()
@@ -198,8 +233,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             # Цена продажи - 70% от стоимости
             sell_price = int(int(loot['loot_price']) * 0.7)
             
-            # Очищаем слот
-            cursor.execute(f"UPDATE users_inventory SET u_i_slot_{slot} = '0,0,0' WHERE u_i_owner = %s", (user_id,))
+            # Очищаем слот (устанавливаем 0,0,0,0)
+            cursor.execute(f"UPDATE users_inventory SET u_i_slot_{slot} = '0,0,0,0' WHERE u_i_owner = %s", (user_id,))
             
             # Начисляем деньги
             cursor.execute('UPDATE users SET u_money = u_money + %s WHERE u_id = %s', (sell_price, user_id))
