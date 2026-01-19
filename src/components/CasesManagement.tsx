@@ -68,8 +68,18 @@ const CasesManagement = ({ userId }: CasesManagementProps) => {
   const handleUpdateCase = async () => {
     if (!editingCase) return;
 
+    if (!userId || userId === 0) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось определить ID пользователя. Попробуйте перезайти.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
+      console.log('Updating case with userId:', userId);
       const response = await fetch('https://functions.poehali.dev/09aee658-398c-499d-9dc2-2b3c508b0f13', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -81,7 +91,11 @@ const CasesManagement = ({ userId }: CasesManagementProps) => {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to update case');
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Update failed:', errorData);
+        throw new Error(errorData.error || 'Failed to update case');
+      }
       
       toast({
         title: "Успешно!",

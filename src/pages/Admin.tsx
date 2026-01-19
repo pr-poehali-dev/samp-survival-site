@@ -44,6 +44,8 @@ const Admin = () => {
     console.log('=== ADMIN CHECK DEBUG ===');
     console.log('Full user data:', parsedUser);
     console.log('All user keys:', Object.keys(parsedUser));
+    console.log('u_id:', parsedUser?.u_id);
+    console.log('id:', parsedUser?.id);
     console.log('admin_level value:', parsedUser?.admin_level);
     console.log('admin_level type:', typeof parsedUser?.admin_level);
     console.log('u_admin value:', parsedUser?.u_admin);
@@ -52,6 +54,7 @@ const Admin = () => {
     const adminLevel = parsedUser?.admin_level || 0;
     console.log('Final adminLevel:', adminLevel, 'Type:', typeof adminLevel);
     console.log('Check result:', Number(adminLevel) >= 6 ? 'PASS' : 'FAIL');
+    console.log('User ID for cases:', parsedUser?.u_id || parsedUser?.id || 0);
     console.log('========================');
     
     if (Number(adminLevel) < 6) {
