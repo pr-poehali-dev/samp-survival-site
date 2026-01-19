@@ -1,7 +1,13 @@
+# Дозор Смерти / Death Watch RP
+# Sitemap: https://death-watch.ru/sitemap.xml
+
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
+Allow: /
+
+User-agent: Yandex
 Allow: /
 
 User-agent: Twitterbot

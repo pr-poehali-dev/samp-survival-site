@@ -1,0 +1,5 @@
+# React Router - все запросы на index.html
+/*    /index.html   200
+
+# Редирект с www
+https://www.death-watch.ru/*  https://death-watch.ru/:splat  301!

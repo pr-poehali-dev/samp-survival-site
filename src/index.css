@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* v2.0 - Force reload styles for all users */
+
 @layer base {
   :root {
     --background: 0 0% 7%;
