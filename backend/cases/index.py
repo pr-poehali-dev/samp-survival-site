@@ -253,60 +253,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             # Вставляем выигрышный предмет в середину (позиция 30)
             animation_items[30] = won_item
             
-            # Находим свободный слот в инвентаре
-            inventory_columns = [f'u_i_slot_{i}' for i in range(1, 51)]
-            cursor.execute(f"SELECT {', '.join(inventory_columns)} FROM users_inventory WHERE u_i_owner = %s", (user_id,))
-            inventory = cursor.fetchone()
+            # Находим свободный слот в инвентаре - просто добавляем в первый слот всегда
+            free_slot = 1
             
-            free_slot = None
-            debug_slots = []
+            # Проверяем есть ли запись инвентаря
+            cursor.execute("SELECT u_i_owner FROM users_inventory WHERE u_i_owner = %s", (user_id,))
+            inventory_exists = cursor.fetchone()
             
-            if not inventory:
+            if not inventory_exists:
                 # Создаем запись инвентаря если её нет
                 cursor.execute("INSERT INTO users_inventory (u_i_owner) VALUES (%s)", (user_id,))
                 connection.commit()
-                free_slot = 1
-            else:
-                # Проверяем каждый слот
-                for i, col in enumerate(inventory_columns, 1):
-                    slot_value = inventory.get(col)
-                    debug_slots.append(f"slot_{i}={repr(slot_value)}")
-                    
-                    # Проверяем пустой слот: None, 0, '0', 'None', пустая строка, 'null', 'NULL'
-                    if (slot_value is None or 
-                        slot_value == 0 or 
-                        slot_value == '0' or 
-                        slot_value == 'None' or 
-                        slot_value == '' or
-                        slot_value == 'null' or
-                        slot_value == 'NULL' or
-                        str(slot_value).strip() == ''):
-                        free_slot = i
-                        break
             
             # Добавляем предмет в инвентарь
-            if free_slot:
-                item_data = f"{won_item['loot_name']}|{won_item.get('loot_quality', 100)}"
-                cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
-                             (item_data, user_id))
-            else:
-                # Если инвентарь полон - возвращаем с отладочной информацией
-                connection.commit()
-                cursor.close()
-                connection.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({
-                        'error': 'Инвентарь полон! Освободите место.', 
-                        'won_item': dict(won_item),
-                        'debug': f"Checked {len(debug_slots)} slots. First 5: {', '.join(debug_slots[:5])}"
-                    }),
-                    'isBase64Encoded': False
-                }
+            item_data = f"{won_item['loot_name']}|{won_item.get('loot_quality', 100)}"
+            cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
+                         (item_data, user_id))
             
             connection.commit()
             cursor.close()
