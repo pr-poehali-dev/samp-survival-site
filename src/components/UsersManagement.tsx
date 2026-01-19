@@ -39,17 +39,14 @@ const UsersManagement = () => {
     try {
       setLoading(true);
       const offset = (page - 1) * perPage;
-      const response = await fetch(`https://functions.poehali.dev/a41a848a-3f67-4204-b161-8f5de2014207?limit=${perPage}&offset=${offset}`);
+      const searchParam = searchQuery.trim() ? `&search=${encodeURIComponent(searchQuery.trim())}` : '';
+      const response = await fetch(`https://functions.poehali.dev/a41a848a-3f67-4204-b161-8f5de2014207?limit=${perPage}&offset=${offset}${searchParam}`);
       const data = await response.json();
       
       if (data.users) {
         setUsers(data.users);
+        setFilteredUsers(data.users);
         setTotalUsers(data.total || 0);
-        if (searchQuery.trim()) {
-          filterUsers(data.users, searchQuery);
-        } else {
-          setFilteredUsers(data.users);
-        }
         setShowUsers(true);
       }
     } catch (error) {
@@ -64,46 +61,24 @@ const UsersManagement = () => {
     }
   };
 
-  const filterUsers = (userList: User[], query: string) => {
-    const lowerQuery = query.toLowerCase().trim();
-    
-    const filtered = userList.filter(user => {
-      const matchName = user.u_name.toLowerCase().includes(lowerQuery);
-      const matchId = user.u_id.toString().includes(lowerQuery);
-      const matchEmail = user.u_email.toLowerCase().includes(lowerQuery);
-      return matchName || matchId || matchEmail;
-    });
-    
-    setFilteredUsers(filtered);
-  };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim() && users.length > 0) {
-      filterUsers(users, searchQuery);
-    } else if (!searchQuery.trim() && users.length > 0) {
-      setFilteredUsers(users);
-    }
-  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
     fetchUsers();
-  }, [page]);
+  }, [page, searchQuery]);
 
   useEffect(() => {
-    const interval = setInterval(fetchUsers, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (users.length > 0) {
-      if (searchQuery.trim()) {
-        filterUsers(users, searchQuery);
-      } else {
-        setFilteredUsers(users);
+    const interval = setInterval(() => {
+      if (!searchQuery.trim()) {
+        fetchUsers();
       }
-    }
-  }, [searchQuery, users]);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [searchQuery]);
 
   const startEditing = (user: User) => {
     setEditingUser(user.u_id);
@@ -344,7 +319,7 @@ const UsersManagement = () => {
         ))}
           </div>
           
-          {!searchQuery && totalUsers > perPage && (
+          {totalUsers > perPage && (
             <div className="flex items-center justify-between mt-6 px-4">
               <div className="text-sm text-gray-400">
                 Показано {Math.min((page - 1) * perPage + 1, totalUsers)} - {Math.min(page * perPage, totalUsers)} из {totalUsers} пользователей

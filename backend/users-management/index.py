@@ -61,20 +61,42 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             query_params = event.get('queryStringParameters', {}) or {}
             limit = int(query_params.get('limit', 100))
             offset = int(query_params.get('offset', 0))
+            search = query_params.get('search', '').strip()
             
-            # Получаем общее количество пользователей
-            cursor.execute('SELECT COUNT(*) as total FROM users')
+            # Формируем WHERE условие для поиска
+            where_clause = ''
+            search_params = []
+            
+            if search:
+                where_clause = '''
+                    WHERE u_name LIKE %s 
+                    OR u_email LIKE %s 
+                    OR CAST(u_id AS CHAR) LIKE %s
+                '''
+                search_pattern = f'%{search}%'
+                search_params = [search_pattern, search_pattern, search_pattern]
+            
+            # Получаем общее количество пользователей с учётом поиска
+            count_query = f'SELECT COUNT(*) as total FROM users {where_clause}'
+            if search_params:
+                cursor.execute(count_query, tuple(search_params))
+            else:
+                cursor.execute(count_query)
             total_count = cursor.fetchone()['total']
             
-            query = '''
+            # Получаем пользователей с учётом поиска
+            query = f'''
                 SELECT 
                     u_id, u_name, u_email, u_date_registration, u_lifetime, 
                     u_money, u_donate, u_score, u_mute, u_ip
                 FROM users 
+                {where_clause}
                 ORDER BY u_id DESC 
                 LIMIT %s OFFSET %s
             '''
-            cursor.execute(query, (limit, offset))
+            
+            query_params_list = search_params + [limit, offset]
+            cursor.execute(query, tuple(query_params_list))
             users_raw = cursor.fetchall()
             
             users = []
