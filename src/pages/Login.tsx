@@ -11,10 +11,30 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [serverName, setServerName] = useState('SURVIVAL RP');
+  const [blocked, setBlocked] = useState(false);
+  const [blockMessage, setBlockMessage] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    const checkBlock = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/56f6b297-dc8f-4b8c-915b-e0291dc4267a', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'check_block' })
+        });
+        const data = await response.json();
+        
+        if (data.blocked) {
+          setBlocked(true);
+          setBlockMessage(data.message || 'Доступ заблокирован');
+        }
+      } catch (error) {
+        console.error('Failed to check IP block:', error);
+      }
+    };
+
     const fetchSettings = async () => {
       try {
         const response = await fetch('https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8', {
@@ -36,6 +56,7 @@ const Login = () => {
       }
     };
 
+    checkBlock();
     fetchSettings();
     const interval = setInterval(fetchSettings, 5000);
     return () => clearInterval(interval);
@@ -43,6 +64,16 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (blocked) {
+      toast({
+        title: "Доступ заблокирован",
+        description: blockMessage,
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -57,6 +88,12 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        await fetch('https://functions.poehali.dev/56f6b297-dc8f-4b8c-915b-e0291dc4267a', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'record_attempt', success: true })
+        });
+        
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("user_password", password);
         localStorage.setItem("login_time", Date.now().toString());
@@ -66,11 +103,29 @@ const Login = () => {
         });
         navigate("/profile");
       } else {
-        toast({
-          title: "Ошибка входа",
-          description: data.error || "Неверный логин или пароль",
-          variant: "destructive",
+        const attemptResponse = await fetch('https://functions.poehali.dev/56f6b297-dc8f-4b8c-915b-e0291dc4267a', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'record_attempt', success: false })
         });
+        
+        const attemptData = await attemptResponse.json();
+        
+        if (attemptData.blocked) {
+          setBlocked(true);
+          setBlockMessage(attemptData.message);
+          toast({
+            title: "Доступ заблокирован",
+            description: attemptData.message,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Ошибка входа",
+            description: data.error || `Неверный логин или пароль. Осталось попыток: ${attemptData.remaining || 0}`,
+            variant: "destructive",
+          });
+        }
       }
     } catch (error) {
       toast({
@@ -104,6 +159,18 @@ const Login = () => {
         </div>
 
         <Card className="bg-black/80 backdrop-blur-md border-primary/30 p-8">
+          {blocked && (
+            <div className="mb-6 p-4 bg-destructive/20 border border-destructive/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Icon name="ShieldAlert" size={24} className="text-destructive" />
+                <div>
+                  <h3 className="font-bold text-destructive">Доступ заблокирован</h3>
+                  <p className="text-sm text-gray-300">{blockMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2">Логин</label>
@@ -133,7 +200,7 @@ const Login = () => {
               type="submit" 
               className="w-full neon-glow" 
               size="lg"
-              disabled={loading}
+              disabled={loading || blocked}
             >
               {loading ? (
                 <>
