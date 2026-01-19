@@ -259,9 +259,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             inventory = cursor.fetchone()
             
             free_slot = None
-            if inventory:
+            if not inventory:
+                # Создаем запись инвентаря если её нет
+                cursor.execute("INSERT INTO users_inventory (u_i_owner) VALUES (%s)", (user_id,))
+                free_slot = 1
+            else:
                 for i, col in enumerate(inventory_columns, 1):
-                    if not inventory[col] or inventory[col] == '0' or inventory[col] == 'None':
+                    if not inventory[col] or inventory[col] == '0' or inventory[col] == 'None' or inventory[col] == '':
                         free_slot = i
                         break
             
@@ -270,6 +274,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 item_data = f"{won_item['loot_name']}|{won_item.get('loot_quality', 100)}"
                 cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
                              (item_data, user_id))
+            else:
+                # Если инвентарь полон
+                connection.commit()
+                cursor.close()
+                connection.close()
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Инвентарь полон! Освободите место.', 'won_item': dict(won_item)}),
+                    'isBase64Encoded': False
+                }
             
             connection.commit()
             cursor.close()
