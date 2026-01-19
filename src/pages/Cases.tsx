@@ -183,6 +183,11 @@ const Cases = () => {
     setAnimationFinished(false);
   };
 
+  const extractColor = (name: string): string | null => {
+    const match = name.match(/\{([A-F0-9]{6})\}/);
+    return match ? `#${match[1]}` : null;
+  };
+
   const cleanItemName = (name: string) => {
     return name.replace(/\{[A-F0-9]{6}\}/g, '');
   };
@@ -256,13 +261,16 @@ const Cases = () => {
                 >
                   {animationItems.map((item, index) => {
                     const rarity = getRarityByPrice(item.loot_price);
+                    const itemColor = extractColor(item.loot_name);
                     return (
                       <div
                         key={index}
                         className={`flex-shrink-0 w-32 h-40 flex flex-col items-center justify-center border-2 rounded-lg p-3 ${rarityColors[rarity as keyof typeof rarityColors]}`}
                       >
                         <div className="text-4xl mb-2">📦</div>
-                        <div className="text-xs text-center font-bold line-clamp-2">{cleanItemName(item.loot_name)}</div>
+                        <div className="text-xs text-center font-bold line-clamp-2" style={{ color: itemColor || 'white' }}>
+                          {cleanItemName(item.loot_name)}
+                        </div>
                         <div className="text-xs text-gray-400 mt-1">{item.loot_price}₽</div>
                       </div>
                     );
@@ -275,7 +283,9 @@ const Cases = () => {
                   <Card className={`inline-block bg-black/80 backdrop-blur-md border-2 p-8 ${rarityColors[getRarityByPrice(wonItem.loot_price) as keyof typeof rarityColors]}`}>
                     <div className="text-6xl mb-4">🎉</div>
                     <h3 className="text-2xl font-bold mb-2">Вы выиграли!</h3>
-                    <p className="text-xl mb-4">{cleanItemName(wonItem.loot_name)}</p>
+                    <p className="text-xl mb-4" style={{ color: extractColor(wonItem.loot_name) || 'white' }}>
+                      {cleanItemName(wonItem.loot_name)}
+                    </p>
                     <p className="text-gray-400 mb-4">Стоимость: {wonItem.loot_price}₽</p>
                     <Button onClick={closeAnimation} className="neon-glow">
                       <Icon name="Check" size={18} className="mr-2" />

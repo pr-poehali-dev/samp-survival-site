@@ -110,6 +110,11 @@ const Inventory = () => {
     }
   };
 
+  const extractColor = (name: string): string | null => {
+    const match = name.match(/\{([A-F0-9]{6})\}/);
+    return match ? `#${match[1]}` : null;
+  };
+
   const cleanItemName = (name: string) => {
     return name.replace(/\{[A-F0-9]{6}\}/g, '');
   };
@@ -175,11 +180,15 @@ const Inventory = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const itemColor = extractColor(item.name);
+                  return (
                   <Card key={item.slot} className="bg-black/60 backdrop-blur-md border-2 border-green-500/30 p-4 hover:scale-105 transition-transform">
                     <div className="text-center">
                       <div className="text-4xl mb-2">📦</div>
-                      <h3 className="text-sm font-bold mb-1 line-clamp-2">{cleanItemName(item.name)}</h3>
+                      <h3 className="text-sm font-bold mb-1 line-clamp-2" style={{ color: itemColor || 'white' }}>
+                        {cleanItemName(item.name)}
+                      </h3>
                       <p className="text-xs text-gray-400 mb-2">Стоимость: {item.price}₽</p>
                       <p className="text-xs text-green-400 mb-3">Продажа: {Math.floor(item.price * 0.7)}₽</p>
                       {item.can_sell ? (
@@ -209,7 +218,8 @@ const Inventory = () => {
                       )}
                     </div>
                   </Card>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
