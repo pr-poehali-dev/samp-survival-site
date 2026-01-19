@@ -265,12 +265,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 free_slot = 1
             else:
                 # Ищем первый пустой слот
+                print(f"DEBUG: Checking inventory for user {user_id}")
                 for i in range(1, 51):
                     col_name = f'u_i_slot_{i}'
                     slot_value = inventory.get(col_name)
+                    print(f"DEBUG: Slot {i} = {repr(slot_value)} (type: {type(slot_value)})")
                     # Пустой слот: None или пустая строка
                     if slot_value is None or (isinstance(slot_value, str) and slot_value.strip() in ['', '0', 'None', 'null', 'NULL']):
                         free_slot = i
+                        print(f"DEBUG: Found free slot at position {i}")
                         break
             
             # Если нет свободного слота - ошибка
