@@ -186,15 +186,15 @@ const Admin = () => {
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="text-2xl font-bold text-gradient neon-text">{settings.server_name || 'Дозор Смерти / Death Watch'}</div>
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => navigate("/")}>
+              <Button variant="outline" onClick={() => navigate("/")} className="border-primary/30 hover:bg-primary/10">
                 <Icon name="Home" size={18} className="mr-2" />
                 Главная
               </Button>
-              <Button variant="ghost" onClick={() => navigate("/profile")}>
+              <Button variant="outline" onClick={() => navigate("/profile")} className="border-primary/30 hover:bg-primary/10">
                 <Icon name="User" size={18} className="mr-2" />
                 Профиль
               </Button>
-              <Button variant="outline" onClick={handleLogout} className="border-primary/30">
+              <Button variant="outline" onClick={handleLogout} className="border-primary/30 hover:bg-primary/10">
                 <Icon name="LogOut" size={18} className="mr-2" />
                 Выйти
               </Button>
