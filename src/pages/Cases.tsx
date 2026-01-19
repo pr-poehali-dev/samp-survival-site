@@ -78,7 +78,7 @@ const Cases = () => {
     }
   };
 
-  const openCase = async (caseData: Case) => {
+  const openCase = async (caseData: Case, paymentMethod: 'money' | 'donate') => {
     if (!user?.u_id) {
       toast({
         title: "Требуется авторизация",
@@ -89,11 +89,20 @@ const Cases = () => {
       return;
     }
 
-    // Проверяем баланс доната перед открытием
-    if (caseData.price_donate > 0 && (user.u_donate || 0) < caseData.price_donate) {
+    // Проверяем баланс в зависимости от выбранного способа оплаты
+    if (paymentMethod === 'donate' && (user.u_donate || 0) < caseData.price_donate) {
       toast({
         title: "Недостаточно доната",
         description: `Необходимо ${caseData.price_donate}Ᵽ, у вас ${user.u_donate || 0}Ᵽ`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (paymentMethod === 'money' && (user.u_money || 0) < caseData.price_money) {
+      toast({
+        title: "Недостаточно денег",
+        description: `Необходимо ${caseData.price_money}₽, у вас ${user.u_money || 0}₽`,
         variant: "destructive"
       });
       return;
@@ -111,7 +120,8 @@ const Cases = () => {
         },
         body: JSON.stringify({
           case_id: caseData.id,
-          user_id: user.u_id
+          user_id: user.u_id,
+          payment_method: paymentMethod
         })
       });
 
@@ -143,8 +153,10 @@ const Cases = () => {
             });
             
             const updatedUser = { ...user };
-            if (caseData.price_donate > 0) {
+            if (paymentMethod === 'donate') {
               updatedUser.u_donate = (user.u_donate || 0) - caseData.price_donate;
+            } else {
+              updatedUser.u_money = (user.u_money || 0) - caseData.price_money;
             }
             setUser(updatedUser);
             localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -200,6 +212,10 @@ const Cases = () => {
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
             <div className="text-2xl font-bold text-gradient">КЕЙСЫ</div>
             <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-lg border border-green-500/30">
+                <Icon name="Wallet" size={18} className="text-green-500" />
+                <span className="font-bold text-green-500">{user?.u_money || 0}₽</span>
+              </div>
               <div className="flex items-center gap-2 bg-black/60 px-4 py-2 rounded-lg border border-yellow-500/30">
                 <Icon name="Gem" size={18} className="text-yellow-500" />
                 <span className="font-bold text-yellow-500">{user?.u_donate || 0}Ᵽ</span>
@@ -285,29 +301,28 @@ const Cases = () => {
                         <h3 className="text-xl font-bold mb-2">{caseData.name}</h3>
                         <p className="text-sm text-gray-400 mb-4 min-h-[40px]">{caseData.description}</p>
                         
-                        <div className="space-y-2 mb-4">
-                          {caseData.price_money > 0 && (
-                            <div className="flex items-center justify-center gap-2">
-                              <Icon name="Wallet" size={16} className="text-green-500" />
-                              <span>{caseData.price_money}₽</span>
-                            </div>
-                          )}
-                          {caseData.price_donate > 0 && (
-                            <div className="flex items-center justify-center gap-2">
-                              <Icon name="Gem" size={16} className="text-yellow-500" />
-                              <span>{caseData.price_donate} доната</span>
-                            </div>
-                          )}
+                        <div className="text-xs text-gray-500 mb-4 min-h-[20px]">
+                          Выберите способ оплаты:
                         </div>
 
-                        <Button 
-                          onClick={() => openCase(caseData)}
-                          disabled={opening}
-                          className="w-full neon-glow"
-                        >
-                          <Icon name="Gift" size={18} className="mr-2" />
-                          Открыть
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => openCase(caseData, 'money')}
+                            disabled={opening}
+                            className="flex-1 bg-green-600 hover:bg-green-700"
+                          >
+                            <Icon name="Wallet" size={18} className="mr-2" />
+                            {caseData.price_money}₽
+                          </Button>
+                          <Button 
+                            onClick={() => openCase(caseData, 'donate')}
+                            disabled={opening}
+                            className="flex-1 bg-yellow-600 hover:bg-yellow-700"
+                          >
+                            <Icon name="Gem" size={18} className="mr-2" />
+                            {caseData.price_donate}ᴽ
+                          </Button>
+                        </div>
                       </div>
                     </Card>
                   ))}

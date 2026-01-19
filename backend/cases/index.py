@@ -68,8 +68,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'id': 1,
                     'name': 'Стартовый кейс',
                     'price_money': 5000,
-                    'price_donate': 0,
-                    'description': 'Базовые предметы для выживания',
+                    'price_donate': 50,
+                    'description': 'Базовые предметы для выживания (до 1000₽)',
                     'image': '📦',
                     'rarity': 'common',
                     'items': [item for item in items if item['loot_price'] and int(item['loot_price']) < 1000][:20]
@@ -78,8 +78,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'id': 2,
                     'name': 'Военный кейс',
                     'price_money': 15000,
-                    'price_donate': 0,
-                    'description': 'Оружие и боеприпасы',
+                    'price_donate': 150,
+                    'description': 'Оружие и боеприпасы (1000-5000₽)',
                     'image': '🎖️',
                     'rarity': 'rare',
                     'items': [item for item in items if item['loot_price'] and 1000 <= int(item['loot_price']) < 5000][:20]
@@ -87,9 +87,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 {
                     'id': 3,
                     'name': 'Премиум кейс',
-                    'price_money': 0,
-                    'price_donate': 100,
-                    'description': 'Эксклюзивные предметы',
+                    'price_money': 50000,
+                    'price_donate': 500,
+                    'description': 'Эксклюзивные предметы (5000+₽)',
                     'image': '💎',
                     'rarity': 'legendary',
                     'items': [item for item in items if item['loot_price'] and int(item['loot_price']) >= 5000][:20]
@@ -98,8 +98,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'id': 4,
                     'name': 'Кейс выживальщика',
                     'price_money': 10000,
-                    'price_donate': 0,
-                    'description': 'Еда, вода, медикаменты',
+                    'price_donate': 100,
+                    'description': 'Еда, вода, медикаменты (до 3000₽)',
                     'image': '🏥',
                     'rarity': 'uncommon',
                     'items': [item for item in items if item['loot_type'] and 'food' in str(item['loot_type']).lower()][:20]
@@ -137,6 +137,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             body = json.loads(event.get('body', '{}'))
             case_id = body.get('case_id')
             user_id = body.get('user_id')
+            payment_method = body.get('payment_method', 'donate')
             
             if not case_id or not user_id:
                 cursor.close()
@@ -174,10 +175,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             # Определяем параметры кейса
             case_configs = {
-                1: {'price_money': 5000, 'price_donate': 0, 'max_price': 1000},
-                2: {'price_money': 15000, 'price_donate': 0, 'max_price': 5000},
-                3: {'price_money': 0, 'price_donate': 100, 'max_price': 999999},
-                4: {'price_money': 10000, 'price_donate': 0, 'max_price': 3000}
+                1: {'price_money': 5000, 'price_donate': 50, 'max_price': 1000, 'min_price': 0},
+                2: {'price_money': 15000, 'price_donate': 150, 'max_price': 5000, 'min_price': 1000},
+                3: {'price_money': 50000, 'price_donate': 500, 'max_price': 999999, 'min_price': 5000},
+                4: {'price_money': 10000, 'price_donate': 100, 'max_price': 3000, 'min_price': 0}
             }
             
             config = case_configs.get(case_id)
@@ -221,17 +222,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Списываем валюту
-            if config['price_money'] > 0:
+            # Списываем валюту в зависимости от выбранного способа оплаты
+            if payment_method == 'money':
                 cursor.execute('UPDATE users SET u_money = u_money - %s WHERE u_id = %s', 
                              (config['price_money'], user_id))
-            
-            if config['price_donate'] > 0:
+            else:
                 cursor.execute('UPDATE users SET u_donate = u_donate - %s WHERE u_id = %s', 
                              (config['price_donate'], user_id))
             
             # Выбираем случайный предмет с весами
-            case_items = [item for item in all_items if item['loot_price'] and int(item['loot_price']) <= config['max_price']]
+            case_items = [item for item in all_items if item['loot_price'] and config['min_price'] <= int(item['loot_price']) <= config['max_price']]
             
             if not case_items:
                 case_items = [
