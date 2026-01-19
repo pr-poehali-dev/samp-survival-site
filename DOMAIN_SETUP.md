@@ -14,19 +14,11 @@ A      death-watch.ru    IP_АДРЕС_ВАШЕГО_СЕРВЕРА           360
 A      www               IP_АДРЕС_ВАШЕГО_СЕРВЕРА           3600
 ```
 
-Или, если используете CDN/хостинг:
+### 2. Настройка домена
 
-```
-Тип     Имя               Значение                          TTL
-CNAME   death-watch.ru    ваш-проект.poehali.dev           3600
-CNAME   www               ваш-проект.poehali.dev           3600
-```
+Для корректной работы домена:
 
-### 2. Настройка на хостинге poehali.dev
-
-В настройках проекта на poehali.dev:
-
-1. Перейдите в **Настройки** → **Домены**
+1. Убедитесь, что DNS записи указывают на ваш сервер
 2. Добавьте домен: `death-watch.ru`
 3. Добавьте алиас: `www.death-watch.ru`
 4. Дождитесь выпуска SSL сертификата (обычно 5-10 минут)
@@ -159,5 +151,5 @@ openssl s_client -connect death-watch.ru:443 -servername death-watch.ru
 ## Контакты для помощи
 
 Если проблемы сохраняются:
-- Telegram: https://t.me/+QgiLIa1gFRY4Y2Iy
-- Техподдержка поехали: https://poehali.dev/support
+- Telegram комьюнити: https://t.me/+QgiLIa1gFRY4Y2Iy
+- Сайт проекта: https://death-watch.ru
