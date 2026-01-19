@@ -13,6 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Rule {
   id: number;
@@ -22,12 +30,24 @@ interface Rule {
   rule_order: number;
 }
 
+interface Category {
+  id: string;
+  label: string;
+  icon: string;
+  order: number;
+}
+
 interface RulesManagementProps {
   userId: number;
 }
 
 const RulesManagement = ({ userId }: RulesManagementProps) => {
   const [rules, setRules] = useState<Rule[]>([]);
+  const [categories, setCategories] = useState<Category[]>([
+    { id: 'players', label: 'Правила для игроков', icon: 'UserCheck', order: 0 },
+    { id: 'factions', label: 'Правила для фракций', icon: 'Shield', order: 1 },
+    { id: 'general', label: 'Общие правила', icon: 'AlertTriangle', order: 2 }
+  ]);
   const [loading, setLoading] = useState(false);
   const [editingRule, setEditingRule] = useState<Rule | null>(null);
   const [newRule, setNewRule] = useState({
@@ -36,23 +56,26 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
     description: '',
     rule_order: 0
   });
+  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
+  const [newCategory, setNewCategory] = useState({ id: '', label: '', icon: 'Folder' });
   const { toast } = useToast();
-
-  const CATEGORIES = {
-    players: 'Правила для игроков',
-    factions: 'Правила для фракций',
-    general: 'Общие правила'
-  };
-
-  const ICONS = {
-    players: 'UserCheck',
-    factions: 'Shield',
-    general: 'AlertTriangle'
-  };
 
   useEffect(() => {
     fetchRules();
+    loadCategories();
   }, []);
+
+  const loadCategories = () => {
+    const saved = localStorage.getItem('rules_categories');
+    if (saved) {
+      setCategories(JSON.parse(saved));
+    }
+  };
+
+  const saveCategories = (cats: Category[]) => {
+    localStorage.setItem('rules_categories', JSON.stringify(cats));
+    setCategories(cats);
+  };
 
   const fetchRules = async () => {
     try {
@@ -68,6 +91,79 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleAddCategory = () => {
+    if (!newCategory.id || !newCategory.label) {
+      toast({
+        title: "Ошибка",
+        description: "Заполните все поля категории",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (categories.find(c => c.id === newCategory.id)) {
+      toast({
+        title: "Ошибка",
+        description: "Категория с таким ID уже существует",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCat: Category = {
+      ...newCategory,
+      order: categories.length
+    };
+
+    saveCategories([...categories, newCat]);
+    setNewCategory({ id: '', label: '', icon: 'Folder' });
+    setShowCategoryDialog(false);
+    
+    toast({
+      title: "Успешно!",
+      description: "Категория добавлена",
+    });
+  };
+
+  const handleDeleteCategory = (categoryId: string) => {
+    const categoryRules = rules.filter(r => r.category === categoryId);
+    
+    if (categoryRules.length > 0) {
+      toast({
+        title: "Ошибка",
+        description: `Нельзя удалить категорию с правилами (${categoryRules.length} шт.)`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!confirm('Удалить эту категорию?')) return;
+
+    const updated = categories.filter(c => c.id !== categoryId);
+    saveCategories(updated);
+    
+    toast({
+      title: "Успешно!",
+      description: "Категория удалена",
+    });
+  };
+
+  const moveCategoryUp = (index: number) => {
+    if (index === 0) return;
+    const updated = [...categories];
+    [updated[index], updated[index - 1]] = [updated[index - 1], updated[index]];
+    updated.forEach((cat, idx) => cat.order = idx);
+    saveCategories(updated);
+  };
+
+  const moveCategoryDown = (index: number) => {
+    if (index === categories.length - 1) return;
+    const updated = [...categories];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
+    updated.forEach((cat, idx) => cat.order = idx);
+    saveCategories(updated);
   };
 
   const handleSaveRule = async () => {
@@ -98,7 +194,7 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
         description: "Правило добавлено",
       });
       
-      setNewRule({ category: 'players', title: '', description: '', rule_order: 0 });
+      setNewRule({ category: categories[0]?.id || 'players', title: '', description: '', rule_order: 0 });
       await fetchRules();
     } catch (error) {
       toast({
@@ -188,8 +284,102 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
     return acc;
   }, {} as Record<string, Rule[]>);
 
+  const sortedCategories = [...categories].sort((a, b) => a.order - b.order);
+
   return (
     <div className="space-y-6">
+      <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold flex items-center gap-2">
+            <Icon name="FolderTree" size={24} className="text-primary" />
+            Управление категориями
+          </h3>
+          <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Icon name="Plus" size={16} className="mr-2" />
+                Добавить категорию
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-black/95 border-primary/30">
+              <DialogHeader>
+                <DialogTitle>Новая категория</DialogTitle>
+                <DialogDescription>Добавьте новую категорию правил</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>ID категории (латиницей)</Label>
+                  <Input
+                    value={newCategory.id}
+                    onChange={(e) => setNewCategory({ ...newCategory, id: e.target.value.toLowerCase().replace(/\s/g, '_') })}
+                    className="bg-black/40 border-white/10"
+                    placeholder="admin_rules"
+                  />
+                </div>
+                <div>
+                  <Label>Название</Label>
+                  <Input
+                    value={newCategory.label}
+                    onChange={(e) => setNewCategory({ ...newCategory, label: e.target.value })}
+                    className="bg-black/40 border-white/10"
+                    placeholder="Правила для администрации"
+                  />
+                </div>
+                <div>
+                  <Label>Иконка (название из lucide-react)</Label>
+                  <Input
+                    value={newCategory.icon}
+                    onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
+                    className="bg-black/40 border-white/10"
+                    placeholder="Shield"
+                  />
+                </div>
+                <Button onClick={handleAddCategory} className="w-full">
+                  <Icon name="Check" size={16} className="mr-2" />
+                  Создать категорию
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="space-y-2">
+          {sortedCategories.map((cat, index) => (
+            <div key={cat.id} className="flex items-center gap-2 p-3 bg-black/40 rounded-lg border border-white/10">
+              <Icon name={cat.icon as any} size={20} className="text-primary" />
+              <span className="flex-1 font-medium">{cat.label}</span>
+              <span className="text-sm text-gray-400">({rulesByCategory[cat.id]?.length || 0} правил)</span>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => moveCategoryUp(index)}
+                  disabled={index === 0}
+                >
+                  <Icon name="ChevronUp" size={16} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => moveCategoryDown(index)}
+                  disabled={index === sortedCategories.length - 1}
+                >
+                  <Icon name="ChevronDown" size={16} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteCategory(cat.id)}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Icon name="Trash2" size={16} />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
         <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
           <Icon name="Plus" size={24} className="text-primary" />
@@ -204,8 +394,8 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(CATEGORIES).map(([key, label]) => (
-                  <SelectItem key={key} value={key}>{label}</SelectItem>
+                {sortedCategories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -248,15 +438,15 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
         </div>
       </Card>
 
-      {Object.entries(CATEGORIES).map(([category, label]) => (
-        <Card key={category} className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+      {sortedCategories.map((cat) => (
+        <Card key={cat.id} className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
           <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Icon name={ICONS[category as keyof typeof ICONS]} size={24} className="text-primary" />
-            {label}
+            <Icon name={cat.icon as any} size={24} className="text-primary" />
+            {cat.label}
           </h3>
           
           <div className="space-y-3">
-            {(rulesByCategory[category] || []).map((rule) => (
+            {(rulesByCategory[cat.id] || []).map((rule) => (
               editingRule?.id === rule.id ? (
                 <Card key={rule.id} className="bg-black/40 p-4 border-primary/20">
                   <div className="space-y-3">
@@ -271,12 +461,12 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
                       className="bg-black/60 border-white/10"
                     />
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={handleUpdateRule} disabled={loading}>
-                        <Icon name="Check" size={16} className="mr-1" />
+                      <Button onClick={handleUpdateRule} size="sm" disabled={loading}>
+                        <Icon name="Check" size={16} className="mr-2" />
                         Сохранить
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingRule(null)}>
-                        <Icon name="X" size={16} className="mr-1" />
+                      <Button onClick={() => setEditingRule(null)} variant="outline" size="sm">
+                        <Icon name="X" size={16} className="mr-2" />
                         Отмена
                       </Button>
                     </div>
@@ -286,15 +476,24 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
                 <Card key={rule.id} className="bg-black/40 p-4 border-white/10 hover:border-primary/30 transition-colors">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <div className="font-semibold text-white mb-1">{rule.title}</div>
-                      <div className="text-sm text-gray-400">{rule.description}</div>
+                      <h4 className="font-bold text-white mb-1">{rule.title}</h4>
+                      <p className="text-sm text-gray-400">{rule.description}</p>
                     </div>
-                    <div className="flex gap-2 shrink-0">
-                      <Button size="sm" variant="ghost" onClick={() => setEditingRule(rule)}>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingRule(rule)}
+                      >
                         <Icon name="Edit" size={16} />
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => handleDeleteRule(rule.id)} disabled={loading}>
-                        <Icon name="Trash2" size={16} className="text-red-400" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteRule(rule.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Icon name="Trash2" size={16} />
                       </Button>
                     </div>
                   </div>
@@ -302,8 +501,11 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
               )
             ))}
             
-            {(!rulesByCategory[category] || rulesByCategory[category].length === 0) && (
-              <p className="text-gray-500 text-center py-4">Правил нет</p>
+            {(!rulesByCategory[cat.id] || rulesByCategory[cat.id].length === 0) && (
+              <div className="text-center py-8 text-gray-500">
+                <Icon name="FileX" size={48} className="mx-auto mb-2 text-gray-700" />
+                <p>Нет правил в этой категории</p>
+              </div>
             )}
           </div>
         </Card>

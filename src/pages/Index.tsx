@@ -15,6 +15,7 @@ const Index = () => {
   const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [rules, setRules] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -127,18 +128,34 @@ const Index = () => {
       }
     };
 
+    const loadCategories = () => {
+      const saved = localStorage.getItem('rules_categories');
+      if (saved) {
+        setCategories(JSON.parse(saved));
+      } else {
+        setCategories([
+          { id: 'players', label: 'Правила для игроков', icon: 'UserCheck', order: 0 },
+          { id: 'factions', label: 'Правила для фракций', icon: 'Shield', order: 1 },
+          { id: 'general', label: 'Общие правила', icon: 'AlertTriangle', order: 2 }
+        ]);
+      }
+    };
+
     checkAuth();
     fetchSettings();
     fetchRules();
+    loadCategories();
     
     const authInterval = setInterval(checkAuth, 5000);
     const settingsInterval = setInterval(fetchSettings, 5000);
     const rulesInterval = setInterval(fetchRules, 30000);
+    const categoriesInterval = setInterval(loadCategories, 5000);
 
     return () => {
       clearInterval(authInterval);
       clearInterval(settingsInterval);
       clearInterval(rulesInterval);
+      clearInterval(categoriesInterval);
     };
   }, []);
 
@@ -182,27 +199,15 @@ const Index = () => {
               <h2 className="text-4xl font-bold text-center mb-12 neon-text">Правила сервера</h2>
               
               <div className="space-y-6">
-                {['players', 'factions', 'general'].map((category) => {
-                  const categoryRules = rules.filter(r => r.category === category);
+                {categories.sort((a, b) => a.order - b.order).map((category) => {
+                  const categoryRules = rules.filter(r => r.category === category.id);
                   if (categoryRules.length === 0) return null;
                   
-                  const categoryLabels: Record<string, string> = {
-                    players: 'Правила для игроков',
-                    factions: 'Правила для фракций',
-                    general: 'Общие правила'
-                  };
-                  
-                  const categoryIcons: Record<string, string> = {
-                    players: 'UserCheck',
-                    factions: 'Shield',
-                    general: 'AlertTriangle'
-                  };
-                  
                   return (
-                    <Card key={category} className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+                    <Card key={category.id} className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
                       <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                        <Icon name={categoryIcons[category]} size={24} className="text-primary" />
-                        {categoryLabels[category]}
+                        <Icon name={category.icon} size={24} className="text-primary" />
+                        {category.label}
                       </h3>
                       <ul className="space-y-2 text-gray-300">
                         {categoryRules.map((rule) => (
