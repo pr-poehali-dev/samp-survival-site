@@ -58,15 +58,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     try:
         if method == 'GET':
+            query_params = event.get('queryStringParameters', {}) or {}
+            limit = int(query_params.get('limit', 100))
+            offset = int(query_params.get('offset', 0))
+            
+            # Получаем общее количество пользователей
+            cursor.execute('SELECT COUNT(*) as total FROM users')
+            total_count = cursor.fetchone()['total']
+            
             query = '''
                 SELECT 
                     u_id, u_name, u_email, u_date_registration, u_lifetime, 
                     u_money, u_donate, u_score, u_mute, u_ip
                 FROM users 
                 ORDER BY u_date_registration DESC 
-                LIMIT 100
+                LIMIT %s OFFSET %s
             '''
-            cursor.execute(query)
+            cursor.execute(query, (limit, offset))
             users_raw = cursor.fetchall()
             
             users = []
@@ -82,7 +90,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'users': users, 'total': len(users)}),
+                'body': json.dumps({'users': users, 'total': total_count, 'limit': limit, 'offset': offset}),
                 'isBase64Encoded': False
             }
     

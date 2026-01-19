@@ -30,16 +30,21 @@ const UsersManagement = () => {
     u_donate: 0,
     u_mute: 0
   });
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(50);
+  const [totalUsers, setTotalUsers] = useState(0);
   const { toast } = useToast();
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://functions.poehali.dev/a41a848a-3f67-4204-b161-8f5de2014207');
+      const offset = (page - 1) * perPage;
+      const response = await fetch(`https://functions.poehali.dev/a41a848a-3f67-4204-b161-8f5de2014207?limit=${perPage}&offset=${offset}`);
       const data = await response.json();
       
       if (data.users) {
         setUsers(data.users);
+        setTotalUsers(data.total || 0);
         if (searchQuery.trim()) {
           filterUsers(data.users, searchQuery);
         } else {
@@ -83,6 +88,9 @@ const UsersManagement = () => {
 
   useEffect(() => {
     fetchUsers();
+  }, [page]);
+
+  useEffect(() => {
     const interval = setInterval(fetchUsers, 10000);
     return () => clearInterval(interval);
   }, []);
@@ -217,7 +225,7 @@ const UsersManagement = () => {
       ) : (
         <>
           <div className="text-sm text-gray-400">
-            Найдено пользователей: {filteredUsers.length} из {users.length}
+            Найдено пользователей: {filteredUsers.length} из {totalUsers}
           </div>
           <div className="grid gap-4">
             {filteredUsers.map((user) => (
@@ -335,6 +343,39 @@ const UsersManagement = () => {
           </Card>
         ))}
           </div>
+          
+          {!searchQuery && totalUsers > perPage && (
+            <div className="flex items-center justify-between mt-6 px-4">
+              <div className="text-sm text-gray-400">
+                Показано {Math.min((page - 1) * perPage + 1, totalUsers)} - {Math.min(page * perPage, totalUsers)} из {totalUsers} пользователей
+              </div>
+              <div className="flex items-center gap-3">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => setPage(p => Math.max(1, p - 1))} 
+                  disabled={page === 1}
+                  className="bg-black/40 border-white/10"
+                >
+                  <Icon name="ChevronLeft" size={16} className="mr-1" />
+                  Назад
+                </Button>
+                <span className="text-sm text-gray-300">
+                  Страница {page} из {Math.ceil(totalUsers / perPage)}
+                </span>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => setPage(p => p + 1)} 
+                  disabled={page >= Math.ceil(totalUsers / perPage)}
+                  className="bg-black/40 border-white/10"
+                >
+                  Вперёд
+                  <Icon name="ChevronRight" size={16} className="ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

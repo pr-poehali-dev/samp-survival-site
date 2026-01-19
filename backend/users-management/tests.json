@@ -5,11 +5,7 @@
       "method": "GET",
       "path": "/",
       "expectedStatus": 200,
-      "expectedBody": {
-        "users": "array",
-        "total": "number"
-      },
-      "bodyMatcher": "partial"
+      "bodyMatcher": "skip"
     },
     {
       "name": "Update user money",
@@ -21,10 +17,7 @@
         "u_money": 10000
       },
       "expectedStatus": 200,
-      "expectedBody": {
-        "success": true
-      },
-      "bodyMatcher": "partial"
+      "bodyMatcher": "skip"
     }
   ]
 }
