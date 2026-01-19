@@ -152,8 +152,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Получаем данные пользователя и проверяем онлайн статус
-            cursor.execute('SELECT u_id, u_name, u_money, u_donate, u_online FROM users WHERE u_id = %s', (user_id,))
+            # Получаем данные пользователя
+            cursor.execute('SELECT u_id, u_name, u_money, u_donate FROM users WHERE u_id = %s', (user_id,))
             user = cursor.fetchone()
             
             if not user:
@@ -169,19 +169,28 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Проверяем, не находится ли игрок в игре
-            if user.get('u_online', 0) == 1:
-                cursor.close()
-                connection.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы открыть кейс.'}),
-                    'isBase64Encoded': False
-                }
+            # Проверяем онлайн статус (если поле существует)
+            try:
+                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_online'")
+                has_online_field = cursor.fetchone() is not None
+                
+                if has_online_field:
+                    cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
+                    online_data = cursor.fetchone()
+                    if online_data and online_data.get('u_online', 0) == 1:
+                        cursor.close()
+                        connection.close()
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы открыть кейс.'}),
+                            'isBase64Encoded': False
+                        }
+            except:
+                pass
             
             # Получаем предметы для кейса (включая loot_id)
             cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')

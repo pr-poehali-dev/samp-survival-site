@@ -165,21 +165,28 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Проверяем, не находится ли игрок в игре
-            cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
-            user_data = cursor.fetchone()
-            if user_data and user_data.get('u_online', 0) == 1:
-                cursor.close()
-                connection.close()
-                return {
-                    'statusCode': 400,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы продать предмет.'}),
-                    'isBase64Encoded': False
-                }
+            # Проверяем онлайн статус (если поле существует)
+            try:
+                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_online'")
+                has_online_field = cursor.fetchone() is not None
+                
+                if has_online_field:
+                    cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
+                    user_data = cursor.fetchone()
+                    if user_data and user_data.get('u_online', 0) == 1:
+                        cursor.close()
+                        connection.close()
+                        return {
+                            'statusCode': 400,
+                            'headers': {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*'
+                            },
+                            'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы продать предмет.'}),
+                            'isBase64Encoded': False
+                        }
+            except:
+                pass
             
             slot_value = result.get(f'u_i_slot_{slot}')
             if not slot_value or slot_value in ['0,0,0', '', 'None', 'null']:
