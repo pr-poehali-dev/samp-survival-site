@@ -76,7 +76,7 @@ const Admin = () => {
   const fetchSettings = async (retryCount = 0) => {
     try {
       const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(25000),
         cache: 'no-cache'
       });
       
@@ -124,7 +124,7 @@ const Admin = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(10000)
+        signal: AbortSignal.timeout(30000)
       });
 
       const data = await response.json();

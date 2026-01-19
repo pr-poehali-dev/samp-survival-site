@@ -104,7 +104,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 password=user_pass[1],
                 database=host_db[1],
                 cursorclass=pymysql.cursors.DictCursor,
-                connect_timeout=5
+                connect_timeout=15,
+                read_timeout=15,
+                write_timeout=15
             )
             
             mysql_cursor = mysql_conn.cursor()
