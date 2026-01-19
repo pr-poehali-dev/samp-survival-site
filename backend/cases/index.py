@@ -265,16 +265,20 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 connection.commit()
                 free_slot = 1
             else:
+                # Проверяем каждый слот
                 for i, col in enumerate(inventory_columns, 1):
-                    slot_value = inventory[col]
-                    # Проверяем пустой слот: None, 0, '0', 'None', пустая строка
-                    if slot_value is None or slot_value == 0 or slot_value == '0' or slot_value == 'None' or slot_value == '':
+                    slot_value = inventory.get(col)
+                    # Проверяем пустой слот: None, 0, '0', 'None', пустая строка, 'null', 'NULL'
+                    if (slot_value is None or 
+                        slot_value == 0 or 
+                        slot_value == '0' or 
+                        slot_value == 'None' or 
+                        slot_value == '' or
+                        slot_value == 'null' or
+                        slot_value == 'NULL' or
+                        str(slot_value).strip() == ''):
                         free_slot = i
                         break
-                
-                # Если не нашли свободный слот, значит все заполнены
-                if free_slot is None:
-                    free_slot = None
             
             # Добавляем предмет в инвентарь
             if free_slot:
