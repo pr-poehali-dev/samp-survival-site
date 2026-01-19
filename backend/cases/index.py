@@ -264,16 +264,21 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 connection.commit()
                 free_slot = 1
             else:
-                # Ищем первый пустой слот
-                print(f"DEBUG: Checking inventory for user {user_id}")
+                # Ищем первый пустой слот (формат: id,количество,прочность или 0,0,0)
                 for i in range(1, 51):
                     col_name = f'u_i_slot_{i}'
                     slot_value = inventory.get(col_name)
-                    print(f"DEBUG: Slot {i} = {repr(slot_value)} (type: {type(slot_value)})")
-                    # Пустой слот: None или пустая строка
-                    if slot_value is None or (isinstance(slot_value, str) and slot_value.strip() in ['', '0', 'None', 'null', 'NULL']):
+                    # Пустой слот: None, пустая строка или '0,0,0'
+                    is_empty = (
+                        slot_value is None or 
+                        (isinstance(slot_value, str) and (
+                            slot_value.strip() in ['', '0', 'None', 'null', 'NULL', '0,0,0'] or
+                            slot_value.startswith('0,0,') or
+                            slot_value == '0,0,0'
+                        ))
+                    )
+                    if is_empty:
                         free_slot = i
-                        print(f"DEBUG: Found free slot at position {i}")
                         break
             
             # Если нет свободного слота - ошибка
@@ -291,8 +296,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Добавляем предмет в инвентарь
-            item_data = f"{won_item['loot_name']}|{won_item.get('loot_quality', 100)}"
+            # Получаем ID предмета из базы server_loots
+            cursor.execute('SELECT loot_id FROM server_loots WHERE loot_name = %s LIMIT 1', (won_item['loot_name'],))
+            loot_info = cursor.fetchone()
+            loot_id = loot_info['loot_id'] if loot_info else 1
+            
+            # Добавляем предмет в инвентарь (формат: id,количество,прочность)
+            item_data = f"{loot_id},1,0"
             cursor.execute(f"UPDATE users_inventory SET u_i_slot_{free_slot} = %s WHERE u_i_owner = %s",
                          (item_data, user_id))
             
