@@ -176,11 +176,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 # Метод 1: Проверка поля u_online (1 = в игре, 0 = не в игре)
                 cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_online'")
                 has_online_field = cursor.fetchone() is not None
+                print(f"DEBUG: has_online_field = {has_online_field}")
                 
                 if has_online_field:
                     cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
                     online_data = cursor.fetchone()
-                    if online_data and online_data.get('u_online', 0) == 1:
+                    print(f"DEBUG: online_data = {online_data}")
+                    u_online_value = online_data.get('u_online', 0) if online_data else 0
+                    print(f"DEBUG: u_online_value = {u_online_value}, type = {type(u_online_value)}")
+                    if online_data and u_online_value == 1:
                         is_online = True
                 
                 # Метод 2: Проверка через last_action (активность < 10 мин = в игре)
@@ -197,6 +201,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             current_time = int(time.time())
                             if current_time - last_action < 600:
                                 is_online = True
+                
+                print(f"DEBUG: Final is_online = {is_online}")
                             
             except Exception as e:
                 print(f"Online check error: {e}")
