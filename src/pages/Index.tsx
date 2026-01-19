@@ -10,7 +10,6 @@ import HowToPlayModal from "@/components/HowToPlayModal";
 
 const Index = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [online, setOnline] = useState({ players: 0, maxPlayers: 100 });
   const [serverName, setServerName] = useState('SURVIVAL RP');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
@@ -56,24 +55,7 @@ const Index = () => {
       }
     };
 
-    const fetchOnline = async () => {
-      try {
-        const response = await fetch('https://functions.poehali.dev/572ddbde-507d-4153-9d42-b66188affb54?check=online', {
-          signal: AbortSignal.timeout(5000)
-        });
-        
-        if (!response.ok) {
-          console.warn(`Online API returned ${response.status}`);
-          return;
-        }
-        
-        const data = await response.json();
-        const newOnline = { players: data.online || 0, maxPlayers: data.maxPlayers || 100 };
-        setOnline(newOnline);
-      } catch (error) {
-        console.error('Failed to fetch online:', error);
-      }
-    };
+
 
     const fetchSettings = async () => {
       try {
@@ -123,18 +105,15 @@ const Index = () => {
     };
 
     checkAuth();
-    fetchOnline();
     fetchSettings();
     fetchRules();
     
     const authInterval = setInterval(checkAuth, 5000);
-    const onlineInterval = setInterval(fetchOnline, 5000);
     const settingsInterval = setInterval(fetchSettings, 5000);
     const rulesInterval = setInterval(fetchRules, 30000);
 
     return () => {
       clearInterval(authInterval);
-      clearInterval(onlineInterval);
       clearInterval(settingsInterval);
       clearInterval(rulesInterval);
     };
@@ -169,7 +148,6 @@ const Index = () => {
         <main className="pt-20">
           <HeroSection 
             serverIp={SERVER_IP}
-            online={online}
             onCopyIP={handleCopyIP}
             onConnect={handleConnect}
           />

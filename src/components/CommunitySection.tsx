@@ -24,7 +24,7 @@ const CommunitySection = ({ settings }: CommunitySectionProps) => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold">Discord</h3>
-                <p className="text-gray-400">3 онлайн • 34 участников</p>
+                <p className="text-gray-400">Общайся с игроками</p>
               </div>
             </div>
             <Button 
@@ -44,7 +44,7 @@ const CommunitySection = ({ settings }: CommunitySectionProps) => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold">VKontakte</h3>
-                <p className="text-gray-400">149 участников</p>
+                <p className="text-gray-400">Следи за новостями</p>
               </div>
             </div>
             <Button 

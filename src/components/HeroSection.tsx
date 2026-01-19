@@ -5,12 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 interface HeroSectionProps {
   serverIp: string;
-  online: { players: number; maxPlayers: number };
   onCopyIP: () => void;
   onConnect: () => void;
 }
 
-const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps) => {
+const HeroSection = ({ serverIp, onCopyIP, onConnect }: HeroSectionProps) => {
   const navigate = useNavigate();
 
   return (
@@ -45,19 +44,6 @@ const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps
                 <Icon name="Gift" size={20} className="mr-2" />
                 Кейсы
               </Button>
-            </div>
-          </div>
-          
-          <div className="mt-6">
-            <div className="flex justify-between text-sm mb-2">
-              <span>Онлайн</span>
-              <span className="text-primary">{online.players} / {online.maxPlayers}</span>
-            </div>
-            <div className="w-full bg-white/10 rounded-full h-2">
-              <div 
-                className="bg-gradient-to-r from-primary to-secondary h-2 rounded-full transition-all" 
-                style={{ width: `${Math.min((online.players / online.maxPlayers) * 100, 100)}%` }} 
-              />
             </div>
           </div>
         </Card>

@@ -66,20 +66,6 @@ export const ProfileStatsCards = ({ user, getStatValue }: ProfileStatsCardsProps
           </div>
         </Card>
 
-        <Card className="bg-black/60 backdrop-blur-md border-purple-500/30 p-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center">
-              <Icon name="Zap" size={32} className="text-purple-500" />
-            </div>
-            <div>
-              <div className="text-sm text-purple-500/70">Статус</div>
-              <div className="text-xl font-bold text-purple-500">
-                {(user?.u_online || 0) === 1 ? '🟢 В игре' : '⚪ Оффлайн'}
-              </div>
-            </div>
-          </div>
-        </Card>
-
         <Card className="bg-black/60 backdrop-blur-md border-green-500/30 p-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
