@@ -11,7 +11,6 @@ import LogsViewer from "@/components/LogsViewer";
 import RulesManagement from "@/components/RulesManagement";
 import CasesManagement from "@/components/CasesManagement";
 import BlockedIPsManagement from "@/components/BlockedIPsManagement";
-import BlockedIPsManagement from "@/components/BlockedIPsManagement";
 
 interface ServerSettings {
   server_name: string;
