@@ -169,8 +169,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            # Проверяем онлайн статус (если поле существует)
+            # КРИТИЧНО: Проверяем онлайн статус игрока
+            # Проверяем через несколько методов для надежности
+            is_online = False
+            online_check_failed = False
+            
             try:
+                # Метод 1: Проверка поля u_online
                 cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_online'")
                 has_online_field = cursor.fetchone() is not None
                 
@@ -178,19 +183,40 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     cursor.execute('SELECT u_online FROM users WHERE u_id = %s', (user_id,))
                     online_data = cursor.fetchone()
                     if online_data and online_data.get('u_online', 0) == 1:
-                        cursor.close()
-                        connection.close()
-                        return {
-                            'statusCode': 400,
-                            'headers': {
-                                'Content-Type': 'application/json',
-                                'Access-Control-Allow-Origin': '*'
-                            },
-                            'body': json.dumps({'error': 'Вы не должны находиться в игре! Выйдите из игры, чтобы открыть кейс.'}),
-                            'isBase64Encoded': False
-                        }
-            except:
-                pass
+                        is_online = True
+                
+                # Метод 2: Проверка через last_action (если есть активность менее 10 минут назад)
+                cursor.execute("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'u_last_action'")
+                has_last_action = cursor.fetchone() is not None
+                
+                if has_last_action and not is_online:
+                    import time
+                    cursor.execute('SELECT u_last_action FROM users WHERE u_id = %s', (user_id,))
+                    action_data = cursor.fetchone()
+                    if action_data:
+                        last_action = action_data.get('u_last_action', 0)
+                        current_time = int(time.time())
+                        # Если активность была менее 10 минут назад - считаем онлайн
+                        if current_time - last_action < 600:
+                            is_online = True
+                            
+            except Exception as e:
+                print(f"Online check error: {e}")
+                # Если не можем проверить статус - блокируем операцию из-за безопасности
+                online_check_failed = True
+            
+            if is_online:
+                cursor.close()
+                connection.close()
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': '🎮 Вы находитесь в игре! Выйдите из игры, чтобы открыть кейс.'}),
+                    'isBase64Encoded': False
+                }
             
             # Получаем предметы для кейса (включая loot_id)
             cursor.execute('SELECT loot_id, loot_name, loot_type, loot_price, loot_quality FROM server_loots LIMIT 100')

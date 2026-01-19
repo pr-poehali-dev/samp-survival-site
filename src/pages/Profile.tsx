@@ -270,6 +270,48 @@ const Profile = () => {
               </Card>
             </div>
 
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-black/60 backdrop-blur-md border-yellow-500/30 p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                    <Icon name="Crown" size={32} className="text-yellow-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-yellow-500/70">VIP статус</div>
+                    <div className="text-2xl font-bold text-yellow-500">
+                      {(user?.u_vip_time || 0) > 0 ? `${Math.ceil((user?.u_vip_time || 0) / 86400)} дн.` : 'Нет'}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-black/60 backdrop-blur-md border-purple-500/30 p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center">
+                    <Icon name="Zap" size={32} className="text-purple-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-purple-500/70">Статус</div>
+                    <div className="text-xl font-bold text-purple-500">
+                      {(user?.u_online || 0) === 1 ? '🟢 В игре' : '⚪ Оффлайн'}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="bg-black/60 backdrop-blur-md border-green-500/30 p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <Icon name="Gem" size={32} className="text-green-500" />
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-400">Донат валюта</div>
+                    <div className="text-2xl font-bold">{getStatValue('u_donate') || '0'}Ᵽ</div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
                 <div className="flex items-center justify-between mb-6">
