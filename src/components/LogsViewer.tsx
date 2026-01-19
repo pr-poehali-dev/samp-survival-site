@@ -34,6 +34,8 @@ const LogsViewer = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchUser, setSearchUser] = useState('');
   const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [perPage] = useState(50);
   const { toast } = useToast();
 
   const fetchLogs = async () => {
@@ -47,7 +49,8 @@ const LogsViewer = () => {
       if (searchUser.trim()) {
         params.append('user_name', searchUser.trim());
       }
-      params.append('limit', '50');
+      params.append('limit', perPage.toString());
+      params.append('offset', ((page - 1) * perPage).toString());
       
       const url = `https://functions.poehali.dev/87a1d7ee-a438-4ee1-bb8b-40f381ca8de7?${params.toString()}`;
       const response = await fetch(url);
@@ -70,8 +73,12 @@ const LogsViewer = () => {
   };
 
   useEffect(() => {
-    fetchLogs();
+    setPage(1);
   }, [selectedCategory, searchUser]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [selectedCategory, searchUser, page]);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -186,6 +193,37 @@ const LogsViewer = () => {
                 </div>
               </Card>
             ))
+          )}
+          
+          {logs.length > 0 && (
+            <div className="flex items-center justify-between mt-6 p-4 bg-black/40 rounded-lg border border-primary/20">
+              <div className="text-sm text-gray-400">
+                Показано {Math.min((page - 1) * perPage + 1, total)} - {Math.min(page * perPage, total)} из {total}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  <Icon name="ChevronLeft" size={16} className="mr-1" />
+                  Назад
+                </Button>
+                <div className="flex items-center gap-2 px-4">
+                  <span className="text-sm text-gray-400">Страница {page} из {Math.ceil(total / perPage)}</span>
+                </div>
+                <Button
+                  onClick={() => setPage(p => p + 1)}
+                  disabled={page >= Math.ceil(total / perPage)}
+                  variant="outline"
+                  size="sm"
+                >
+                  Вперёд
+                  <Icon name="ChevronRight" size={16} className="ml-1" />
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       )}
