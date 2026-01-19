@@ -15,6 +15,7 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [settings, setSettings] = useState({ discord_link: '', vk_link: '', forum_link: '' });
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [rules, setRules] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -103,18 +104,39 @@ const Index = () => {
       }
     };
 
+    const fetchRules = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/353a7f9f-c1a8-4395-9120-78c37baa0419', {
+          signal: AbortSignal.timeout(5000)
+        });
+        
+        if (!response.ok) {
+          console.warn(`Rules API returned ${response.status}`);
+          return;
+        }
+        
+        const data = await response.json();
+        setRules(data.rules || []);
+      } catch (error) {
+        console.error('Failed to fetch rules:', error);
+      }
+    };
+
     checkAuth();
     fetchOnline();
     fetchSettings();
+    fetchRules();
     
     const authInterval = setInterval(checkAuth, 5000);
     const onlineInterval = setInterval(fetchOnline, 5000);
     const settingsInterval = setInterval(fetchSettings, 5000);
+    const rulesInterval = setInterval(fetchRules, 30000);
 
     return () => {
       clearInterval(authInterval);
       clearInterval(onlineInterval);
       clearInterval(settingsInterval);
+      clearInterval(rulesInterval);
     };
   }, []);
 
@@ -159,68 +181,39 @@ const Index = () => {
               <h2 className="text-4xl font-bold text-center mb-12 neon-text">Правила сервера</h2>
               
               <div className="space-y-6">
-                <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <Icon name="UserCheck" size={24} className="text-primary" />
-                    Правила для игроков
-                  </h3>
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Запрещено использование читов и багов</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Уважайте других игроков</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Соблюдайте правила РП-отыгровки</span>
-                    </li>
-                  </ul>
-                </Card>
-
-                <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <Icon name="Shield" size={24} className="text-primary" />
-                    Правила для фракций
-                  </h3>
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Захват территорий только в определённое время</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Соблюдайте устав своей фракции</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Кооперация между кланами разрешена</span>
-                    </li>
-                  </ul>
-                </Card>
-
-                <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
-                  <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                    <Icon name="AlertTriangle" size={24} className="text-primary" />
-                    Общие правила
-                  </h3>
-                  <ul className="space-y-2 text-gray-300">
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Запрещён спам и флуд в чате</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Реклама других серверов запрещена</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-primary">•</span>
-                      <span>Прислушивайтесь к администрации</span>
-                    </li>
-                  </ul>
-                </Card>
+                {['players', 'factions', 'general'].map((category) => {
+                  const categoryRules = rules.filter(r => r.category === category);
+                  if (categoryRules.length === 0) return null;
+                  
+                  const categoryLabels: Record<string, string> = {
+                    players: 'Правила для игроков',
+                    factions: 'Правила для фракций',
+                    general: 'Общие правила'
+                  };
+                  
+                  const categoryIcons: Record<string, string> = {
+                    players: 'UserCheck',
+                    factions: 'Shield',
+                    general: 'AlertTriangle'
+                  };
+                  
+                  return (
+                    <Card key={category} className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
+                      <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <Icon name={categoryIcons[category]} size={24} className="text-primary" />
+                        {categoryLabels[category]}
+                      </h3>
+                      <ul className="space-y-2 text-gray-300">
+                        {categoryRules.map((rule) => (
+                          <li key={rule.id} className="flex gap-2">
+                            <span className="text-primary">•</span>
+                            <span>{rule.title}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </section>

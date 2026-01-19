@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get server rules",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "rules": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -41,10 +41,6 @@ const HeroSection = ({ serverIp, online, onCopyIP, onConnect }: HeroSectionProps
                 <Icon name="Wifi" size={20} className="mr-2" />
                 Подключиться
               </Button>
-              <Button size="lg" variant="outline" className="border-purple-500 text-purple-400 hover:bg-purple-500/10" onClick={() => navigate('/cases')}>
-                <Icon name="Gift" size={20} className="mr-2" />
-                Кейсы
-              </Button>
             </div>
           </div>
           

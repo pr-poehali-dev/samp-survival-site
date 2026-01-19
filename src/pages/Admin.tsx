@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import UsersManagement from "@/components/UsersManagement";
 import LogsViewer from "@/components/LogsViewer";
+import RulesManagement from "@/components/RulesManagement";
 
 interface ServerSettings {
   server_name: string;
@@ -18,7 +19,7 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs'>('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules'>('settings');
   const [settings, setSettings] = useState<ServerSettings>({
     server_name: "",
     discord_link: "",
@@ -224,6 +225,14 @@ const Admin = () => {
                 <Icon name="FileText" size={18} className="mr-2" />
                 Логи
               </Button>
+              <Button
+                onClick={() => setActiveTab('rules')}
+                variant={activeTab === 'rules' ? 'default' : 'outline'}
+                className={activeTab === 'rules' ? 'neon-glow' : ''}
+              >
+                <Icon name="BookOpen" size={18} className="mr-2" />
+                Правила
+              </Button>
             </div>
 
             {activeTab === 'settings' && (
@@ -319,6 +328,10 @@ const Admin = () => {
               <Card className="bg-black/60 backdrop-blur-md border-primary/30 p-6">
                 <UsersManagement />
               </Card>
+            )}
+
+            {activeTab === 'rules' && (
+              <RulesManagement userId={user?.u_id || user?.id || 0} />
             )}
 
             {activeTab === 'logs' && (
