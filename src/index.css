@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* v2.2.0 - Fixed white button backgrounds completely - 2026-01-20 */
+/* v2.3.0 - Fixed 404 routing issues - 2026-01-20 */
 
 @layer base {
   :root {
