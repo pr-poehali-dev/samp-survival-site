@@ -309,12 +309,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             print(f'DEBUG: Querying users_admins for u_a_name = {username_value}')
             
             try:
-                cursor.execute('SELECT u_a_level FROM users_admins WHERE u_a_name = %s', (username_value,))
+                cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username_value,))
                 admin_data = cursor.fetchone()
                 print(f'DEBUG: admin_data result = {admin_data}')
                 
                 if admin_data:
-                    admin_level = admin_data.get('u_a_level', 0)
+                    admin_level = admin_data.get('admin_level', 0)
                     print(f'DEBUG: Setting admin_level = {admin_level}')
                     user_data['admin_level'] = admin_level
                 else:

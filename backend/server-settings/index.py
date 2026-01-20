@@ -112,7 +112,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             mysql_cursor = mysql_conn.cursor()
             
             mysql_cursor.execute('''
-                SELECT u_a_level 
+                SELECT admin_level 
                 FROM users_admins 
                 WHERE u_a_name = %s
             ''', (username,))
@@ -134,7 +134,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
-            admin_level = result.get('u_a_level', 0)
+            admin_level = result.get('admin_level', 0)
             print(f'DEBUG: Admin level for {username}: {admin_level}')
             
             if admin_level < 6:
