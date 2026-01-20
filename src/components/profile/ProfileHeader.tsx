@@ -24,7 +24,7 @@ export const ProfileHeader = ({ serverName, isAdmin, onNavigate, onLogout }: Pro
               Админ-панель
             </Button>
           )}
-          <Button variant="outline" onClick={onLogout} className="border-gray-600 text-gray-400 hover:text-white hover:border-gray-400">
+          <Button variant="outline" onClick={onLogout} className="border-gray-600 text-gray-300 hover:text-white hover:border-gray-400">
             <Icon name="LogOut" size={18} className="mr-2" />
             Выйти
           </Button>
