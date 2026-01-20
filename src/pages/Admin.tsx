@@ -76,10 +76,15 @@ const Admin = () => {
 
   const fetchSettings = async (retryCount = 0) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      
       const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
-        signal: AbortSignal.timeout(25000),
+        signal: controller.signal,
         cache: 'no-cache'
       });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
         console.warn(`Settings API returned ${response.status}`);
@@ -119,14 +124,19 @@ const Admin = () => {
       console.log('Payload:', payload);
       console.log('===========================');
       
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
       const response = await fetch("https://functions.poehali.dev/7429a9b5-8d13-44b6-8a20-67ccba23e8f8", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(30000)
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       console.log('Response status:', response.status);
