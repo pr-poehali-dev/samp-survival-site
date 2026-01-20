@@ -14,7 +14,7 @@ export const ProfileHeader = ({ serverName, isAdmin, onNavigate, onLogout }: Pro
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="text-2xl font-bold text-white">{serverName}</div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => onNavigate("/")} className="text-gray-400 hover:text-red-500">
+          <Button variant="ghost" onClick={() => onNavigate("/")} className="text-gray-300 hover:text-red-500">
             <Icon name="Home" size={18} className="mr-2" />
             Главная
           </Button>

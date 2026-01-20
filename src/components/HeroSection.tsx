@@ -13,9 +13,13 @@ const HeroSection = ({ serverIp, onCopyIP, onConnect }: HeroSectionProps) => {
   const navigate = useNavigate();
 
   return (
-    <section className="min-h-screen flex items-center justify-center px-4">
-      <div className="text-center max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-7xl font-black mb-6 neon-text glitch shake">
+    <section className="min-h-screen flex items-center justify-center px-4 relative">
+      <div 
+        className="absolute inset-0 opacity-20 bg-cover bg-center"
+        style={{ backgroundImage: "url('https://cdn.poehali.dev/projects/bb150b69-aa78-47ca-b25a-00871a425db3/files/e11933f8-63f0-48b9-8388-339a50eaaaa6.jpg')" }}
+      />
+      <div className="text-center max-w-4xl mx-auto relative z-10">
+        <h1 className="text-5xl md:text-7xl font-black mb-6 neon-text glitch">
           НОВАЯ КРЕПОСТЬ
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-8 fade-pulse">
