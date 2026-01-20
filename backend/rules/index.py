@@ -115,14 +115,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         elif method == 'POST':
             body = json.loads(event.get('body', '{}'))
-            user_id = body.get('user_id')
+            username = body.get('username')
             category = body.get('category')
             title = body.get('title')
             description = body.get('description')
             rule_order = body.get('rule_order', 0)
             rule_id = body.get('rule_id')
             
-            if not user_id:
+            if not username:
                 cursor.close()
                 connection.close()
                 return {
@@ -131,14 +131,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'user_id required'}),
+                    'body': json.dumps({'error': 'username required'}),
                     'isBase64Encoded': False
                 }
             
-            cursor.execute('SELECT u_level FROM users WHERE u_id = %s', (user_id,))
-            user = cursor.fetchone()
+            cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username,))
+            admin = cursor.fetchone()
             
-            if not user or user['u_level'] < 10:
+            if not admin or admin['admin_level'] < 6:
                 cursor.close()
                 connection.close()
                 return {
@@ -178,10 +178,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         elif method == 'DELETE':
             body = json.loads(event.get('body', '{}'))
-            user_id = body.get('user_id')
+            username = body.get('username')
             rule_id = body.get('rule_id')
             
-            if not user_id or not rule_id:
+            if not username or not rule_id:
                 cursor.close()
                 connection.close()
                 return {
@@ -190,14 +190,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'user_id and rule_id required'}),
+                    'body': json.dumps({'error': 'username and rule_id required'}),
                     'isBase64Encoded': False
                 }
             
-            cursor.execute('SELECT u_level FROM users WHERE u_id = %s', (user_id,))
-            user = cursor.fetchone()
+            cursor.execute('SELECT admin_level FROM users_admins WHERE u_a_name = %s', (username,))
+            admin = cursor.fetchone()
             
-            if not user or user['u_level'] < 10:
+            if not admin or admin['admin_level'] < 6:
                 cursor.close()
                 connection.close()
                 return {

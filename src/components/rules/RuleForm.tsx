@@ -23,11 +23,11 @@ interface Category {
 
 interface RuleFormProps {
   categories: Category[];
-  userId: number;
+  username: string;
   onRuleSaved: () => void;
 }
 
-const RuleForm = ({ categories, userId, onRuleSaved }: RuleFormProps) => {
+const RuleForm = ({ categories, username, onRuleSaved }: RuleFormProps) => {
   const [loading, setLoading] = useState(false);
   const [newRule, setNewRule] = useState({
     category: categories[0]?.id || 'players',
@@ -55,7 +55,7 @@ const RuleForm = ({ categories, userId, onRuleSaved }: RuleFormProps) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: userId,
+          username: username,
           ...newRule
         })
       });

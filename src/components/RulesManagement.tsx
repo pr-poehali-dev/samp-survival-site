@@ -20,10 +20,10 @@ interface Category {
 }
 
 interface RulesManagementProps {
-  userId: number;
+  username: string;
 }
 
-const RulesManagement = ({ userId }: RulesManagementProps) => {
+const RulesManagement = ({ username }: RulesManagementProps) => {
   const [rules, setRules] = useState<Rule[]>([]);
   const [categories, setCategories] = useState<Category[]>([
     { id: 'players', label: 'Правила для игроков', icon: 'UserCheck', order: 0 },
@@ -76,14 +76,14 @@ const RulesManagement = ({ userId }: RulesManagementProps) => {
 
       <RuleForm 
         categories={categories}
-        userId={userId}
+        username={username}
         onRuleSaved={fetchRules}
       />
 
       <RulesList 
         categories={categories}
         rulesByCategory={rulesByCategory}
-        userId={userId}
+        username={username}
         onRuleUpdated={fetchRules}
       />
     </div>

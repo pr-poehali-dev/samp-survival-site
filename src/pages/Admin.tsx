@@ -356,7 +356,7 @@ const Admin = () => {
             )}
 
             {activeTab === 'rules' && (
-              <RulesManagement userId={user?.u_id || user?.id || 0} />
+              <RulesManagement username={user?.u_name || user?.username || ''} />
             )}
 
             {activeTab === 'cases' && (

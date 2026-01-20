@@ -24,11 +24,11 @@ interface Category {
 interface RulesListProps {
   categories: Category[];
   rulesByCategory: Record<string, Rule[]>;
-  userId: number;
+  username: string;
   onRuleUpdated: () => void;
 }
 
-const RulesList = ({ categories, rulesByCategory, userId, onRuleUpdated }: RulesListProps) => {
+const RulesList = ({ categories, rulesByCategory, username, onRuleUpdated }: RulesListProps) => {
   const [loading, setLoading] = useState(false);
   const [editingRule, setEditingRule] = useState<Rule | null>(null);
   const { toast } = useToast();
@@ -44,7 +44,7 @@ const RulesList = ({ categories, rulesByCategory, userId, onRuleUpdated }: Rules
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: userId,
+          username: username,
           rule_id: editingRule.id,
           category: editingRule.category,
           title: editingRule.title,
@@ -82,7 +82,7 @@ const RulesList = ({ categories, rulesByCategory, userId, onRuleUpdated }: Rules
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: userId,
+          username: username,
           rule_id: ruleId
         })
       });
