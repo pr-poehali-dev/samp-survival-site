@@ -11,6 +11,12 @@ interface CommunitySectionProps {
 }
 
 const CommunitySection = ({ settings }: CommunitySectionProps) => {
+  const openLink = (url: string) => {
+    if (!url) return;
+    const fullUrl = url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`;
+    window.open(fullUrl, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <section id="community" className="py-20 px-4">
       <div className="container mx-auto max-w-6xl">
@@ -30,7 +36,7 @@ const CommunitySection = ({ settings }: CommunitySectionProps) => {
             <Button 
               className="w-full neon-glow" 
               size="lg"
-              onClick={() => settings.discord_link && window.open(settings.discord_link, '_blank')}
+              onClick={() => openLink(settings.discord_link)}
               disabled={!settings.discord_link}
             >
               Присоединиться к Discord
@@ -50,7 +56,7 @@ const CommunitySection = ({ settings }: CommunitySectionProps) => {
             <Button 
               className="w-full neon-glow" 
               size="lg"
-              onClick={() => settings.vk_link && window.open(settings.vk_link, '_blank')}
+              onClick={() => openLink(settings.vk_link)}
               disabled={!settings.vk_link}
             >
               Подписаться ВКонтакте
