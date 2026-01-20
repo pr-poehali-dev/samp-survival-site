@@ -96,7 +96,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         host_db = parts[1].split('/')
         host_port = host_db[0].split(':')
         
+        mysql_conn = None
+        mysql_cursor = None
+        pg_conn = None
+        pg_cursor = None
+        
         try:
+            print('DEBUG: Connecting to MySQL...')
             mysql_conn = pymysql.connect(
                 host=host_port[0],
                 port=int(host_port[1]) if len(host_port) > 1 else 3306,
@@ -104,23 +110,22 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 password=user_pass[1],
                 database=host_db[1],
                 cursorclass=pymysql.cursors.DictCursor,
-                connect_timeout=15,
-                read_timeout=15,
-                write_timeout=15
+                connect_timeout=20,
+                read_timeout=20,
+                write_timeout=20
             )
+            print('DEBUG: MySQL connected')
             
             mysql_cursor = mysql_conn.cursor()
             
+            print(f'DEBUG: Checking admin level for {username}')
             mysql_cursor.execute('''
                 SELECT admin_level 
                 FROM users_admins 
                 WHERE u_a_name = %s
             ''', (username,))
             result = mysql_cursor.fetchone()
-            print(f'DEBUG: Admin check for {username}: {result}')
-            
-            mysql_cursor.close()
-            mysql_conn.close()
+            print(f'DEBUG: Admin check result: {result}')
             
             if not result:
                 print(f'ERROR: Admin {username} not found in users_admins')
@@ -130,7 +135,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': f'Admin access denied for {username}'}),
+                    'body': json.dumps({'error': f'Пользователь {username} не является администратором'}),
                     'isBase64Encoded': False
                 }
             
@@ -145,13 +150,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'Access denied. Admin level 6+ required'}),
+                    'body': json.dumps({'error': f'Недостаточно прав. Требуется уровень 6+, текущий: {admin_level}'}),
                     'isBase64Encoded': False
                 }
             
             print('DEBUG: Connecting to PostgreSQL...')
+            if not pg_dsn:
+                raise Exception('DATABASE_URL не настроен')
+                
             pg_conn = psycopg2.connect(pg_dsn)
             pg_cursor = pg_conn.cursor()
+            print('DEBUG: PostgreSQL connected')
             
             print(f'DEBUG: Updating {len(updates)} settings...')
             for key, value in updates.items():
@@ -163,8 +172,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             
             pg_conn.commit()
             print('DEBUG: Settings committed successfully')
-            pg_cursor.close()
-            pg_conn.close()
             
             return {
                 'statusCode': 200,
@@ -172,20 +179,59 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'success': True, 'message': 'Settings updated'}),
+                'body': json.dumps({'success': True, 'message': 'Настройки успешно сохранены'}),
                 'isBase64Encoded': False
             }
             
-        except Exception as e:
+        except pymysql.Error as e:
+            print(f'ERROR MySQL: {str(e)}')
+            import traceback
+            traceback.print_exc()
             return {
                 'statusCode': 500,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': str(e)}),
+                'body': json.dumps({'error': f'Ошибка подключения к MySQL: {str(e)}'}),
                 'isBase64Encoded': False
             }
+        except psycopg2.Error as e:
+            print(f'ERROR PostgreSQL: {str(e)}')
+            import traceback
+            traceback.print_exc()
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': f'Ошибка подключения к PostgreSQL: {str(e)}'}),
+                'isBase64Encoded': False
+            }
+        except Exception as e:
+            print(f'ERROR General: {str(e)}')
+            import traceback
+            traceback.print_exc()
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'error': f'Ошибка сервера: {str(e)}'}),
+                'isBase64Encoded': False
+            }
+        finally:
+            if mysql_cursor:
+                mysql_cursor.close()
+            if mysql_conn:
+                mysql_conn.close()
+            if pg_cursor:
+                pg_cursor.close()
+            if pg_conn:
+                pg_conn.close()
+            print('DEBUG: All connections closed')
     
     return {
         'statusCode': 405,

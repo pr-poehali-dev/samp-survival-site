@@ -148,9 +148,10 @@ const Admin = () => {
       }
     } catch (error) {
       console.error('Save error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Не удалось подключиться к серверу";
       toast({
         title: "Ошибка",
-        description: "Не удалось подключиться к серверу",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
