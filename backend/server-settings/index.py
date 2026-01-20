@@ -112,9 +112,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             mysql_cursor = mysql_conn.cursor()
             
             mysql_cursor.execute('''
-                SELECT ua.u_a_level 
-                FROM users_admins ua 
-                WHERE ua.u_a_name = %s
+                SELECT u_a_level 
+                FROM users_admins 
+                WHERE u_a_name = %s
             ''', (username,))
             result = mysql_cursor.fetchone()
             print(f'DEBUG: Admin check for {username}: {result}')
