@@ -20,7 +20,7 @@ const HeroSection = ({ serverIp, onCopyIP, onConnect }: HeroSectionProps) => {
       />
       <div className="text-center max-w-4xl mx-auto relative z-10">
         <h1 className="text-5xl md:text-7xl font-black mb-6 neon-text glitch">
-          НОВАЯ КРЕПОСТЬ
+          ПОСТРОЙ СВОЮ КРЕПОСТЬ
         </h1>
         <p className="text-xl md:text-2xl text-gray-300 mb-8 fade-pulse">
           Постапокалиптическая пустошь

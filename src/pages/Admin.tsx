@@ -11,6 +11,7 @@ import LogsViewer from "@/components/LogsViewer";
 import RulesManagement from "@/components/RulesManagement";
 import CasesManagement from "@/components/CasesManagement";
 import BlockedIPsManagement from "@/components/BlockedIPsManagement";
+import NewsManagement from "@/components/NewsManagement";
 
 interface ServerSettings {
   server_name: string;
@@ -21,7 +22,7 @@ interface ServerSettings {
 
 const Admin = () => {
   const [user, setUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules' | 'cases' | 'blocked'>('settings');
+  const [activeTab, setActiveTab] = useState<'settings' | 'users' | 'logs' | 'rules' | 'cases' | 'blocked' | 'news'>('settings');
   const [settings, setSettings] = useState<ServerSettings>({
     server_name: "Дозор Смерти / Death Watch",
     discord_link: "",
@@ -258,6 +259,14 @@ const Admin = () => {
                 <Icon name="ShieldAlert" size={18} className="mr-2" />
                 Блокировки IP
               </Button>
+              <Button
+                onClick={() => setActiveTab('news')}
+                variant={activeTab === 'news' ? 'default' : 'outline'}
+                className={activeTab === 'news' ? 'neon-glow' : ''}
+              >
+                <Icon name="Newspaper" size={18} className="mr-2" />
+                Новости
+              </Button>
             </div>
 
             {activeTab === 'settings' && (
@@ -374,6 +383,10 @@ const Admin = () => {
 
             {activeTab === 'blocked' && (
               <BlockedIPsManagement />
+            )}
+
+            {activeTab === 'news' && (
+              <NewsManagement username={user?.u_name || user?.username || ''} />
             )}
           </div>
         </main>

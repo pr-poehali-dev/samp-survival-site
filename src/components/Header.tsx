@@ -8,6 +8,7 @@ interface HeaderProps {
   setMobileMenuOpen: (value: boolean) => void;
   onNavigate: (path: string) => void;
   onShowHowToPlay: () => void;
+  forumLink?: string;
 }
 
 const Header = ({ 
@@ -16,7 +17,8 @@ const Header = ({
   mobileMenuOpen, 
   setMobileMenuOpen, 
   onNavigate,
-  onShowHowToPlay 
+  onShowHowToPlay,
+  forumLink 
 }: HeaderProps) => {
   return (
     <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-md border-b border-white/10 z-50">
@@ -27,7 +29,7 @@ const Header = ({
           <a href="#news" className="hover:text-primary transition-colors">Новости</a>
           <button onClick={onShowHowToPlay} className="hover:text-primary transition-colors">Как начать</button>
           <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
-          <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
+          <a href={forumLink || '#'} target={forumLink ? '_blank' : undefined} rel="noopener noreferrer" className="hover:text-primary transition-colors">Форум</a>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -58,7 +60,7 @@ const Header = ({
             <a href="#news" className="hover:text-primary transition-colors">Новости</a>
             <button onClick={onShowHowToPlay} className="hover:text-primary transition-colors text-left">Как начать</button>
             <a href="#help" className="hover:text-primary transition-colors">Помощь</a>
-            <a href="#forum" className="hover:text-primary transition-colors">Форум</a>
+            <a href={forumLink || '#'} target={forumLink ? '_blank' : undefined} rel="noopener noreferrer" className="hover:text-primary transition-colors">Форум</a>
             {isLoggedIn ? (
               <Button className="w-full neon-glow" onClick={() => onNavigate('/profile')}>
                 <Icon name="User" size={18} className="mr-2" />
