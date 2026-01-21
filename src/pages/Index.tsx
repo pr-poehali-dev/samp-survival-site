@@ -342,9 +342,13 @@ const Index = () => {
           </section>
 
           <footer className="py-8 px-4 border-t border-white/10">
-            <div className="container mx-auto text-center text-gray-400 text-sm">
+            <div className="container mx-auto text-center text-gray-400 text-sm space-y-3">
               <p>© 2023-2026 {serverName}. Все права защищены.</p>
-              <p className="mt-2">Постапокалиптический ролевой проект GTA SAMP • Основан в 2023 году</p>
+              <p>Постапокалиптический ролевой проект GTA SAMP • Основан в 2023 году</p>
+              <div className="pt-3 border-t border-white/5 mt-3">
+                <p className="text-gray-500">ИП Бояринцев Вадим Вячеславович</p>
+                <p className="text-gray-500">ИНН: 222261894107</p>
+              </div>
             </div>
           </footer>
         </main>
